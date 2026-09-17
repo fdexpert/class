@@ -148,7 +148,7 @@
       <h1 class="ch">課程定位與學習地圖</h1>
       <p class="lead">這份教材的唯一目的：讓你在「文本即數據」第一堂課走進教室時，筆電上的環境是好的、手是熱的，聽得懂老師在講哪一層。</p>
       <div class="pagetoc"><div class="tt">本頁章節</div>
-        <a href="#s00-who">適合誰</a><a href="#s00-why">為什麼需要這份教材</a><a href="#s00-map">課程地圖</a><a href="#s00-case">貫穿範例</a><a href="#s00-env">環境與版本</a><a href="#s00-how">怎麼用</a>
+        <a href="#s00-who">適合誰</a><a href="#s00-why">為什麼需要這份教材</a><a href="#s00-req">課程的硬性要求</a><a href="#s00-map">課程地圖</a><a href="#s00-case">貫穿範例</a><a href="#s00-env">環境與版本</a><a href="#s00-how">怎麼用</a>
       </div>
 
       <h2 id="s00-who">1. 適合誰</h2>
@@ -156,36 +156,58 @@
       <p>如果你有 Python 經驗，第二篇可以跳著讀，但請不要跳過第三章的 Project 工作流，那是 R 社群和 Python 習慣差最多的地方。</p>
 
       <h2 id="s00-why">2. 為什麼需要這份教材</h2>
-      <p>課綱的「先備知識」寫得很直接：具備 R 使用經驗、能在 Python 環境執行程式碼、會用 RStudio 或 Positron 編輯執行程式與管理套件、會用終端機。第一週的 Lab 就是「在 RStudio 中安裝套件與設定專案」與「建立 GitHub 帳號與儲存庫設定」，第三週就要用 quanteda 做斷詞與建立文件特徵矩陣。</p>
+      <p>課綱的「先備知識」寫得很直接：具備 R 使用經驗與基本程式設計能力，能自在執行一些 Python 程式碼，能自在使用 RStudio 或 Positron。<strong>第 1 週不需要安裝任何軟體、也沒有程式練習</strong>，環境設定指南會在第 2 週前提供——但第 2 週的 Lab 就要一口氣完成安裝套件、建立專案、設定 GitHub Desktop、複製課程儲存庫、還要在 Overleaf 編譯出一份 LaTeX PDF。到了第 4 週，就直接用 quanteda 從語料庫做到 token 與 DFM。</p>
       <p>換句話說，這門課把 R 當成<strong>已經會的工具</strong>，把課堂時間留給方法論。工具不熟的人會在第 3 到第 5 週之間迅速掉隊——不是因為聽不懂主題模型，而是因為卡在讀不進檔案、中文變亂碼、套件裝不起來這些跟課程內容無關的事。這份教材就是要把那些事提前解決掉。</p>
       <div class="callout note"><div class="ct">▍這份教材不教什麼</div>
         <p>不教統計、不教文本分析方法本身、不教主題模型怎麼解讀——那些是課堂的事。這裡只處理「手」的問題：怎麼把想法變成能跑的程式碼，怎麼把結果變成可以交出去的檔案。</p>
       </div>
 
-      <h2 id="s00-map">3. 課程地圖</h2>
+      <h2 id="s00-req">3. 課程的硬性要求</h2>
+      <p>工具要學到什麼程度，是由課程要求決定的。下表整理 2026-09-17 版課綱的評分項目，每一項後面標出它對工具能力的實際要求。</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:24%">項目</th><th style="width:8%">佔比</th><th style="width:24%">截止</th><th>對工具的要求</th></tr></thead>
+        <tbody>
+          <tr><td>研究論文摘要</td><td>10%</td><td>10/23（W7）23:59</td><td>Overleaf ＋ LaTeX 範本；英文 1,000 字內</td></tr>
+          <tr><td>期中研究設計報告</td><td>20%</td><td>12/4（W13）23:59</td><td>同上；10 頁 / 2,500 字內；此時你的分析要跑得出初步結果</td></tr>
+          <tr><td>課堂參與</td><td>20%</td><td>整學期</td><td>NTU COOL 討論區與 GitHub Issues 的提問與回答也計入</td></tr>
+          <tr><td>期末海報發表</td><td>25%</td><td>12/18（W15）課堂</td><td>PolMeth 海報規範；LaTeX 範本 ＋ Overleaf；5 分鐘概述</td></tr>
+          <tr><td>期末研究論文</td><td>25%</td><td>待公告（NTU COOL）</td><td>PSRM 風格 Research Note；4,000 字內；<strong>另附 GitHub 或 CodeOcean 可重現儲存庫</strong></td></tr>
+        </tbody>
+      </table></div>
+      <div class="callout warn"><div class="ct">▍三件最容易誤解的事</div>
+        <p><strong>一、課後 Lab 不計分。</strong>它是自主練習，不是獨立的計分項目——但期中與期末合計 45% 要你真的跑得動分析，Lab 是唯一的練習場。</p>
+        <p><strong>二、繳交走 Overleaf，不是 GitHub。</strong>四項計分作業都用課程提供的 LaTeX 範本，各自獨立的 Overleaf 專案，權限要開到 Editor（只給 View 不算）。Quarto 只能當你自己的分析筆記本，<strong>不能當計分文件的格式</strong>。</p>
+        <p><strong>三、第 1 週不用裝任何軟體。</strong>環境設定指南第 2 週前才提供，但第 2 週的 Lab 就要一次完成套件安裝、專案建立、GitHub Desktop 設定、clone 課程儲存庫、Overleaf 編譯 PDF。這份教材的第一、二篇就是為了讓你那天不手忙腳亂。</p>
+      </div>
+      <div class="callout note"><div class="ct">▍16 週裡有 4 週停課</div>
+        <p>W3 中秋節、W5 國慶日補假、W11 臺大校慶運動會、W16 行憲紀念日。<strong>實際授課只有 11 週</strong>，而進度表沒有因此變鬆——W4 一次講完斷詞、DFM、字典法與情緒分析。這是提前準備工具的另一個理由。</p>
+      </div>
+
+      <h2 id="s00-map">4. 課程地圖</h2>
       <p>全課約 8 小時，設計成分四次消化，每次約 2 小時。建議不要一天讀完；第二篇之後的內容需要你實際敲過鍵盤才會留下來。</p>
       <div class="tablewrap"><table>
         <thead><tr><th style="width:23%">篇章</th><th style="width:10%">時數</th><th>內容與目的</th></tr></thead>
         <tbody>
-          <tr><td><strong>第一篇 · 建立地基</strong><br>01–04</td><td>約 2 小時</td><td>四件工具的分工、RStudio 介面與必改設定、Project 工作流、套件管理。讀完你的環境不會再出現「檔案找不到」「中文亂碼」這類問題。</td></tr>
+          <tr><td><strong>第一篇 · 建立地基</strong><br>01–04</td><td>約 2 小時</td><td>各個工具的分工（含 Overleaf 為何才是交件窗口）、RStudio 介面與必改設定、Project 工作流、套件管理。讀完你的環境不會再出現「檔案找不到」「中文亂碼」這類問題。</td></tr>
           <tr><td><strong>第二篇 · R 語言最小必要集</strong><br>05–10</td><td>約 2.5 小時</td><td>物件與向量、讀檔與 tibble、管線與 dplyr、字串處理、purrr，最後一章專講怎麼讀懂錯誤訊息與求助（含課程的 AI 聲明規定）。只教文本分析會用到的部分，刻意不教物件導向與 base 繪圖。</td></tr>
-          <tr><td><strong>第三篇 · 文本分析第一次實戰</strong><br>11–14</td><td>約 1.5 小時</td><td>從 CSV 到 corpus、英文與中文斷詞、dfm 與停用詞、第一張圖。等於把課程第 3 週的 Lab 先預演一次。</td></tr>
-          <tr><td><strong>第四篇 · 交付與協作</strong><br>15–19</td><td>約 2 小時</td><td>Quarto 出 PDF、GitHub Desktop 與 GitHub Classroom、Positron、reticulate 接 Python，最後把整套工作流串成從 Lab 到期末論文的流程。對應作業繳交與期中期末報告的實際要求。</td></tr>
+          <tr><td><strong>第三篇 · 文本分析第一次實戰</strong><br>11–14</td><td>約 1.5 小時</td><td>從 CSV 到 corpus、英文與中文斷詞、dfm 與停用詞、第一張圖。等於把課程第 4 週的 Lab 先預演一次。</td></tr>
+          <tr><td><strong>第四篇 · 交付與協作</strong><br>15–19</td><td>約 2 小時</td><td>Quarto 分析筆記本、Overleaf 與 LaTeX 繳交流程、GitHub Desktop 與課程儲存庫、Positron、reticulate 接 Python。對應摘要、期中研究設計、海報與期末論文的實際繳交要求。</td></tr>
           <tr><td><strong>附錄</strong><br>A–D</td><td>查閱用</td><td>快捷鍵速查、Windows 操作對照、課前自我檢查清單、環境安裝紀錄。</td></tr>
         </tbody>
       </table></div>
       <div class="callout tip"><div class="ct">▍目前進度</div>
-        <p>你現在看到的是 <strong>v0.5，包含導論與第一至三篇（共 14 章）</strong>。第四篇與附錄在側欄顯示為灰色，尚未撰寫。</p>
+        <p>你現在看到的是 <strong>v0.6，包含導論與第一至三篇（共 14 章）</strong>。第四篇與附錄在側欄顯示為灰色，尚未撰寫。</p>
+        <p><strong>本版已依 2026-09-17 更新版課綱全面校對</strong>：評分項目、繳交管道（改為 Overleaf）、課後 Lab 定位、求助管道與週次對應皆已更新。若你讀過 9 月 17 日以前的版本，這些地方都變了。</p>
       </div>
 
-      <h2 id="s00-case">4. 貫穿範例：立法院書面質詢</h2>
+      <h2 id="s00-case">5. 貫穿範例：立法院書面質詢</h2>
       <p>全課程用同一份真實資料串起來：<strong>立法院第 11 屆書面質詢 162 筆</strong>，取自立法院開放資料 API，涵蓋第 1 至第 3 會期、28 位委員，每筆有「事由」（一句話摘要）與「說明」（完整質詢內容，平均 617 字）。</p>
       <p>選這份資料有三個理由。第一，它是中文，你會真實遇到中文斷詞的問題，而不是拿英文範例練完、上課換中文就傻眼。第二，它是政治文本，正好是課程第 12 週建議的期末題目方向之一（台灣立法行為、立法演說分析）。第三，它<strong>不乾淨</strong>——原始 PDF 排版在漢字之間塞了空白，會出現「造成許多觀光客抱怨臺灣政策之反覆與延宕」被拆成「造 成 許 多 觀 光 客」的狀況。真實資料就長這樣，我們會在第三篇正面處理它。</p>
       <div class="callout warn"><div class="ct">▍關於 legisTaiwan 套件</div>
         <p>授課教師維護的 <code>legisTaiwan</code> 套件原本是抓這份資料最方便的方式，但 <strong>2026-09-17 實測，它的 <code>get_ly_interpellations()</code> 與 <code>get_ly_legislators_by_term()</code> 都回傳 HTTP 404</strong>，套件內部呼叫的端點與現行 API 已不一致。底層 API（<code>ly.govapi.tw/v2</code>）本身正常。因此本教材的取材腳本改為直接呼叫 API。這件事本身就是很好的一課：<strong>套件會壞，API 會變，你要有能力判斷是誰壞了</strong>。第十章會教你怎麼做這個判斷。</p>
       </div>
 
-      <h2 id="s00-env">5. 環境與版本</h2>
+      <h2 id="s00-env">6. 環境與版本</h2>
       <p>教材中的每一段程式碼都在下列環境實際執行並驗證過（macOS，Apple Silicon，2026-09-17）。版本不必完全一致，但如果你的 R 明顯較舊（例如 4.1 以下），部分寫法會不適用。</p>
       <div class="tablewrap"><table>
         <thead><tr><th>項目</th><th>版本</th><th>用途</th></tr></thead>
@@ -200,21 +222,21 @@
         </tbody>
       </table></div>
 
-      <h2 id="s00-how">6. 怎麼用這份教材</h2>
+      <h2 id="s00-how">7. 怎麼用這份教材</h2>
       <p>左側導覽切換章節，底部「下一章」或鍵盤 <span class="kbd">←</span> <span class="kbd">→</span> 翻頁，右上角切換深淺色。程式碼區塊右上角有複製鈕。</p>
       <p>各章嵌入的示範影片<strong>都是英文</strong>。中文的 RStudio 教學影片不是沒有，但內容深度與版本新舊都對不上這門課的需求，與其硬塞，不如給你品質好的英文影片——它們都有自動字幕，YouTube 也能自動翻成中文。點縮圖會另開視窗並<strong>直接跳到該段落的時間點</strong>，不用自己找。影片是補充，不看也能讀完教材。</p>
       <p>最重要的一件事：<strong>每一段程式碼都要自己敲一遍</strong>，不要只用複製鈕。複製貼上學不會程式，打錯字才學得會——你會因此認識錯誤訊息，而認識錯誤訊息是這份教材真正想給你的能力。</p>
-      <footer class="foot">課程需求對照 2026-09-10 版課綱（NTLDEV7191）整理；環境與版本資訊為實機測試結果（查證日 2026-09-17）。</footer>
-      <div class="chap-foot"><a class="nextlink" data-go="ch01"><span class="k">下一章 →</span> 01 · 四件工具的分工</a></div>
+      <footer class="foot">課程需求對照 <strong>2026-09-17 版課綱</strong>（NTLDEV7191，46 頁）整理；環境與版本資訊為實機測試結果（查證日 2026-09-18）。</footer>
+      <div class="chap-foot"><a class="nextlink" data-go="ch01"><span class="k">下一章 →</span> 01 · 工具的分工</a></div>
     </section>
 
     <!-- ===================== ch01 ===================== -->
     <section class="chapter" id="ch01">
       <div class="crumb">第一篇 · 建立地基 / 01</div>
-      <h1 class="ch">R、RStudio、Quarto、GitHub：四件工具的分工</h1>
-      <p class="lead">本章目標：搞懂你電腦裡那四個圖示各自負責什麼，以後看到錯誤訊息才知道該去哪裡找。</p>
+      <h1 class="ch">R、RStudio、Quarto、GitHub、Overleaf：工具的分工</h1>
+      <p class="lead">本章目標：搞懂這幾個工具各自負責什麼、哪一個才是真正的交件窗口，以後看到錯誤訊息也才知道該去哪裡找。</p>
       <div class="pagetoc"><div class="tt">本頁章節</div>
-        <a href="#s01-why">為什麼要先講這個</a><a href="#s01-r">R 是引擎</a><a href="#s01-rs">RStudio 是駕駛艙</a><a href="#s01-q">Quarto 是排版廠</a><a href="#s01-gh">GitHub 是交件窗口</a><a href="#s01-tab">速查對照表</a><a href="#s01-p">動手練習</a><a href="#s01-s">本章小結</a>
+        <a href="#s01-why">為什麼要先講這個</a><a href="#s01-r">R 是引擎</a><a href="#s01-rs">RStudio 是駕駛艙</a><a href="#s01-q">Quarto 是排版廠</a><a href="#s01-gh">GitHub 的角色</a><a href="#s01-ol">Overleaf</a><a href="#s01-tab">速查對照表</a><a href="#s01-p">動手練習</a><a href="#s01-s">本章小結</a>
       </div>
 
       <h2 id="s01-why">1. 為什麼要先講這個</h2>
@@ -222,7 +244,7 @@
       <p>先把界線畫清楚，後面十八章都會輕鬆很多。</p>
 
       <div class="diagram">
-        <svg viewBox="0 0 800 300" role="img" aria-label="四件工具的關係圖：你在 RStudio 或 Positron 寫程式碼，送去 R 執行；結果經 Quarto 排成 PDF，再透過 GitHub Desktop 推上 GitHub Classroom">
+        <svg viewBox="0 0 800 300" role="img" aria-label="工具關係圖：你在 RStudio 或 Positron 寫程式碼，送去 R 執行；分析結果用 Quarto 整理成筆記本，正式書面作業與海報用 LaTeX 範本在 Overleaf 撰寫並繳交；GitHub Desktop 用來取得課程教材與存放可重現程式碼">
           <defs><marker id="ah" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
             <path d="M0,0 L7,3 L0,6 Z" fill="var(--accent)"/></marker>
             <marker id="ah2" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
@@ -256,20 +278,20 @@
 
           <path class="dline" d="M288,98 L288,150" marker-end="url(#ah)"/>
           <rect class="dbox" x="180" y="158" width="216" height="72" rx="8"/>
-          <text class="dt" x="288" y="184" text-anchor="middle">Quarto</text>
-          <text class="ds" x="288" y="203" text-anchor="middle">文字＋程式碼＋結果 → PDF</text>
-          <text class="dk" x="288" y="221" text-anchor="middle">底層：Pandoc + LaTeX</text>
+          <text class="dt" x="288" y="184" text-anchor="middle">Quarto ／ Overleaf</text>
+          <text class="ds" x="288" y="203" text-anchor="middle">分析筆記本 ／ LaTeX 繳交</text>
+          <text class="dk" x="288" y="221" text-anchor="middle">計分文件一律走 LaTeX</text>
 
           <path class="dline" d="M396,194 L448,194" marker-end="url(#ah)"/>
           <rect class="dbox" x="456" y="158" width="216" height="72" rx="8"/>
           <text class="dt" x="564" y="184" text-anchor="middle">GitHub Desktop</text>
           <text class="ds" x="564" y="203" text-anchor="middle">版本紀錄與繳交</text>
-          <text class="dk" x="564" y="221" text-anchor="middle">→ GitHub Classroom</text>
+          <text class="dk" x="564" y="221" text-anchor="middle">課程教材 · 可重現程式碼</text>
 
           <text class="dacc" x="8" y="268">上排＝寫程式的迴圈（每天幾百次）</text>
-          <text class="dacc" x="8" y="288">下排＝交件的路徑（每份作業一次）</text>
+          <text class="dacc" x="8" y="288">下排＝交件的路徑（每份繳交一次）</text>
         </svg>
-        <div class="dcap">四件工具的分工。實線是你主動觸發的動作，虛線是自動回流的結果。注意：套件掛在 R 底下，不是掛在 RStudio 底下——換 IDE 不用重裝套件，換 R 版本才要。</div>
+        <div class="dcap">工具的分工。實線是你主動觸發的動作，虛線是自動回流的結果。注意：套件掛在 R 底下，不是掛在 RStudio 底下——換 IDE 不用重裝套件，換 R 版本才要。</div>
       </div>
 
       <h2 id="s01-r">2. R 是引擎</h2>
@@ -290,15 +312,27 @@
 
       <h2 id="s01-q">4. Quarto 是排版廠</h2>
       <p>Quarto 是一個獨立的命令列工具（不是 R 套件），它把「文字 + 程式碼 + 程式碼跑出來的結果」組合成一份完整文件，輸出成 PDF、HTML 或 Word。</p>
-      <p>這門課為什麼非用不可：課綱明文要求「實驗報告、論文與海報均須使用 LaTeX／Overleaf 或 Quarto 撰寫，渲染為 PDF」，而且期末論文要附「GitHub 或 CodeOcean 可重現程式碼儲存庫」。Quarto 一次解決兩件事——你的報告和你的程式碼是同一份檔案，改了數據重新 render，表格和圖自己更新，不會出現「論文裡的數字跟程式碼跑出來的不一樣」這種學術災難。</p>
+      <p>Quarto 一次解決兩件事——你的報告和你的程式碼是同一份檔案，改了數據重新 render，表格和圖自己更新，不會出現「論文裡的數字跟程式碼跑出來的不一樣」這種學術災難。</p>
+      <div class="callout warn"><div class="ct">▍但這門課的計分文件不能用 Quarto</div>
+        <p>2026-09-17 版課綱把這件事講得很死：<strong>書面作業與海報必須使用課程提供的 LaTeX 範本，透過各自獨立的共用 Overleaf 專案繳交，並開放授課教師 Editor（可編輯）權限</strong>。課綱原文明寫「分析筆記本可使用 Quarto，但 Quarto 不能取代 LaTeX，作為計分書面作業或海報的撰寫格式」。</p>
+        <p>所以兩者分工是：<strong>Quarto 用來做你自己的分析筆記本</strong>（跑程式、看結果、留紀錄），<strong>Overleaf 上的 LaTeX 用來寫要交出去的東西</strong>（摘要、期中研究設計、海報、期末論文）。Quarto 仍然值得學，它是你私下工作的主力，只是別拿它當繳交格式。</p>
+      </div>
       <p>Quarto 底下還串了兩個工具：<strong>Pandoc</strong> 負責格式轉換，<strong>LaTeX</strong>（我們裝的是 TinyTeX）負責排出 PDF。你不用直接操作它們，但出錯時錯誤訊息可能來自它們，知道有這層會少走很多冤枉路。</p>
       <div class="codeblock"><span class="lang">terminal</span><button class="copyb">複製</button><pre>quarto --version
 # 1.10.18</pre></div>
 
-      <h2 id="s01-gh">5. GitHub 是交件窗口</h2>
-      <p>Git 是版本控制系統，GitHub 是把 Git 儲存庫放在網路上的服務。這門課用 <strong>GitHub Classroom</strong> 繳交六份 Lab 作業（成績取最佳三份，佔 20%），期末論文也要附可重現儲存庫。</p>
-      <p>好消息是課綱明說「不要求 Git 經驗」，你會用 <strong>GitHub Desktop</strong>，一個圖形介面工具，不用背指令。第 16 章會完整走一遍。</p>
+      <h2 id="s01-gh">5. GitHub 是教材來源，Overleaf 才是交件窗口</h2>
+      <p>Git 是版本控制系統，GitHub 是把 Git 儲存庫放在網路上的服務。<strong>在這門課，GitHub 的角色是取得東西而不是交出東西</strong>：課綱寫明「GitHub 是課程教材與程式碼的主要來源」，教材另外同步鏡像到 NTU COOL 供公告與討論。第 2 週的 Lab 就要你設定 GitHub Desktop 並複製（clone）課程儲存庫。</p>
+      <p>好消息是課綱明說「不需要 Git 經驗」，你會用 <strong>GitHub Desktop</strong>，一個圖形介面工具，不用背指令。第 16 章會完整走一遍。</p>
+      <p>GitHub 在期末還有一個角色：<strong>期末論文要附一個 GitHub 或 CodeOcean 的可重現程式碼儲存庫</strong>。所以你整學期的程式碼怎麼組織，到期末會直接變成交出去的東西的一部分——這是第 3 章那些資料夾紀律的最終理由。</p>
       <p>這裡先建立一個觀念：Git 管的是<strong>程式碼和文字檔的歷史</strong>，不是拿來存資料的雲端硬碟。把幾百 MB 的語料推上 GitHub 是新手最常犯的錯之一，第 16 章會教你用 <code>.gitignore</code> 擋掉。</p>
+
+      <h2 id="s01-ol">6. Overleaf：真正的交件窗口</h2>
+      <p>Overleaf 是線上的 LaTeX 編輯器，瀏覽器裡就能寫、即時編譯出 PDF、多人可同時編輯。這門課四項計分繳交——研究論文摘要、期中研究設計報告、期末海報、期末研究論文——<strong>全部走 Overleaf</strong>。</p>
+      <p>兩個容易出錯的細節：每一項作業用<strong>各自獨立的</strong> Overleaf 專案，不要全部塞在同一個；權限必須開到 <strong>Editor（可編輯）</strong>，只給 View（僅檢視）不算繳交。課綱把這兩點都明確寫出來，代表過去有人踩過。</p>
+      <div class="callout note"><div class="ct">▍第 2 週就會用到</div>
+        <p>第 2 週的 Lab 要求你在 Overleaf 建立一份簡短的 LaTeX 文件、編譯成 PDF、並邀請授課教師取得 Editor 權限。<strong>建議現在就去 overleaf.com 註冊一個免費帳號</strong>，用學校信箱註冊，之後要加入課程專案比較單純。實際的 LaTeX 撰寫會在第 15 章談。</p>
+      </div>
 
       <div class="videobox" data-vid="IJc2J-qewiU" data-start="0">
         <div class="vhead"><span class="play">▶</span> 影片示範 · R 與 RStudio 的差別（英文，5 分 09 秒） <span class="seg">點縮圖開啟</span></div>
@@ -308,15 +342,16 @@
         <div class="vcap">「What's the Difference Between R and RStudio?」— Duke Center for Computational Thinking。除了 R 與 RStudio 的分工，後半也帶到套件的概念，可與第 4 章對照。英文發音、有自動字幕。版權屬原作者。</div>
       </div>
 
-      <h2 id="s01-tab">6. 速查對照表</h2>
+      <h2 id="s01-tab">7. 速查對照表</h2>
       <div class="tablewrap"><table>
         <thead><tr><th style="width:14%">工具</th><th style="width:16%">身分</th><th>負責什麼</th><th style="width:26%">出問題時的徵兆</th></tr></thead>
         <tbody>
           <tr><td><strong>R</strong></td><td>程式語言＋執行引擎</td><td>所有運算、套件的家</td><td><code>Error in ...</code>、<code>there is no package called</code></td></tr>
           <tr><td><strong>RStudio</strong></td><td>IDE（駕駛艙）</td><td>編輯、執行、顯示、檔案與圖形管理</td><td>面板消失、字體亂掉、專案打不開</td></tr>
           <tr><td><strong>Positron</strong></td><td>另一款 IDE</td><td>同上，但 R 與 Python 並重</td><td>同上（第 17 章）</td></tr>
-          <tr><td><strong>Quarto</strong></td><td>獨立命令列工具</td><td>把程式碼與文字組成 PDF／HTML</td><td>render 失敗、LaTeX 錯誤、中文字不出來</td></tr>
-          <tr><td><strong>GitHub Desktop</strong></td><td>Git 圖形介面</td><td>版本記錄、作業繳交</td><td>push 被拒、合併衝突</td></tr>
+          <tr><td><strong>Quarto</strong></td><td>獨立命令列工具</td><td>分析筆記本（<strong>不可當計分文件格式</strong>）</td><td>render 失敗、LaTeX 錯誤、中文字不出來</td></tr>
+          <tr><td><strong>GitHub Desktop</strong></td><td>Git 圖形介面</td><td>取得課程教材、保存可重現程式碼</td><td>push 被拒、合併衝突</td></tr>
+          <tr><td><strong>Overleaf</strong></td><td>線上 LaTeX 編輯器</td><td><strong>四項計分作業的繳交管道</strong></td><td>編譯錯誤、權限沒開到 Editor</td></tr>
         </tbody>
       </table></div>
 
@@ -324,7 +359,7 @@
         <p>路徑不同：R 通常在 <code>C:\Program Files\R\R-4.6.1\</code>，套件預設裝在使用者資料夾 <code>C:\Users\你的名字\AppData\Local\R\win-library\4.6</code>。另外 Windows 需要額外安裝 <strong>Rtools</strong>（<a href="https://cran.r-project.org/bin/windows/Rtools/" target="_blank" rel="noopener">cran.r-project.org/bin/windows/Rtools</a>）才能編譯需要 C++ 的套件；macOS 的對應物是 Xcode Command Line Tools。本課有幾個套件（如 jiebaR）會用到編譯，沒裝 Rtools 會失敗。</p>
       </div>
 
-      <h2 id="s01-p">7. 動手練習</h2>
+      <h2 id="s01-p">8. 動手練習</h2>
       <div class="practice"><ol>
         <li>打開「終端機」（macOS 內建，在 應用程式 → 工具程式；Windows 用 PowerShell），輸入 <code>R --version</code>、<code>quarto --version</code>，確認兩個版本號都印得出來。</li>
         <li>在同一個終端機輸入 <code>R</code> 進入 R 的 Console，打 <code>1 + 1</code> 按 Enter，看到 <code>[1] 2</code>。然後打 <code>q()</code>、再打 <code>n</code> 離開。你剛剛用的就是「沒有 RStudio 的 R」。</li>
@@ -332,11 +367,12 @@
         <li>在 RStudio 的 Console 打 <code>R.home()</code>，看看它指到的路徑是不是上面提過的那個。</li>
       </ol></div>
 
-      <h2 id="s01-s">8. 本章小結</h2>
+      <h2 id="s01-s">9. 本章小結</h2>
       <ul>
         <li>R 是引擎，負責運算，套件裝在 R 裡；RStudio 是駕駛艙，負責讓你舒服地操作 R。</li>
-        <li>Quarto 是獨立工具，把程式碼與文字組成 PDF，課綱的報告格式要求靠它滿足。</li>
-        <li>GitHub 是交件窗口，用 GitHub Desktop 操作即可，不需要背指令。</li>
+        <li>Quarto 是獨立工具，適合做自己的分析筆記本；<strong>但課綱明定它不能當計分書面作業或海報的格式</strong>。</li>
+        <li>GitHub 是<strong>取得</strong>教材與程式碼的地方，也是期末可重現儲存庫的所在；用 GitHub Desktop 操作即可，不需要背指令。</li>
+        <li><strong>Overleaf 才是交件窗口</strong>：四項計分作業各用獨立專案，權限要開到 Editor。</li>
         <li>看到錯誤訊息，先判斷是誰在說話——這是整份教材最省時間的一個習慣。</li>
       </ul>
       <footer class="foot">對照 <a href="https://cran.r-project.org/" target="_blank" rel="noopener">CRAN</a>、<a href="https://quarto.org/docs/guide/" target="_blank" rel="noopener">Quarto 官方指南</a>、<a href="https://docs.posit.co/ide/user/" target="_blank" rel="noopener">RStudio 使用者指南</a>與實機測試結果撰寫（查證日 2026-09-17）。</footer>
@@ -412,7 +448,7 @@
       <p><strong>Console</strong> 適合試探：想知道 <code>nchar("測試")</code> 回傳什麼，直接在 Console 打，看到答案，丟掉。它是草稿紙。</p>
       <p><strong>Script</strong>（<code>.R</code> 檔）適合累積：你的分析流程——讀檔、清理、斷詞、建 dfm——要寫在 Script 裡，存檔，明天打開還在，下週改一個參數重跑一次。它是你的作品。</p>
       <div class="callout warn"><div class="ct">▍新手最常犯的錯</div>
-        <p>整個分析流程都打在 Console 裡，跑出漂亮結果，然後關掉 RStudio。隔天要重現，全部消失。你的 Lab 作業要繳交<strong>可重現的程式碼</strong>，Console 裡的東西交不出去。從第一天就養成習慣：<strong>凡是會想再跑第二次的，都寫進 Script</strong>。</p>
+        <p>整個分析流程都打在 Console 裡，跑出漂亮結果，然後關掉 RStudio。隔天要重現，全部消失。期末論文要附<strong>可重現的程式碼儲存庫</strong>，Console 裡的東西交不出去。從第一天就養成習慣：<strong>凡是會想再跑第二次的，都寫進 Script</strong>。</p>
       </div>
       <p>新建 Script 的方式：選單 File → New File → R Script，或直接按 <span class="kbd">Cmd</span>+<span class="kbd">Shift</span>+<span class="kbd">N</span>。</p>
 
@@ -533,7 +569,7 @@ list.files()  # 這個資料夾裡有什麼</pre></div>
       <p>網路上的舊教學會教你在 Script 開頭寫：</p>
       <div class="codeblock"><span class="lang">R · 請不要這樣做</span><button class="copyb">複製</button><pre>setwd("/Users/yourname/Documents/text-as-data/data")   # macOS
 setwd("C:/Users/yourname/Documents/text-as-data/data") # Windows</pre></div>
-      <p>這行在你的電腦上完全正常，但它讓你的程式碼<strong>只能在你的電腦上跑</strong>。助教拿到你的作業，第一行就失敗，因為他的電腦裡沒有 <code>/Users/yourname/</code> 這個路徑。這門課的 Lab 透過 GitHub Classroom 繳交、期末要附可重現儲存庫，<code>setwd()</code> 等於在可重現性上自己開一槍。</p>
+      <p>這行在你的電腦上完全正常，但它讓你的程式碼<strong>只能在你的電腦上跑</strong>。助教拿到你的作業，第一行就失敗，因為他的電腦裡沒有 <code>/Users/yourname/</code> 這個路徑。這門課的期末論文要附 GitHub 或 CodeOcean 的可重現儲存庫，<code>setwd()</code> 等於在可重現性上自己開一槍。</p>
       <p>正確做法是使用 <strong>RStudio Project</strong>：當你透過 <code>.Rproj</code> 檔開啟專案時，RStudio 自動把工作目錄設在專案資料夾。你的程式碼裡只出現相對路徑（<code>data/質詢.csv</code>），誰拿到都能跑。</p>
 
       <h2 id="s03-proj">3. 建立你的課程 Project</h2>
@@ -557,7 +593,7 @@ setwd("C:/Users/yourname/Documents/text-as-data/data") # Windows</pre></div>
       <div class="codeblock"><span class="lang">R Console</span><button class="copyb">複製</button><pre>dir.create("data")     # 原始資料，只讀不改
 dir.create("R")        # 你的分析腳本
 dir.create("output")   # 產生的圖表、清理後的資料
-dir.create("report")   # Quarto 報告
+dir.create("report")   # Quarto 分析筆記本
 list.files()</pre></div>
 
       <div class="diagram">
@@ -572,10 +608,10 @@ list.files()</pre></div>
 ├── <b>output/</b>                  <i>產出：全部可由程式碼重新生成</i>
 │   ├── dfm-top-terms.png
 │   └── 質詢_已清理.csv
-└── <b>report/</b>                  <i>Quarto 報告（第 15 章）</i>
+└── <b>report/</b>                  <i>Quarto 分析筆記本（第 15 章）</i>
     ├── lab01.qmd
     └── lab01.pdf</pre>
-        <div class="dcap">建議的專案結構。資料由左往右流動：<code>data/</code> 的原始檔經過 <code>R/</code> 的腳本處理，結果落在 <code>output/</code>，最後由 <code>report/</code> 引用成交件用的 PDF。</div>
+        <div class="dcap">建議的專案結構。資料由左往右流動：<code>data/</code> 的原始檔經過 <code>R/</code> 的腳本處理，結果落在 <code>output/</code>，最後在 <code>report/</code> 整理成分析筆記本，數字與圖再帶進 Overleaf 的正式文件。</div>
       </div>
       <div class="tablewrap"><table>
         <thead><tr><th style="width:16%">資料夾</th><th>放什麼</th><th style="width:30%">紀律</th></tr></thead>
@@ -583,7 +619,7 @@ list.files()</pre></div>
           <tr><td><code>data/</code></td><td>原始資料，例如立法院質詢 CSV</td><td><strong>永遠不要修改或覆蓋原始檔</strong>。清理過的版本另存到 output/</td></tr>
           <tr><td><code>R/</code></td><td><code>01-import.R</code>、<code>02-clean.R</code>、<code>03-dfm.R</code></td><td>用數字開頭命名，執行順序一目瞭然</td></tr>
           <tr><td><code>output/</code></td><td>圖檔、清理後資料、模型結果</td><td>這裡的東西應該<strong>全部能由程式碼重新生成</strong></td></tr>
-          <tr><td><code>report/</code></td><td><code>.qmd</code> 報告與 render 出來的 PDF</td><td>第 15 章會用到</td></tr>
+          <tr><td><code>report/</code></td><td>Quarto 分析筆記本（<code>.qmd</code>）與其輸出</td><td>計分文件寫在 Overleaf，不放這裡；第 15 章說明兩者怎麼銜接</td></tr>
         </tbody>
       </table></div>
       <p>「output 裡的東西全部能重新生成」這條紀律背後有個判斷標準：如果你把 output 資料夾整個刪掉，再從頭執行 R 資料夾裡的腳本，應該能得到一模一樣的結果。做得到，你的分析就是可重現的；做不到，表示有某個步驟你是手動做的而沒寫進程式碼——那正是期末繳交時會出事的地方。</p>
@@ -1489,15 +1525,27 @@ reprex::reprex()
 #&gt; other attached packages: jiebaR, purrr, stringr, dplyr, readr …
 
 packageVersion("quanteda")   # 單獨查某個套件的版本</pre></div>
-      <p>本課的求助管道，課綱寫得很明確：<strong>技術問題先到 GitHub Classroom 提問</strong>；如果判斷是套件本身的問題，可以直接到該套件作者的 GitHub 開 issue；其他事項寄信預約。</p>
+      <p>本課的求助管道，2026-09-17 版課綱寫得很細，順序不要弄錯：</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:30%">什麼狀況</th><th>去哪裡</th></tr></thead>
+        <tbody>
+          <tr><td>一般技術問題</td><td><strong>先張貼於 NTU COOL 討論區</strong></td></tr>
+          <tr><td>課程程式碼的問題（不涉敏感資訊）</td><td>也可以用課程儲存庫的 <strong>GitHub Issues</strong></td></tr>
+          <tr><td>課後 Lab 卡住</td><td>預約授課教師或助教的 <strong>office hours</strong>，<strong>帶著相關程式碼或輸出結果</strong>與問題的簡短說明</td></tr>
+          <tr><td>套件本身有問題</td><td>課綱寫明授課教師會<strong>協助你向套件作者開 Issue</strong>——所以判斷出「是套件壞了」是有價值的，第 4 節那個 legisTaiwan 案例就是</td></tr>
+          <tr><td>個人事務、個別成績</td><td>直接聯繫授課教師或助教</td></tr>
+        </tbody>
+      </table></div>
+      <p>注意「帶著程式碼或輸出結果」這個要求——這正是前面 reprex 在做的事。把問題準備好再去問，是你能為自己省最多時間的習慣。</p>
 
       <h2 id="s10-ai">6. AI 協助與課程規定</h2>
       <p>用 AI 解讀錯誤訊息是合理且高效的——課綱明文允許 AI 輔助概念化、文獻初篩、寫作編輯。但有兩件事必須說清楚。</p>
       <p>第一，<strong>驗證責任在你</strong>。課綱寫得很直接：不得把未驗證的 AI 引用、資料、程式碼、分析或文字當成自己的作品。AI 給的程式碼要自己跑過、看懂、確認結果合理，才能用。</p>
-      <p>第二，<strong>必須聲明</strong>。每一份作業、實驗報告、海報、論文都要揭露使用的工具與版本、你請它做什麼、輸出怎麼用、你怎麼驗證。<strong>沒有附 AI 聲明的作業不予受理，直到補齊為止</strong>。即使完全沒用 AI，也要寫上原文指定的那句聲明：</p>
+      <p>第二，<strong>必須聲明</strong>。每一份作業、海報、期末論文<strong>以及加分申請</strong>都要揭露使用的工具與版本、你請它做什麼、產出怎麼被使用、你怎麼檢查或驗證——課綱明說<strong>不需要附上確切的提示詞</strong>。<strong>沒有附完整 AI 聲明的繳交，在補齊之前不予受理</strong>。課綱另外提供了一個輔助工具：<a href="https://disclose-ai.app" target="_blank" rel="noopener">AI Disclosure Generator</a>。即使完全沒用 AI，也要照錄原文指定的那句聲明：</p>
       <div class="codeblock"><span class="lang">聲明範例</span><button class="copyb">複製</button><pre>No generative AI tools were used in the preparation of this assignment.</pre></div>
-      <div class="callout warn"><div class="ct">▍不要把未發表的資料丟進開放系統</div>
-        <p>課綱另有一條限制容易被忽略：除合法、必要且適當保護外，不得把個資、敏感資料、未發表研究或機密審稿內容輸入開放系統。你的期末論文資料如果涉及這些，貼進線上 AI 服務前要先想清楚。</p>
+      <div class="callout warn"><div class="ct">▍兩條容易被忽略的紅線</div>
+        <p>第一，除非合法、必要且已有適當保護，<strong>不得把個資、敏感資料、未發表研究材料或保密審查資料輸入開放式生成式 AI 系統</strong>。你的期末論文資料如果涉及這些，貼進線上 AI 服務前要先想清楚。</p>
+        <p>第二，課綱明列四種會<strong>依臺大程序以學術不端處理</strong>的行為：不實陳述 AI 使用情形、未查證 AI 生成的內容、透過 AI 捏造來源或資料、利用 AI 規避作業的學習目標。這不是「扣分」等級的事。</p>
       </div>
 
       <div class="videobox pending">
@@ -1521,10 +1569,10 @@ packageVersion("quanteda")   # 單獨查某個套件的版本</pre></div>
         <li>六種常見錯誤：物件不存在、函數不存在、檔案路徑不對、型別不對、索引超界、欄位名打錯。</li>
         <li>四種分流：打錯字／資料不如預期／套件本身壞了／外部世界變了。</li>
         <li>套件壞掉時先確認底層服務是否正常（legisTaiwan 回 404 但 API 回 200）。</li>
-        <li>求助用 reprex 加 <code>sessionInfo()</code>；本課技術問題先走 GitHub Classroom。</li>
-        <li>AI 可以用，但驗證責任在你，而且<strong>每份作業都要附 AI 聲明，沒有就不予受理</strong>。</li>
+        <li>求助用 reprex 加 <code>sessionInfo()</code>；本課技術問題先走 NTU COOL 討論區，程式碼問題可用 GitHub Issues。</li>
+        <li>AI 可以用，但驗證責任在你；<strong>每份繳交（含加分申請）都要附 AI 聲明，沒有就不予受理</strong>，不實陳述則以學術不端處理。</li>
       </ul>
-      <footer class="foot">錯誤訊息皆為 R 4.6.1 實際執行擷取；課程規定對照 2026-09-10 版課綱第 38–41 頁；legisTaiwan 與 API 狀態為實測結果（查證日 2026-09-17）。</footer>
+      <footer class="foot">錯誤訊息皆為 R 4.6.1 實際執行擷取；課程規定對照 <strong>2026-09-17 版課綱</strong>的生成式 AI 與學術支援章節；legisTaiwan 與 API 狀態為實測結果（查證日 2026-09-18）。</footer>
       <div class="chap-foot"><a class="nextlink" data-go="ch11"><span class="k">下一章 →</span> 11 · 從 CSV 到 corpus</a></div>
     </section>
 
@@ -1538,7 +1586,7 @@ packageVersion("quanteda")   # 單獨查某個套件的版本</pre></div>
       </div>
 
       <h2 id="s11-three">1. quanteda 的三層結構</h2>
-      <p>這門課第 3 週之後的每一次操作，幾乎都是在這三層之間移動。先把這張圖記起來，後面就不會迷路。</p>
+      <p>這門課第 4 週之後的每一次操作，幾乎都是在這三層之間移動。先把這張圖記起來，後面就不會迷路。</p>
 
       <div class="diagram">
 <pre><b>data.frame / tibble</b>   <i>一列一篇，還是普通表格</i>
@@ -1643,7 +1691,7 @@ ndoc(co)
 #&gt; [8] "science"</pre></div>
       <p>常用的幾個：<code>remove_punct</code>（標點）、<code>remove_numbers</code>（數字）、<code>remove_symbols</code>（符號）、<code>remove_url</code>（網址）。</p>
       <div class="callout warn"><div class="ct">▍每一個 remove 都是研究決定</div>
-        <p>移除數字聽起來無害，但如果你研究的是預算案，「20 億」「93,800 條」正是重點。<strong>沒有一組通用的正確設定</strong>——每個選項都該問一次「這對我的研究問題會不會拿掉重要資訊」。這類決定在論文的方法章節要交代清楚，也是第 3 週課程強調「方法假設」的原因。</p>
+        <p>移除數字聽起來無害，但如果你研究的是預算案，「20 億」「93,800 條」正是重點。<strong>沒有一組通用的正確設定</strong>——每個選項都該問一次「這對我的研究問題會不會拿掉重要資訊」。這類決定在論文的方法章節要交代清楚，也是第 4 週課程把「斷詞、DFM、字典法」放在同一週講的原因——前處理的每個決定都會一路影響到情緒分數。</p>
       </div>
 
       <h2 id="s12-zh">3. 中文的真相</h2>
@@ -1745,7 +1793,7 @@ length(unique(unlist(as.list(tk))))      # 不重複詞型
       <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>dm0 &lt;- dfm(tk)
 dim(dm0)
 #&gt; [1]  162 6469</pre></div>
-      <p>162 列（文件）× 6,469 欄（詞型），每一格是「這個詞在這篇出現幾次」。這就是<strong>詞袋模型</strong>（bag of words）——第 3 週課程的核心概念。</p>
+      <p>162 列（文件）× 6,469 欄（詞型），每一格是「這個詞在這篇出現幾次」。這就是<strong>詞袋模型</strong>（bag of words）——第 4 週課程的核心概念。</p>
       <p>「袋」這個比喻很傳神：詞被倒進袋子裡，誰先誰後完全消失。「政府不應該補助」和「不應該政府補助」在 dfm 裡一模一樣。這個簡化是所有後續方法（字典法、主題模型、尺度分析）的共同前提，也是它們共同的限制。</p>
 
       <h2 id="s13-sparse">2. 稀疏度：為什麼矩陣幾乎是空的</h2>
@@ -1934,15 +1982,19 @@ write_csv(f, here("output", "top10_freq.csv"))</pre></div>
       <p>呼應第 3 章的紀律：圖和表都存進 <code>output/</code>，而且都是<strong>由程式碼生成的</strong>。不要在 RStudio 的 Plots 面板按 Export 手動存——那樣資料一改，你得記得重按一次，而你一定會忘記。</p>
 
       <h2 id="s14-next">6. 這一篇接到課程哪裡</h2>
-      <p>你剛剛走完的流程——讀檔、清理、斷詞、建 dfm、算詞頻、分組比較、畫圖——<strong>就是課程第 3 週 Lab 的完整內容</strong>。上課時你會是已經走過一遍的人。</p>
+      <p>你剛剛走完的流程——讀檔、清理、斷詞、建 dfm、算詞頻、分組比較、畫圖——<strong>幾乎就是課程第 4 週 Lab 的內容</strong>（「使用 quanteda，沿著同一個範例從語料庫一路做到 token 與 DFM」）。上課時你會是已經走過一遍的人。</p>
+      <div class="callout note"><div class="ct">▍課後 Lab 不計分，但別因此跳過</div>
+        <p>2026-09-17 版課綱把課後 Lab 明確定位為<strong>自主練習，不是獨立的計分項目</strong>。這反而提高了它的重要性：沒有分數逼你，但期中研究設計（20%）與期末論文（25%）要你真的跑得動分析。<strong>Lab 是唯一的練習場</strong>，跳過的代價會在第 13 週截止日那天出現。</p>
+      </div>
       <div class="tablewrap"><table>
         <thead><tr><th style="width:22%">你已經做過的</th><th>課程接下來會加什麼</th></tr></thead>
         <tbody>
-          <tr><td>停用詞與 tf-idf</td><td>W4 字典法與情緒分析：用現成或自建的詞典替文本評分</td></tr>
-          <tr><td>textstat_frequency、keyness</td><td>W5 描述與比較文本：更嚴謹的比較統計與視覺化</td></tr>
-          <tr><td>dfm</td><td>W6 尺度分析（Wordfish／Wordscores）、W7 主題模型（stm）皆以 dfm 為輸入</td></tr>
-          <tr><td>jieba 與自訂詞典</td><td>W3 中研院詞庫小組工具、legisTaiwan 建立完整語料</td></tr>
-          <tr><td>詞袋的限制</td><td>W10–W12 詞嵌入與 Transformer：讓詞序與語境重新回來</td></tr>
+          <tr><td>jieba、自訂詞典、前處理選擇</td><td><strong>W2</strong> 以 R 與 Python 進行文本前處理：協作工作流程</td></tr>
+          <tr><td>corpus → tokens → dfm、停用詞</td><td><strong>W4</strong> 斷詞、文件特徵矩陣、字典法與情緒分析（同一週把前處理與字典法連在一起講）</td></tr>
+          <tr><td>dfm 當作模型輸入</td><td><strong>W7</strong> 監督式／非監督式／半監督式尺度分析、<strong>W8</strong> 主題模型及其變體</td></tr>
+          <tr><td>textstat_frequency、keyness</td><td><strong>W9</strong> 文本的描述與比較：可讀性、文本相似度與詞嵌入</td></tr>
+          <tr><td>詞袋的限制</td><td><strong>W10</strong> NLP 工作流程與 Transformer、<strong>W12</strong> 大型語言模型與多代理人系統：讓詞序與語境重新回來</td></tr>
+          <tr><td>中文語料的特殊處理</td><td><strong>W13</strong> 新型態的文本資料：多語言與多模態來源</td></tr>
         </tbody>
       </table></div>
 
@@ -1971,15 +2023,15 @@ write_csv(f, here("output", "top10_freq.csv"))</pre></div>
         <li><code>textstat_keyness()</code> 做分組比較；本課語料顯示第 3 會期的高齡、AI、生育明顯突出。</li>
         <li>但該發現受限於樣本、組別不對等與委員分布極度不均，<strong>可能是抽樣假象</strong>。</li>
         <li>圖表一律由程式碼生成並存進 <code>output/</code>，不要手動 Export。</li>
-        <li>這一篇等於第 3 週 Lab 的完整預演。</li>
+        <li>這一篇等於第 4 週 Lab 的完整預演。</li>
       </ul>
-      <footer class="foot">程式碼、輸出與圖表皆在 R 4.6.1 + quanteda 4.5.0 + ggplot2 實際執行產生；課程週次對照 2026-09-10 版課綱（查證日 2026-09-18）。</footer>
+      <footer class="foot">程式碼、輸出與圖表皆在 R 4.6.1 + quanteda 4.5.0 + ggplot2 實際執行產生；課程週次對照 <strong>2026-09-17 版課綱</strong>第 7.2 節（查證日 2026-09-18）。</footer>
       <div class="chap-foot" style="color:var(--text-faint);font-size:13.5px;">第三篇到此結束。第四篇「交付與協作」尚未撰寫。</div>
     </section>
 
     <div class="pagemeta">
-      課程版本 v0.5（導論＋第一至三篇）· 更新日 2026-09-17 · 查證日 2026-09-17<br>
-      課程資料整理 © Jerry。課綱內容版權屬國立臺灣大學與授課教師；外部連結之文件與影片版權分屬各原創作者。
+      課程版本 v0.6（導論＋第一至三篇，對齊 2026-09-17 課綱）· 更新日 2026-09-17 · 查證日 2026-09-17<br>
+      課程資料整理 © Jerry。課綱依 2026-09-17 版整理，內容版權屬國立臺灣大學與授課教師；外部連結之文件與影片版權分屬各原創作者。
     </div>
   </main>
 </div>
@@ -1989,7 +2041,7 @@ write_csv(f, here("output", "top10_freq.csv"))</pre></div>
   var groups=[
     {title:"導論",items:[["00","課程定位與學習地圖","ch00",1]]},
     {title:"第一篇 · 建立地基",items:[
-      ["01","四件工具的分工","ch01",1],
+      ["01","工具的分工","ch01",1],
       ["02","RStudio 介面與必改設定","ch02",1],
       ["03","Project 工作流","ch03",1],
       ["04","套件管理","ch04",1]
@@ -2009,8 +2061,8 @@ write_csv(f, here("output", "top10_freq.csv"))</pre></div>
       ["14","描述統計與第一張圖","ch14",1]
     ]},
     {title:"第四篇 · 交付與協作",items:[
-      ["15","Quarto 可重現報告","",0],
-      ["16","GitHub Desktop 與 Classroom","",0],
+      ["15","Quarto 筆記本與 Overleaf 繳交","",0],
+      ["16","GitHub Desktop 與課程儲存庫","",0],
       ["17","Positron","",0],
       ["18","reticulate 接 Python","",0],
       ["19","從 Lab 到期末論文的工作流","",0]
