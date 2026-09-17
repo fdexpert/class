@@ -4,9 +4,9 @@
 
 ## 閱讀
 
-- GitHub Pages：https://fdexpert.github.io/class/
+- GitHub Pages：https://fdexpert.github.io/class/text-as-data-course.html
 - 原 Vercel 網站：https://text-as-data-course.vercel.app/
-- 本機：以瀏覽器開啟 `index.html`。
+- 本機：以瀏覽器開啟 `text-as-data-course.html`。
 
 ## 功能
 
@@ -18,7 +18,7 @@
 ## 部署與更新
 
 GitHub Pages 使用 `main` 分支根目錄，`.nojekyll` 表示直接發布靜態檔案。
-更新 `index.html` 並提交到 `main` 後，GitHub Pages 會自動發布。
+更新 `text-as-data-course.html` 並提交到 `main` 後，GitHub Pages 會自動發布。
 HTML 已內嵌中英資料、樣式與程式，不需安裝相依套件或進行建置。
 
 ## 來源及限制
@@ -27,3 +27,5 @@ HTML 已內嵌中英資料、樣式與程式，不需安裝相依套件或進行
 原課綱的週次與截止日矛盾已保留提示，實際要求以授課教師公告為準。
 DOI 與文獻原站需要連網；部分出版社禁止嵌入，請使用「另開原站」。
 原課綱及所引用文獻的權利歸各自權利人所有；本專案未另行授予其內容的再授權。
+
+`index.html` 僅作首頁轉址，網站根網址會導向 `text-as-data-course.html`。
