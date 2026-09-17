@@ -79,6 +79,23 @@
   th,td{border:1px solid var(--border);padding:7px 10px;text-align:left;vertical-align:top;}
   th{background:var(--surface);color:var(--text);}
   .practice{background:var(--surface);border:1px dashed var(--border);border-radius:9px;padding:6px 16px;margin:16px 0;}
+  .diagram{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin:18px 0;padding:14px 16px 10px;}
+  .diagram svg{display:block;width:100%;height:auto;}
+  .diagram .dcap{font-size:12.5px;color:var(--text-faint);margin-top:9px;padding-top:8px;border-top:1px solid var(--border-soft);}
+  .diagram pre{margin:2px 0;font-family:ui-monospace,"SFMono-Regular",monospace;font-size:12.5px;line-height:1.55;
+    color:var(--text-dim);overflow-x:auto;white-space:pre;}
+  .diagram pre b{color:var(--accent);font-weight:600;}
+  .diagram pre i{color:var(--text-faint);font-style:normal;}
+  svg .dbox{fill:var(--surface-2);stroke:var(--border);stroke-width:1;}
+  svg .dbox-hi{fill:var(--surface-2);stroke:var(--accent);stroke-width:1.5;}
+  svg .dbar{fill:var(--bg-elev);stroke:var(--border);stroke-width:1;}
+  svg .dt{fill:var(--text);font-size:13px;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,"PingFang TC",sans-serif;}
+  svg .ds{fill:var(--text-dim);font-size:11.5px;font-family:-apple-system,BlinkMacSystemFont,"PingFang TC",sans-serif;}
+  svg .dk{fill:var(--text-faint);font-size:10.5px;font-family:ui-monospace,monospace;}
+  svg .dacc{fill:var(--accent);font-size:11.5px;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,"PingFang TC",sans-serif;}
+  svg .dline{stroke:var(--accent);stroke-width:1.6;fill:none;}
+  svg .dline-soft{stroke:var(--text-faint);stroke-width:1.2;fill:none;stroke-dasharray:4 3;}
+  svg .ddot{fill:var(--accent);}
   .videobox{display:block;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:20px 0;background:var(--surface);}
   .videobox.pending{background:var(--bg-elev);border-style:dashed;}
   .videobox .vhead{display:flex;align-items:center;gap:9px;padding:10px 14px;font-size:13.5px;font-weight:600;border-bottom:1px solid var(--border);}
@@ -95,11 +112,6 @@
   .nextlink .k{color:var(--text-faint);font-weight:400;margin-right:6px;}
   .foot{margin-top:24px;font-size:12.5px;color:var(--text-faint);}
   .pagemeta{margin-top:40px;padding:14px 0 0;border-top:1px solid var(--border);font-size:12px;color:var(--text-faint);}
-  .panegrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0;}
-  .pane{border:1px solid var(--border);border-radius:9px;background:var(--surface);padding:11px 13px;}
-  .pane .pt{font-weight:700;font-size:13.5px;margin-bottom:3px;}
-  .pane .pd{font-size:13px;color:var(--text-dim);}
-  .pane.hi{border-color:var(--accent);}
   .kbd{display:inline-block;border:1px solid var(--border);border-bottom-width:2px;border-radius:5px;padding:1px 6px;font-family:ui-monospace,monospace;font-size:12.5px;background:var(--surface-2);}
   #scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:40;}
   @media(max-width:860px){
@@ -109,8 +121,11 @@
     .menubtn{display:inline-block;}
     main{padding:20px 18px 80px;}
     h1.ch{font-size:25px;}
-    .panegrid{grid-template-columns:1fr;}
-  }
+    .diagram{overflow-x:auto;}
+    .diagram svg{min-width:600px;}
+    .diagram .dcap,.diagram pre{min-width:0;}
+    .diagram .dcap::before{content:"（圖可左右滑動）";display:block;color:var(--accent);margin-bottom:4px;}
+    }
 </style>
 </head>
 <body>
@@ -133,7 +148,7 @@
       <h1 class="ch">課程定位與學習地圖</h1>
       <p class="lead">這份教材的唯一目的：讓你在「文本即數據」第一堂課走進教室時，筆電上的環境是好的、手是熱的，聽得懂老師在講哪一層。</p>
       <div class="pagetoc"><div class="tt">本頁章節</div>
-        <a href="#s00-who">適合誰</a><a href="#s00-why">為什麼需要這份教材</a><a href="#s00-map">課程地圖</a><a href="#s00-case">貫穿範例</a><a href="#s00-env">你的機器現況</a><a href="#s00-how">怎麼用</a>
+        <a href="#s00-who">適合誰</a><a href="#s00-why">為什麼需要這份教材</a><a href="#s00-map">課程地圖</a><a href="#s00-case">貫穿範例</a><a href="#s00-env">環境與版本</a><a href="#s00-how">怎麼用</a>
       </div>
 
       <h2 id="s00-who">1. 適合誰</h2>
@@ -170,8 +185,8 @@
         <p>授課教師維護的 <code>legisTaiwan</code> 套件原本是抓這份資料最方便的方式，但 <strong>2026-09-17 實測，它的 <code>get_ly_interpellations()</code> 與 <code>get_ly_legislators_by_term()</code> 都回傳 HTTP 404</strong>，套件內部呼叫的端點與現行 API 已不一致。底層 API（<code>ly.govapi.tw/v2</code>）本身正常。因此本教材的取材腳本改為直接呼叫 API。這件事本身就是很好的一課：<strong>套件會壞，API 會變，你要有能力判斷是誰壞了</strong>。第十章會教你怎麼做這個判斷。</p>
       </div>
 
-      <h2 id="s00-env">5. 你的機器現況</h2>
-      <p>下表是 2026-09-17 在你這台 MacBook Air（Apple Silicon，macOS 27.0）上實測的安裝結果，全部已驗證可用。教材中的每一段程式碼都在這個環境實際跑過。</p>
+      <h2 id="s00-env">5. 環境與版本</h2>
+      <p>教材中的每一段程式碼都在下列環境實際執行並驗證過（macOS，Apple Silicon，2026-09-17）。版本不必完全一致，但如果你的 R 明顯較舊（例如 4.1 以下），部分寫法會不適用。</p>
       <div class="tablewrap"><table>
         <thead><tr><th>項目</th><th>版本</th><th>用途</th></tr></thead>
         <tbody>
@@ -179,9 +194,9 @@
           <tr><td>RStudio</td><td>2026.09.0+174</td><td>主要開發環境</td></tr>
           <tr><td>Positron</td><td>1.130.0</td><td>備選 IDE（第 17 章）</td></tr>
           <tr><td>Quarto</td><td>1.10.18</td><td>可重現報告，出 PDF</td></tr>
-          <tr><td>TinyTeX</td><td>已安裝</td><td>Quarto 出 PDF 的排版引擎</td></tr>
-          <tr><td>GitHub Desktop</td><td>已安裝</td><td>作業繳交</td></tr>
-          <tr><td>R 套件</td><td>41 個</td><td>quanteda 家族、stm、jiebaR、conText、flaiR、legisTaiwan 等</td></tr>
+          <tr><td>TinyTeX</td><td>透過 <code>quarto install tinytex</code></td><td>Quarto 出 PDF 的排版引擎</td></tr>
+          <tr><td>GitHub Desktop</td><td>最新版</td><td>作業繳交</td></tr>
+          <tr><td>R 套件</td><td>41 個</td><td>quanteda 家族、stm、jiebaR、conText、flaiR、legisTaiwan 等，清單見第 4 章</td></tr>
         </tbody>
       </table></div>
 
@@ -189,7 +204,7 @@
       <p>左側導覽切換章節，底部「下一章」或鍵盤 <span class="kbd">←</span> <span class="kbd">→</span> 翻頁，右上角切換深淺色。程式碼區塊右上角有複製鈕。</p>
       <p>各章嵌入的示範影片<strong>都是英文</strong>。中文的 RStudio 教學影片不是沒有，但內容深度與版本新舊都對不上這門課的需求，與其硬塞，不如給你品質好的英文影片——它們都有自動字幕，YouTube 也能自動翻成中文。點縮圖會另開視窗並<strong>直接跳到該段落的時間點</strong>，不用自己找。影片是補充，不看也能讀完教材。</p>
       <p>最重要的一件事：<strong>每一段程式碼都要自己敲一遍</strong>，不要只用複製鈕。複製貼上學不會程式，打錯字才學得會——你會因此認識錯誤訊息，而認識錯誤訊息是這份教材真正想給你的能力。</p>
-      <footer class="foot">課程需求對照 2026-09-10 版課綱（NTLDEV7191）整理；環境資訊為本機實測（查證日 2026-09-17）。</footer>
+      <footer class="foot">課程需求對照 2026-09-10 版課綱（NTLDEV7191）整理；環境與版本資訊為實機測試結果（查證日 2026-09-17）。</footer>
       <div class="chap-foot"><a class="nextlink" data-go="ch01"><span class="k">下一章 →</span> 01 · 四件工具的分工</a></div>
     </section>
 
@@ -205,6 +220,57 @@
       <h2 id="s01-why">1. 為什麼要先講這個</h2>
       <p>新手最常見的困惑不是「這行程式碼怎麼寫」，而是「我到底該在哪裡打這行字」。有人在終端機裡打 R 的指令，有人在 R 的 Console 裡打 <code>brew install</code>，然後對著錯誤訊息發呆。這些困惑的根源都一樣：分不清楚這幾個東西的界線。</p>
       <p>先把界線畫清楚，後面十八章都會輕鬆很多。</p>
+
+      <div class="diagram">
+        <svg viewBox="0 0 800 300" role="img" aria-label="四件工具的關係圖：你在 RStudio 或 Positron 寫程式碼，送去 R 執行；結果經 Quarto 排成 PDF，再透過 GitHub Desktop 推上 GitHub Classroom">
+          <defs><marker id="ah" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+            <path d="M0,0 L7,3 L0,6 Z" fill="var(--accent)"/></marker>
+            <marker id="ah2" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+            <path d="M0,0 L7,3 L0,6 Z" fill="var(--text-faint)"/></marker>
+          </defs>
+
+          <rect class="dbox" x="8" y="26" width="150" height="62" rx="8"/>
+          <text class="dt" x="83" y="52" text-anchor="middle">你</text>
+          <text class="ds" x="83" y="72" text-anchor="middle">寫程式碼、看結果</text>
+
+          <rect class="dbox-hi" x="196" y="16" width="184" height="82" rx="8"/>
+          <text class="dt" x="288" y="42" text-anchor="middle">RStudio／Positron</text>
+          <text class="ds" x="288" y="62" text-anchor="middle">駕駛艙 · IDE</text>
+          <text class="dk" x="288" y="82" text-anchor="middle">編輯 / 送出 / 顯示</text>
+
+          <rect class="dbox-hi" x="424" y="16" width="160" height="82" rx="8"/>
+          <text class="dt" x="504" y="42" text-anchor="middle">R</text>
+          <text class="ds" x="504" y="62" text-anchor="middle">引擎 · 真正在算的</text>
+          <text class="dk" x="504" y="82" text-anchor="middle">套件裝在這裡</text>
+
+          <rect class="dbox" x="628" y="26" width="164" height="62" rx="8"/>
+          <text class="dt" x="710" y="52" text-anchor="middle">套件</text>
+          <text class="dk" x="710" y="72" text-anchor="middle">quanteda · stm · jiebaR</text>
+
+          <path class="dline" d="M158,50 L190,50" marker-end="url(#ah)"/>
+          <path class="dline" d="M380,42 L418,42" marker-end="url(#ah)"/>
+          <path class="dline-soft" d="M418,74 L382,74" marker-end="url(#ah2)"/>
+          <text class="dk" x="400" y="34" text-anchor="middle">送出</text>
+          <text class="dk" x="400" y="92" text-anchor="middle">結果</text>
+          <path class="dline-soft" d="M584,57 L622,57" marker-end="url(#ah2)"/>
+
+          <path class="dline" d="M288,98 L288,150" marker-end="url(#ah)"/>
+          <rect class="dbox" x="180" y="158" width="216" height="72" rx="8"/>
+          <text class="dt" x="288" y="184" text-anchor="middle">Quarto</text>
+          <text class="ds" x="288" y="203" text-anchor="middle">文字＋程式碼＋結果 → PDF</text>
+          <text class="dk" x="288" y="221" text-anchor="middle">底層：Pandoc + LaTeX</text>
+
+          <path class="dline" d="M396,194 L448,194" marker-end="url(#ah)"/>
+          <rect class="dbox" x="456" y="158" width="216" height="72" rx="8"/>
+          <text class="dt" x="564" y="184" text-anchor="middle">GitHub Desktop</text>
+          <text class="ds" x="564" y="203" text-anchor="middle">版本紀錄與繳交</text>
+          <text class="dk" x="564" y="221" text-anchor="middle">→ GitHub Classroom</text>
+
+          <text class="dacc" x="8" y="268">上排＝寫程式的迴圈（每天幾百次）</text>
+          <text class="dacc" x="8" y="288">下排＝交件的路徑（每份作業一次）</text>
+        </svg>
+        <div class="dcap">四件工具的分工。實線是你主動觸發的動作，虛線是自動回流的結果。注意：套件掛在 R 底下，不是掛在 RStudio 底下——換 IDE 不用重裝套件，換 R 版本才要。</div>
+      </div>
 
       <h2 id="s01-r">2. R 是引擎</h2>
       <p>R 是一個程式語言，也是執行這個語言的程式。它本身沒有漂亮的介面——你可以在終端機打 <code>R</code> 直接啟動它，看到的就是一個 <code>&gt;</code> 提示符號，你打指令、它算給你看，如此而已。</p>
@@ -273,7 +339,7 @@
         <li>GitHub 是交件窗口，用 GitHub Desktop 操作即可，不需要背指令。</li>
         <li>看到錯誤訊息，先判斷是誰在說話——這是整份教材最省時間的一個習慣。</li>
       </ul>
-      <footer class="foot">對照 <a href="https://cran.r-project.org/" target="_blank" rel="noopener">CRAN</a>、<a href="https://quarto.org/docs/guide/" target="_blank" rel="noopener">Quarto 官方指南</a>、<a href="https://docs.posit.co/ide/user/" target="_blank" rel="noopener">RStudio 使用者指南</a>與本機實測撰寫（查證日 2026-09-17）。</footer>
+      <footer class="foot">對照 <a href="https://cran.r-project.org/" target="_blank" rel="noopener">CRAN</a>、<a href="https://quarto.org/docs/guide/" target="_blank" rel="noopener">Quarto 官方指南</a>、<a href="https://docs.posit.co/ide/user/" target="_blank" rel="noopener">RStudio 使用者指南</a>與實機測試結果撰寫（查證日 2026-09-17）。</footer>
       <div class="chap-foot"><a class="nextlink" data-go="ch02"><span class="k">下一章 →</span> 02 · RStudio 介面導覽與必改設定</a></div>
     </section>
 
@@ -287,14 +353,59 @@
       </div>
 
       <h2 id="s02-panes">1. 四大窗格</h2>
-      <p>第一次打開 RStudio 只會看到三個窗格，右上角的 Source（編輯器）要等你開啟或新建檔案才會出現。四個窗格各自的角色如下。</p>
-      <div class="panegrid">
-        <div class="pane hi"><div class="pt">左上 · Source（編輯器）</div><div class="pd">寫程式碼的地方。這裡的內容<strong>不會自動執行</strong>，是一份會存檔的稿子。你 90% 的時間在這裡。</div></div>
-        <div class="pane hi"><div class="pt">左下 · Console（主控台）</div><div class="pd">R 的即時互動區。打一行按 Enter 就執行一行，結果直接印出來。<strong>這裡打的東西不會被保存</strong>。</div></div>
-        <div class="pane"><div class="pt">右上 · Environment / History</div><div class="pd">Environment 顯示目前記憶體裡有哪些物件（變數、資料框）。History 是你執行過的指令紀錄。</div></div>
-        <div class="pane"><div class="pt">右下 · Files / Plots / Packages / Help</div><div class="pd">檔案瀏覽、畫出來的圖、已安裝套件清單、說明文件。查 <code>?function</code> 的結果出現在 Help。</div></div>
+      <p>第一次打開 RStudio 只會看到三個窗格，左上角的 Source（編輯器）要等你開啟或新建檔案才會出現。下圖是四個窗格的相對位置，實際畫面請對照本節的示範影片。</p>
+
+      <div class="diagram">
+        <svg viewBox="0 0 800 430" role="img" aria-label="RStudio 視窗配置示意圖：左上 Source 編輯器、左下 Console、右上 Environment 與 History、右下 Files Plots Packages Help">
+          <rect class="dbar" x="4" y="4" width="792" height="30" rx="8"/>
+          <circle class="ddot" cx="24" cy="19" r="4.5" opacity="0.85"/>
+          <circle class="ddot" cx="40" cy="19" r="4.5" opacity="0.5"/>
+          <circle class="ddot" cx="56" cy="19" r="4.5" opacity="0.3"/>
+          <text class="dk" x="400" y="23" text-anchor="middle">RStudio — text-as-data-lab</text>
+
+          <rect class="dbox-hi" x="4" y="42" width="392" height="186" rx="8"/>
+          <rect class="dbar" x="4" y="42" width="392" height="26" rx="8"/>
+          <text class="dk" x="16" y="60">01-import.R ×</text>
+          <text class="dt" x="16" y="94">左上 · Source（編輯器）</text>
+          <text class="ds" x="16" y="116">寫程式碼的地方，內容會存檔。</text>
+          <text class="ds" x="16" y="136">這裡的程式碼不會自動執行，</text>
+          <text class="ds" x="16" y="156">要按 Cmd/Ctrl + Enter 送去 Console。</text>
+          <text class="dacc" x="16" y="186">▍你 90% 的時間在這裡</text>
+          <text class="dk" x="16" y="212">開啟檔案前這格不會出現</text>
+
+          <rect class="dbox-hi" x="4" y="236" width="392" height="190" rx="8"/>
+          <rect class="dbar" x="4" y="236" width="392" height="26" rx="8"/>
+          <text class="dk" x="16" y="254">Console | Terminal | Background Jobs</text>
+          <text class="dt" x="16" y="288">左下 · Console（主控台）</text>
+          <text class="ds" x="16" y="310">打一行、按 Enter、立刻算給你看。</text>
+          <text class="ds" x="16" y="330">這裡打的東西不會被保存 —— 草稿紙。</text>
+          <text class="dacc" x="16" y="358">▍&gt; 等你下指令　+ 表示括號沒關</text>
+          <text class="ds" x="16" y="386">Terminal 分頁是系統終端機，</text>
+          <text class="ds" x="16" y="406">吃 shell 指令而不是 R 語言。</text>
+
+          <rect class="dbox" x="404" y="42" width="392" height="186" rx="8"/>
+          <rect class="dbar" x="404" y="42" width="392" height="26" rx="8"/>
+          <text class="dk" x="416" y="60">Environment | History | Connections</text>
+          <text class="dt" x="416" y="94">右上 · Environment</text>
+          <text class="ds" x="416" y="116">目前記憶體裡有哪些物件。</text>
+          <text class="dk" x="416" y="146">d    162 obs. of 8 variables</text>
+          <text class="dk" x="416" y="166">x    10</text>
+          <text class="ds" x="416" y="196">確認「到底讀進幾筆」最快的地方。</text>
+
+          <rect class="dbox" x="404" y="236" width="392" height="190" rx="8"/>
+          <rect class="dbar" x="404" y="236" width="392" height="26" rx="8"/>
+          <text class="dk" x="416" y="254">Files | Plots | Packages | Help | Viewer</text>
+          <text class="dt" x="416" y="288">右下 · 檔案與說明</text>
+          <text class="ds" x="416" y="310">Files：專案資料夾內容</text>
+          <text class="ds" x="416" y="330">Plots：畫出來的圖</text>
+          <text class="ds" x="416" y="350">Packages：已安裝套件清單</text>
+          <text class="ds" x="416" y="370">Help：?function 的結果出現在這</text>
+          <text class="dacc" x="416" y="400">▍查說明文件先看最下面的 Examples</text>
+        </svg>
+        <div class="dcap">RStudio 預設的四窗格配置示意（非實際截圖）。藍框的兩格是你最常互動的。窗格位置可在 Settings → Pane Layout 自由調換，因此同學的畫面未必與此圖一致。</div>
       </div>
-      <p>右下角窗格還有一個常被忽略的分頁：<strong>Terminal</strong>。它是真正的系統終端機（macOS 上是 zsh），跟 Console 完全不同——Console 吃 R 語言，Terminal 吃 shell 指令。課綱的先備知識裡「會用終端機」指的就是這個。你不用精通，但要知道 <code>brew install</code>、<code>git status</code> 這類指令屬於 Terminal，不屬於 Console。</p>
+
+      <p>左下角窗格還有一個常被忽略的分頁：<strong>Terminal</strong>。它是真正的系統終端機（macOS 上是 zsh），跟 Console 完全不同——Console 吃 R 語言，Terminal 吃 shell 指令。課綱的先備知識裡「會用終端機」指的就是這個。你不用精通，但要知道 <code>brew install</code>、<code>git status</code> 這類指令屬於 Terminal，不屬於 Console。</p>
 
       <h2 id="s02-cs">2. Console 與 Script 的差別（本章最重要）</h2>
       <p>這是新手最容易混淆、也最影響學習效率的一件事。</p>
@@ -420,8 +531,9 @@ list.files()  # 這個資料夾裡有什麼</pre></div>
 
       <h2 id="s03-setwd">2. 為什麼不要用 setwd()</h2>
       <p>網路上的舊教學會教你在 Script 開頭寫：</p>
-      <div class="codeblock"><span class="lang">R · 請不要這樣做</span><button class="copyb">複製</button><pre>setwd("/Users/photofanz/Project/text_as_data/rstudio-course/data")</pre></div>
-      <p>這行在你的電腦上完全正常，但它讓你的程式碼<strong>只能在你的電腦上跑</strong>。助教拿到你的作業，第一行就失敗，因為他的電腦裡沒有 <code>/Users/photofanz/</code>。這門課的 Lab 透過 GitHub Classroom 繳交、期末要附可重現儲存庫，<code>setwd()</code> 等於在可重現性上自己開一槍。</p>
+      <div class="codeblock"><span class="lang">R · 請不要這樣做</span><button class="copyb">複製</button><pre>setwd("/Users/yourname/Documents/text-as-data/data")   # macOS
+setwd("C:/Users/yourname/Documents/text-as-data/data") # Windows</pre></div>
+      <p>這行在你的電腦上完全正常，但它讓你的程式碼<strong>只能在你的電腦上跑</strong>。助教拿到你的作業，第一行就失敗，因為他的電腦裡沒有 <code>/Users/yourname/</code> 這個路徑。這門課的 Lab 透過 GitHub Classroom 繳交、期末要附可重現儲存庫，<code>setwd()</code> 等於在可重現性上自己開一槍。</p>
       <p>正確做法是使用 <strong>RStudio Project</strong>：當你透過 <code>.Rproj</code> 檔開啟專案時，RStudio 自動把工作目錄設在專案資料夾。你的程式碼裡只出現相對路徑（<code>data/質詢.csv</code>），誰拿到都能跑。</p>
 
       <h2 id="s03-proj">3. 建立你的課程 Project</h2>
@@ -447,6 +559,24 @@ dir.create("R")        # 你的分析腳本
 dir.create("output")   # 產生的圖表、清理後的資料
 dir.create("report")   # Quarto 報告
 list.files()</pre></div>
+
+      <div class="diagram">
+<pre><b>text-as-data-lab/</b>            <i>← 專案根目錄，雙擊 .Rproj 就從這裡開始</i>
+├── <b>text-as-data-lab.Rproj</b>   <i>← 開這個檔，不要單獨開 .R 檔</i>
+├── <b>data/</b>                    <i>原始資料：只讀不改</i>
+│   └── 立法院質詢_第11屆.csv
+├── <b>R/</b>                       <i>分析腳本：用數字開頭排順序</i>
+│   ├── 01-import.R
+│   ├── 02-clean.R
+│   └── 03-dfm.R
+├── <b>output/</b>                  <i>產出：全部可由程式碼重新生成</i>
+│   ├── dfm-top-terms.png
+│   └── 質詢_已清理.csv
+└── <b>report/</b>                  <i>Quarto 報告（第 15 章）</i>
+    ├── lab01.qmd
+    └── lab01.pdf</pre>
+        <div class="dcap">建議的專案結構。資料由左往右流動：<code>data/</code> 的原始檔經過 <code>R/</code> 的腳本處理，結果落在 <code>output/</code>，最後由 <code>report/</code> 引用成交件用的 PDF。</div>
+      </div>
       <div class="tablewrap"><table>
         <thead><tr><th style="width:16%">資料夾</th><th>放什麼</th><th style="width:30%">紀律</th></tr></thead>
         <tbody>
@@ -492,7 +622,7 @@ d &lt;- readr::read_csv(here("data", "立法院質詢_第11屆.csv"))</pre></div
         <li>data 只讀不改、output 全部可重新生成——這兩條紀律是期末可重現儲存庫的基礎。</li>
         <li>跨資料夾或跨平台時用 <code>here()</code> 組路徑。</li>
       </ul>
-      <footer class="foot">對照 <a href="https://docs.posit.co/ide/user/ide/guide/code/projects.html" target="_blank" rel="noopener">Posit RStudio Projects 官方說明</a>、<a href="https://here.r-lib.org/" target="_blank" rel="noopener">here 套件官方文件</a>與本機實測撰寫（查證日 2026-09-17）。</footer>
+      <footer class="foot">對照 <a href="https://docs.posit.co/ide/user/ide/guide/code/projects.html" target="_blank" rel="noopener">Posit RStudio Projects 官方說明</a>、<a href="https://here.r-lib.org/" target="_blank" rel="noopener">here 套件官方文件</a>與實機測試結果撰寫（查證日 2026-09-17）。</footer>
       <div class="chap-foot"><a class="nextlink" data-go="ch04"><span class="k">下一章 →</span> 04 · 套件管理</a></div>
     </section>
 
@@ -521,7 +651,7 @@ d &lt;- readr::read_csv(here("data", "立法院質詢_第11屆.csv"))</pre></div
         <tbody>
           <tr><td><strong>CRAN</strong></td><td><code>install.packages("quanteda")</code></td><td>R 的官方套件庫，經過審查，多數套件在這裡。macOS 上會直接下載編譯好的二進位檔，很快。</td></tr>
           <tr><td><strong>GitHub</strong></td><td><code>remotes::install_github("davidycliao/flaiR")</code></td><td>開發者直接發布，沒有 CRAN 審查，通常是最新版或 CRAN 上沒有的套件。<strong>本課教師的 flaiR、legisTaiwan 都在這裡。</strong>需要從原始碼編譯。</td></tr>
-          <tr><td><strong>原始碼</strong></td><td><code>R CMD INSTALL 資料夾</code></td><td>最後手段。當套件原始碼需要修改才能編譯時使用（例如本機的 jiebaR，見下）。</td></tr>
+          <tr><td><strong>原始碼</strong></td><td><code>R CMD INSTALL 資料夾</code></td><td>最後手段。當套件原始碼需要修改才能編譯時使用（例如下方的 jiebaR 案例）。</td></tr>
         </tbody>
       </table></div>
       <p>GitHub 安裝的格式是 <code>"帳號/儲存庫"</code>。你在課程資料或論文裡看到某個套件時，可以先在 CRAN 搜尋，找不到再看作者的 GitHub。</p>
@@ -535,7 +665,7 @@ d &lt;- readr::read_csv(here("data", "立法院質詢_第11屆.csv"))</pre></div
       </div>
 
       <h2 id="s04-list">3. 本課套件清單與出場週次</h2>
-      <p>下表是這門課會用到的主要套件，依課綱週次排列。你的電腦上這些<strong>全部已經安裝並通過載入測試</strong>（2026-09-17，41/41）。</p>
+      <p>下表是這門課會用到的主要套件，依課綱週次排列。上課前建議至少把 W1–W4 那幾列裝起來；本章最後的動手練習附了一段檢查指令，可以確認你自己機器上的狀況。</p>
       <div class="tablewrap"><table>
         <thead><tr><th style="width:14%">週次</th><th style="width:34%">套件</th><th>做什麼</th></tr></thead>
         <tbody>
@@ -552,7 +682,7 @@ d &lt;- readr::read_csv(here("data", "立法院質詢_第11屆.csv"))</pre></div
       </table></div>
 
       <h2 id="s04-fail">4. 三種安裝失敗訊息</h2>
-      <p>套件裝不起來是必然會遇到的事。重點不是避免它，而是能讀懂訊息、判斷是哪一種問題。以下三種涵蓋你這學期八成的狀況，第三種是本機真實發生過的案例。</p>
+      <p>套件裝不起來是必然會遇到的事。重點不是避免它，而是能讀懂訊息、判斷是哪一種問題。以下三種涵蓋你這學期八成的狀況，第三種是撰寫本教材時真實遇到的案例。</p>
 
       <h3>(A) 套件根本不存在或打錯字</h3>
       <div class="codeblock"><span class="lang">R Console</span><button class="copyb">複製</button><pre>Warning message:
@@ -565,13 +695,16 @@ ERROR: configuration failed for package ‘gert’</pre></div>
       <p>這不是 R 的問題，是作業系統缺少某個函式庫。關鍵字是 <code>configure: error</code> 加上一個聽起來像系統套件的名字。macOS 的解法是在<strong>終端機</strong>（不是 Console）執行 <code>brew install libgit2</code>，Windows 則多半是缺 Rtools。</p>
 
       <h3>(C) 編譯失敗：真實案例 jiebaR</h3>
-      <p>2026-09-17 在本機安裝中文斷詞套件 jiebaR 時，CRAN 回報「not available for this version of R」（情況 A），改從 GitHub 安裝後出現：</p>
+      <p>2026-09-17 在 R 4.6.1 安裝中文斷詞套件 jiebaR 時，CRAN 回報「not available for this version of R」（情況 A），改從 GitHub 安裝後出現：</p>
       <div class="codeblock"><span class="lang">R Console</span><button class="copyb">複製</button><pre>../inst/include/lib/limonp/StringUtil.hpp:88:60: error:
     no member named 'not1' in namespace 'std'
 make: *** [RcppExports.o] Error 1
 ERROR: compilation failed for package ‘jiebaR’</pre></div>
       <p>這是套件原始碼本身跟不上時代：<code>std::not1</code> 是 C++ 標準在 C++17 移除的功能，而 R 4.6 預設用 C++20 編譯。不是你的電腦壞了，也不是你裝錯，是<strong>上游套件的程式碼過時了</strong>。</p>
-      <p>本機的處理方式是下載原始碼、把那兩行改寫成現代寫法、再手動安裝。你的電腦上 jiebaR 已經是修補後的版本、可以正常斷詞，但<strong>如果之後你重裝或更新 jiebaR，會再撞到同一個錯</strong>，處理步驟記錄在 <code>setup/環境安裝紀錄.md</code>。</p>
+      <p>可行的處理方式是下載原始碼、把那兩行改寫成現代的 lambda 寫法，再用 <code>R CMD INSTALL</code> 手動安裝——這也是前面表格裡「原始碼」那一列存在的理由。如果你遇到這個錯誤而不想自己改原始碼，替代方案是改用 Python 的 jieba（透過第 18 章的 reticulate），或先用 quanteda 內建的斷詞器處理中文，第 12 章會比較兩者差異。</p>
+      <div class="callout warn"><div class="ct">▍這類問題會反覆出現</div>
+        <p>修補後的版本只存在於你自己的電腦上。<strong>日後重裝或更新同一個套件，會再撞到同一個錯</strong>，所以請把處理步驟記在專案的 README 或筆記裡。等到上游作者修正後，就能恢復用一般方式安裝。</p>
+      </div>
       <div class="callout tip"><div class="ct">▍為什麼要跟你講這麼細</div>
         <p>因為這正是課綱第 10 章要教你的判斷力：看到一大片紅字時，能分辨「我打錯了」「我的系統缺東西」「這個套件本身壞了」。三種問題的解法完全不同，而新手最常見的反應是三種都用同一招——重裝——然後浪費一個下午。</p>
       </div>
@@ -613,13 +746,13 @@ data.frame(套件 = pkgs,
         <li>masked 訊息不是錯誤；需要明確指定時用 <code>套件::函數</code>。</li>
         <li>renv 留到期末交可重現儲存庫時再用。</li>
       </ul>
-      <footer class="foot">對照 <a href="https://cran.r-project.org/doc/manuals/r-release/R-admin.html#Installing-packages" target="_blank" rel="noopener">R Installation and Administration</a>、<a href="https://rstudio.github.io/renv/" target="_blank" rel="noopener">renv 官方文件</a>與本機實際安裝紀錄撰寫（查證日 2026-09-17）。</footer>
+      <footer class="foot">對照 <a href="https://cran.r-project.org/doc/manuals/r-release/R-admin.html#Installing-packages" target="_blank" rel="noopener">R Installation and Administration</a>、<a href="https://rstudio.github.io/renv/" target="_blank" rel="noopener">renv 官方文件</a>與實機安裝測試結果撰寫（查證日 2026-09-17）。</footer>
       <div class="chap-foot" style="color:var(--text-faint);font-size:13.5px;">第一篇到此結束。第二篇「R 語言最小必要集」尚未撰寫——請先回饋這一篇的深淺與節奏，再往下做。</div>
     </section>
 
     <div class="pagemeta">
-      課程版本 v0.2（導論＋第一篇，四支示範影片）· 更新日 2026-09-17 · 查證日 2026-09-17<br>
-      課程資料整理 © Jerry（d14741006.ntu@gmail.com）。課綱內容版權屬國立臺灣大學與授課教師；外部連結之文件與影片版權分屬各原創作者。
+      課程版本 v0.3（導論＋第一篇，含示範影片與示意圖）· 更新日 2026-09-17 · 查證日 2026-09-17<br>
+      課程資料整理 © Jerry。課綱內容版權屬國立臺灣大學與授課教師；外部連結之文件與影片版權分屬各原創作者。
     </div>
   </main>
 </div>
