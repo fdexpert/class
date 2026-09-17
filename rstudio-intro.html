@@ -168,14 +168,14 @@
         <thead><tr><th style="width:23%">篇章</th><th style="width:10%">時數</th><th>內容與目的</th></tr></thead>
         <tbody>
           <tr><td><strong>第一篇 · 建立地基</strong><br>01–04</td><td>約 2 小時</td><td>四件工具的分工、RStudio 介面與必改設定、Project 工作流、套件管理。讀完你的環境不會再出現「檔案找不到」「中文亂碼」這類問題。</td></tr>
-          <tr><td><strong>第二篇 · R 語言最小必要集</strong><br>05–10</td><td>約 2.5 小時</td><td>物件與向量、讀檔與 tibble、管線與 dplyr、字串處理、purrr、讀懂錯誤訊息。只教文本分析會用到的部分，刻意不教物件導向與 base 繪圖。</td></tr>
+          <tr><td><strong>第二篇 · R 語言最小必要集</strong><br>05–10</td><td>約 2.5 小時</td><td>物件與向量、讀檔與 tibble、管線與 dplyr、字串處理、purrr，最後一章專講怎麼讀懂錯誤訊息與求助（含課程的 AI 聲明規定）。只教文本分析會用到的部分，刻意不教物件導向與 base 繪圖。</td></tr>
           <tr><td><strong>第三篇 · 文本分析第一次實戰</strong><br>11–14</td><td>約 1.5 小時</td><td>從 CSV 到 corpus、英文與中文斷詞、dfm 與停用詞、第一張圖。等於把課程第 3 週的 Lab 先預演一次。</td></tr>
-          <tr><td><strong>第四篇 · 交付與協作</strong><br>15–19</td><td>約 2 小時</td><td>Quarto 出 PDF、GitHub Desktop 與 GitHub Classroom、Positron、reticulate 接 Python、除錯與 AI 使用聲明。對應作業繳交與期中期末報告的實際要求。</td></tr>
+          <tr><td><strong>第四篇 · 交付與協作</strong><br>15–19</td><td>約 2 小時</td><td>Quarto 出 PDF、GitHub Desktop 與 GitHub Classroom、Positron、reticulate 接 Python，最後把整套工作流串成從 Lab 到期末論文的流程。對應作業繳交與期中期末報告的實際要求。</td></tr>
           <tr><td><strong>附錄</strong><br>A–D</td><td>查閱用</td><td>快捷鍵速查、Windows 操作對照、課前自我檢查清單、環境安裝紀錄。</td></tr>
         </tbody>
       </table></div>
       <div class="callout tip"><div class="ct">▍目前進度</div>
-        <p>你現在看到的是 <strong>v0.1，只包含導論與第一篇</strong>。第二篇之後的章節在側欄顯示為灰色，尚未撰寫。先讀完第一篇並回饋，再往下做。</p>
+        <p>你現在看到的是 <strong>v0.4，包含導論與第一、二篇（共 10 章）</strong>。第三、四篇與附錄在側欄顯示為灰色，尚未撰寫。</p>
       </div>
 
       <h2 id="s00-case">4. 貫穿範例：立法院書面質詢</h2>
@@ -747,11 +747,789 @@ data.frame(套件 = pkgs,
         <li>renv 留到期末交可重現儲存庫時再用。</li>
       </ul>
       <footer class="foot">對照 <a href="https://cran.r-project.org/doc/manuals/r-release/R-admin.html#Installing-packages" target="_blank" rel="noopener">R Installation and Administration</a>、<a href="https://rstudio.github.io/renv/" target="_blank" rel="noopener">renv 官方文件</a>與實機安裝測試結果撰寫（查證日 2026-09-17）。</footer>
-      <div class="chap-foot" style="color:var(--text-faint);font-size:13.5px;">第一篇到此結束。第二篇「R 語言最小必要集」尚未撰寫——請先回饋這一篇的深淺與節奏，再往下做。</div>
+      <div class="chap-foot"><a class="nextlink" data-go="ch05"><span class="k">下一章 →</span> 05 · 物件、向量與資料框</a></div>
+    </section>
+
+    <!-- ===================== ch05 ===================== -->
+    <section class="chapter" id="ch05">
+      <div class="crumb">第二篇 · R 語言最小必要集 / 05</div>
+      <h1 class="ch">物件、向量與資料框</h1>
+      <p class="lead">本章目標：學會把東西存進變數、認識四種你這學期會反覆遇到的資料型別，並理解 R 最重要的特性——向量化。</p>
+      <div class="pagetoc"><div class="tt">本頁章節</div>
+        <a href="#s05-assign">賦值</a><a href="#s05-type">四種型別</a><a href="#s05-vec">向量與向量化</a><a href="#s05-index">取值</a><a href="#s05-na">NA</a><a href="#s05-df">資料框</a><a href="#s05-p">動手練習</a><a href="#s05-s">本章小結</a>
+      </div>
+
+      <h2 id="s05-assign">1. 賦值：把東西存起來</h2>
+      <p>R 用 <code>&lt;-</code> 把右邊的東西存進左邊的名字。快捷鍵是 <span class="kbd">Alt</span>+<span class="kbd">-</span>（macOS 與 Windows 相同），它會自動補上前後空格。</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>x &lt;- 10
+y &lt;- x * 3
+c(x, y)
+#&gt; [1] 10 30</pre></div>
+      <p>你也會看到有人用 <code>=</code> 賦值。兩者在多數情況下可互換，但 R 社群的慣例是 <code>&lt;-</code>，而且 <code>=</code> 在函數呼叫裡另有意義（指定參數，例如 <code>mean(x, na.rm = TRUE)</code>），混用容易誤讀。這份教材一律用 <code>&lt;-</code>。</p>
+      <div class="callout note"><div class="ct">▍那個 <code>[1]</code> 是什麼</div>
+        <p>R 印出結果時會在每行開頭標示「這行的第一個元素是整體的第幾個」。因為 R 眼中沒有單一數值，只有長度為 1 的向量——這是下一節的重點。</p>
+      </div>
+
+      <h2 id="s05-type">2. 四種型別</h2>
+      <p>用 <code>class()</code> 問任何東西「你是什麼」。</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>class(10)                #&gt; [1] "numeric"    數值
+class("質詢")            #&gt; [1] "character"  文字（一定要有引號）
+class(TRUE)              #&gt; [1] "logical"    邏輯值 TRUE / FALSE
+class(factor("國民黨"))  #&gt; [1] "factor"     類別（有固定的幾種可能值）</pre></div>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:15%">型別</th><th style="width:26%">這門課的例子</th><th>要注意什麼</th></tr></thead>
+        <tbody>
+          <tr><td><code>numeric</code></td><td>會期、字數、詞頻</td><td>能做算術。整數與小數在 R 裡預設同屬 numeric。</td></tr>
+          <tr><td><code>character</code></td><td>質詢全文、委員姓名</td><td><strong>一定要加引號</strong>。忘記加引號是新手最常見的錯誤之一，第 10 章會示範那個錯誤長什麼樣。</td></tr>
+          <tr><td><code>logical</code></td><td>「這筆有沒有提到能源」</td><td>只有 <code>TRUE</code>／<code>FALSE</code>／<code>NA</code>，全大寫、沒有引號。<code>sum()</code> 一個邏輯向量會得到 TRUE 的個數，很好用。</td></tr>
+          <tr><td><code>factor</code></td><td>政黨、會期（當成類別看時）</td><td>看起來像文字，其實是「有限選項」。跑統計模型時 R 會自動幫你轉成虛擬變數。新手階段可以先不主動製造 factor。</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="videobox" data-vid="FY8BISK5DpM" data-start="0">
+        <div class="vhead"><span class="play">▶</span> 影片示範 · R 語言基礎總覽（英文，14 分 12 秒） <span class="seg">點縮圖開啟</span></div>
+        <div class="vthumb" role="button" tabindex="0" aria-label="播放影片：R programming for ABSOLUTE beginners" style="background-image:url('https://i.ytimg.com/vi/FY8BISK5DpM/hqdefault.jpg')">
+          <div class="vplay">▶</div><div class="vopen">在 YouTube 開啟 ↗</div>
+        </div>
+        <div class="vcap">「R programming for ABSOLUTE beginners」— R Programming 101（92 萬觀看）。從零開始講變數、向量、資料型別與基本操作，涵蓋本章與下一章的大部分內容。這支是整份教材裡最值得完整看完的一支。版權屬原作者。</div>
+      </div>
+
+      <h2 id="s05-vec">3. 向量與向量化（R 最重要的特性）</h2>
+      <p>向量是「同一種型別的一串值」，用 <code>c()</code> 建立（c 代表 combine）。</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>字數 &lt;- c(412, 631, 288, 905)
+
+字數 * 2
+#&gt; [1]  824 1262  576 1810
+
+mean(字數)   #&gt; [1] 559
+max(字數)    #&gt; [1] 905
+length(字數) #&gt; [1] 4</pre></div>
+      <p>請仔細看 <code>字數 * 2</code>：你沒有寫任何迴圈，R 自動把每個元素都乘以 2。這叫<strong>向量化</strong>，是 R 跟 Python、Java 這些語言最不一樣的地方。習慣寫迴圈的人來到 R，第一件要改的事就是「先想想能不能整個向量一起算」。</p>
+      <p>比較運算也是向量化的，結果是一個等長的邏輯向量：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>字數 &gt; 500
+#&gt; [1] FALSE  TRUE FALSE  TRUE
+
+sum(字數 &gt; 500)   # TRUE 算 1，所以這是「有幾筆超過 500 字」
+#&gt; [1] 2</pre></div>
+      <div class="callout tip"><div class="ct">▍這個觀念之後會一直出現</div>
+        <p>第 8 章判斷「哪些質詢提到能源」、第 13 章計算詞頻，骨子裡都是同一招：對一整欄做一次運算，得到一整欄結果。</p>
+      </div>
+      <p>還有一件事要小心：向量裡<strong>只能有一種型別</strong>。如果你混進文字，R 會安靜地把所有東西都轉成文字，不會報錯：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>c(1, 2, "三")
+#&gt; [1] "1" "2" "三"     ← 數字被偷偷轉成文字了</pre></div>
+      <p>這種「安靜地做了你沒預期的事」比報錯更危險，因為它要到很後面才會爆炸。習慣用 <code>class()</code> 確認。</p>
+
+      <h2 id="s05-index">4. 取值：中括號</h2>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>字數[2]              #&gt; [1] 631      第 2 個
+字數[c(1, 3)]        #&gt; [1] 412 288  第 1 和第 3 個
+字數[字數 &gt; 400]     #&gt; [1] 412 631 905   用邏輯向量篩選</pre></div>
+      <p>最後一種寫法值得多看兩眼：中括號裡放一個邏輯向量，R 會留下 <code>TRUE</code> 的位置。這就是 <code>dplyr::filter()</code> 的底層原理，第 7 章會用更好讀的寫法做同一件事。</p>
+      <div class="callout warn"><div class="ct">▍R 從 1 開始數</div>
+        <p>如果你有 Python 經驗，請記住這點：R 的第一個元素是 <code>[1]</code> 不是 <code>[0]</code>。<code>字數[0]</code> 不會報錯，但會回傳一個空向量——又是一個安靜的陷阱。</p>
+      </div>
+
+      <h2 id="s05-na">5. NA：缺失值</h2>
+      <p><code>NA</code> 代表「這格沒有資料」。它有傳染性：任何跟 NA 做的運算，結果都是 NA。</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>有缺 &lt;- c(412, NA, 288)
+
+mean(有缺)                 #&gt; [1] NA          ← 不是錯誤，是提醒你資料有洞
+mean(有缺, na.rm = TRUE)   #&gt; [1] 350         ← 明確表示「忽略缺失值」
+is.na(有缺)                #&gt; [1] FALSE  TRUE FALSE</pre></div>
+      <p>R 的設計哲學是：不幫你決定怎麼處理缺失值。<code>na.rm = TRUE</code> 要你自己打，是為了逼你意識到「我正在丟掉一些資料」。做研究時這是好事——你應該在論文裡交代你怎麼處理缺失值。</p>
+
+      <h2 id="s05-df">6. 資料框：向量並排起來</h2>
+      <p>把幾個等長的向量並排，就是一張表：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>d0 &lt;- data.frame(委員 = c("甲", "乙"), 字數 = c(412, 631))
+d0
+#&gt;   委員 字數
+#&gt; 1   甲  412
+#&gt; 2   乙  631
+
+str(d0)
+#&gt; 'data.frame': 2 obs. of  2 variables:
+#&gt;  $ 委員: chr  "甲" "乙"
+#&gt;  $ 字數: num  412 631</pre></div>
+      <p><strong>每一欄是一個向量，而且各欄可以是不同型別</strong>——這就是資料框跟矩陣的差別。你這學期處理的每一份資料，包括那 162 筆質詢，本質上都是這樣一疊並排的向量。</p>
+      <p>用 <code>$</code> 取出某一欄，得到的就是一個向量，前面學的所有東西都能用：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>d0$字數           #&gt; [1] 412 631
+mean(d0$字數)     #&gt; [1] 521.5</pre></div>
+
+      <h2 id="s05-p">7. 動手練習</h2>
+      <div class="practice"><ol>
+        <li>建立向量 <code>會期 &lt;- c(1, 1, 2, 2, 3)</code>，算出 <code>length()</code>、<code>table()</code>，看看 <code>table()</code> 回傳什麼。</li>
+        <li>建立 <code>提到能源 &lt;- c(TRUE, FALSE, TRUE, TRUE, FALSE)</code>，用 <code>sum()</code> 算有幾筆是 TRUE，再用 <code>mean()</code> 算比例。想一下為什麼 <code>mean()</code> 會給你比例。</li>
+        <li>執行 <code>c(1, TRUE, "文字")</code>，用 <code>class()</code> 看結果型別。R 的轉型順序是 logical → numeric → character，驗證看看。</li>
+        <li>把上面兩個向量並成一個 data.frame，用 <code>$</code> 取出其中一欄。</li>
+        <li>故意製造錯誤：執行 <code>mean(c("412", "631"))</code>，記下錯誤訊息，第 10 章會回頭解剖它。</li>
+      </ol></div>
+
+      <h2 id="s05-s">8. 本章小結</h2>
+      <ul>
+        <li><code>&lt;-</code> 賦值，快捷鍵 <span class="kbd">Alt</span>+<span class="kbd">-</span>。</li>
+        <li>四種型別：numeric、character（要引號）、logical（全大寫無引號）、factor。不確定就 <code>class()</code>。</li>
+        <li>向量化是 R 的核心：對整個向量做運算，不用寫迴圈。</li>
+        <li>向量只能有一種型別；混型別時 R 會安靜轉型，不報錯。</li>
+        <li><code>NA</code> 有傳染性，聚合函數要加 <code>na.rm = TRUE</code>——這是逼你意識到資料有洞。</li>
+        <li>資料框＝一疊等長的向量，<code>$</code> 取欄。</li>
+      </ul>
+      <footer class="foot">程式碼與輸出皆在 R 4.6.1 實際執行驗證；對照 <a href="https://cran.r-project.org/doc/manuals/r-release/R-intro.html" target="_blank" rel="noopener">An Introduction to R</a> 撰寫（查證日 2026-09-17）。</footer>
+      <div class="chap-foot"><a class="nextlink" data-go="ch06"><span class="k">下一章 →</span> 06 · 讀檔與 tibble</a></div>
+    </section>
+
+    <!-- ===================== ch06 ===================== -->
+    <section class="chapter" id="ch06">
+      <div class="crumb">第二篇 · R 語言最小必要集 / 06</div>
+      <h1 class="ch">讀檔與 tibble</h1>
+      <p class="lead">本章目標：把那 162 筆立法院質詢讀進 R，學會讀檔後必做的三個檢查，並知道中文 CSV 出亂碼時該怎麼辦。</p>
+      <div class="pagetoc"><div class="tt">本頁章節</div>
+        <a href="#s06-two">read_csv 與 read.csv</a><a href="#s06-read">把資料讀進來</a><a href="#s06-check">讀完必做的三個檢查</a><a href="#s06-tbl">tibble 的印法</a><a href="#s06-explore">初步探索</a><a href="#s06-enc">中文亂碼</a><a href="#s06-p">動手練習</a><a href="#s06-s">本章小結</a>
+      </div>
+
+      <h2 id="s06-two">1. read_csv 與 read.csv：差一個點</h2>
+      <p>R 有兩個讀 CSV 的函數，名字只差一個符號，行為差很多。</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:22%"></th><th style="width:39%"><code>read.csv()</code></th><th><code>read_csv()</code></th></tr></thead>
+        <tbody>
+          <tr><td>來自</td><td>R 內建（base）</td><td><code>readr</code> 套件（tidyverse 的一部分）</td></tr>
+          <tr><td>回傳</td><td>data.frame</td><td>tibble</td></tr>
+          <tr><td>預設編碼</td><td>跟著作業系統，<strong>Windows 上常是中文亂碼的元凶</strong></td><td>一律 UTF-8</td></tr>
+          <tr><td>速度</td><td>慢</td><td>快很多（大語料有感）</td></tr>
+          <tr><td>回饋</td><td>安靜</td><td>會印出每一欄被判定成什麼型別</td></tr>
+        </tbody>
+      </table></div>
+      <p>本教材與本課一律用 <code>read_csv()</code>。你在網路上看到舊教學用 <code>read.csv()</code> 時，知道差別即可。</p>
+
+      <h2 id="s06-read">2. 把資料讀進來</h2>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>library(readr)
+library(dplyr)
+library(here)
+
+d &lt;- read_csv(here("data", "立法院質詢_第11屆.csv"))
+
+dim(d)
+#&gt; [1] 162   8      ← 162 列、8 欄</pre></div>
+      <p>如果你在 Console 直接執行 <code>read_csv()</code>，它會印出一段 column specification，告訴你每一欄被判定成什麼型別。那不是錯誤訊息，是它在跟你報告。想讓它安靜，加上 <code>show_col_types = FALSE</code>。</p>
+      <div class="callout tip"><div class="ct">▍讀檔失敗的第一反應</div>
+        <p>看到 <code>does not exist in current working directory</code>，不要急著改檔名。先執行 <code>getwd()</code> 和 <code>list.files()</code>（第 3 章），九成的情況是 R 站錯位置，而不是檔案真的不見。</p>
+      </div>
+
+      <div class="videobox" data-vid="e8B9YU_M5FM" data-start="213">
+        <div class="vhead"><span class="play">▶</span> 影片示範 · 讀 CSV 進 RStudio（英文，11 分 54 秒） <span class="seg">從 3:33 開始</span></div>
+        <div class="vthumb" role="button" tabindex="0" aria-label="播放影片：How to import data and install packages" style="background-image:url('https://i.ytimg.com/vi/e8B9YU_M5FM/hqdefault.jpg')">
+          <div class="vplay">▶</div><div class="vopen">在 YouTube 開啟 ↗</div>
+        </div>
+        <div class="vcap">「How to import data and install packages」— R Programming 101。直接跳到 3:33「Read CSV」段落。其他章節：0:40 建立專案（對應第 3 章）、6:30 取出資料、7:30 安裝套件（對應第 4 章）。版權屬原作者。</div>
+      </div>
+
+      <h2 id="s06-check">3. 讀完必做的三個檢查</h2>
+      <p>養成習慣：資料一讀進來，先做這三件事再說。花你十秒，省下之後好幾小時。</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>dim(d)        # 一、幾列幾欄？跟你預期的一樣嗎
+glimpse(d)    # 二、每欄是什麼型別？內容長什麼樣
+summary(d)    # 三、有沒有奇怪的極值或大量 NA</pre></div>
+      <p><code>glimpse()</code> 是 dplyr 提供的，比 <code>str()</code> 好讀。實際輸出（節錄）：</p>
+      <div class="codeblock"><span class="lang">R Console</span><button class="copyb">複製</button><pre>Rows: 162
+Columns: 8
+$ 質詢編號 &lt;chr&gt; "11-1-1-1", "11-1-20-63", "11-1-20-64", …
+$ 屆       &lt;dbl&gt; 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, …
+$ 會期     &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
+$ 會次     &lt;dbl&gt; 1, 20, 20, 20, 20, 20, 21, 3, 3, 3, 3, …
+$ 委員     &lt;chr&gt; "羅智強", "黃健豪", "馬文君", "萬美玲", …
+$ 刊登日期 &lt;date&gt; 2024-02-16, 2024-06-26, 2024-06-26, …
+$ 事由     &lt;chr&gt; "本院羅委員智強，就文化部發放文化成年禮金政策…
+$ 說明     &lt;chr&gt; "由「藝 FUN 券」轉型而來的「文化成年禮金」…</pre></div>
+      <p>這一眼要看出三件事：<strong>162 筆沒錯</strong>；<strong>刊登日期被正確判定為 <code>&lt;date&gt;</code> 而不是文字</strong>（readr 自動做到的，read.csv 不會）；<strong>中文沒有亂碼</strong>。三項都對，才往下走。</p>
+
+      <h2 id="s06-tbl">4. tibble 的印法</h2>
+      <p><code>read_csv()</code> 回傳的是 tibble，直接打變數名稱只會印前 10 列，並標明型別與剩餘筆數：</p>
+      <div class="codeblock"><span class="lang">R Console</span><button class="copyb">複製</button><pre>d
+#&gt; # A tibble: 162 × 8
+#&gt;   質詢編號      屆  會期  會次 委員   刊登日期
+#&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;  &lt;date&gt;
+#&gt; 1 11-1-1-1      11     1     1 羅智強 2024-02-16
+#&gt; 2 11-1-20-63    11     1    20 黃健豪 2024-06-26
+#&gt; 3 11-1-20-64    11     1    20 馬文君 2024-06-26
+#&gt; # ℹ 159 more rows</pre></div>
+      <p>這是 tibble 相對 data.frame 的一大好處：<strong>不會因為手滑而把 162 筆全文噴滿整個 Console</strong>。若真的想看全部，用 <code>print(d, n = 30)</code> 或 <code>View(d)</code>（開試算表視窗）。</p>
+
+      <h2 id="s06-explore">5. 初步探索</h2>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>names(d)
+#&gt; [1] "質詢編號" "屆" "會期" "會次" "委員" "刊登日期" "事由" "說明"
+
+n_distinct(d$委員)
+#&gt; [1] 28
+
+table(d$會期)
+#&gt;  1  2  3
+#&gt; 59 68 35
+
+summary(nchar(d$說明))
+#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+#&gt;    72.0   412.0   569.5   631.1   785.8  2573.0</pre></div>
+      <p>最後一行已經是實質發現了：質詢說明從 72 字到 2,573 字，中位數 569.5、平均 631.1。<strong>平均大於中位數</strong>，表示分布右偏——少數幾篇超長的質詢把平均值拉高了。做文本分析時這件事很重要：如果你之後比較「誰的質詢比較長」，用平均數會被極端值主導，可能要考慮中位數，或在論文裡把分布講清楚。</p>
+      <div class="callout note"><div class="ct">▍<code>nchar()</code> 算的是什麼</div>
+        <p>對中文而言，<code>nchar()</code> 算的是<strong>字元數</strong>（一個漢字算一個），不是詞數。「能源政策」是 4 個字元、2 個詞。詞數要先斷詞才算得出來，那是第 12 章的事。</p>
+      </div>
+
+      <h2 id="s06-enc">6. 中文亂碼怎麼辦</h2>
+      <p>如果讀進來的中文變成 <code>\u5b78</code>、問號或方塊，是編碼問題。處理順序：</p>
+      <p>第一，確認 RStudio 的預設編碼是 UTF-8（第 2 章的必改設定第 4 項）。第二，如果檔案本身不是 UTF-8——台灣的 Windows 環境常見 Big5——明確告訴 <code>read_csv()</code>：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>library(readr)
+d &lt;- read_csv("某個big5檔.csv", locale = locale(encoding = "BIG5"))
+
+# 不確定是什麼編碼時，讓 readr 猜：
+guess_encoding("某個檔.csv")</pre></div>
+      <p>本課附的語料是 UTF-8，不需要特別處理。但你自己抓來的資料（尤其是政府網站的舊檔案）很可能是 Big5，屆時記得這一節。</p>
+      <div class="callout win"><div class="ct">▍Windows 差異</div>
+        <p>Windows 的 R 預設語系不是 UTF-8，<code>read.csv()</code> 讀中文特別容易亂碼，這也是本課一律用 <code>read_csv()</code> 的理由之一。另外 Excel 存成 CSV 時預設會用系統編碼而非 UTF-8——若要從 Excel 匯出中文 CSV 給 R 用，請選「CSV UTF-8」那個選項。</p>
+      </div>
+
+      <h2 id="s06-p">7. 動手練習</h2>
+      <div class="practice"><ol>
+        <li>在你的專案裡讀入 <code>立法院質詢_第11屆.csv</code>，跑完 <code>dim()</code>、<code>glimpse()</code>、<code>summary()</code> 三件事。</li>
+        <li>用 <code>n_distinct(d$會次)</code> 看有幾個不同的會次；用 <code>table(d$委員)</code> 看誰的質詢最多（結果會很長，先想想怎麼只看前幾名——第 7 章給答案）。</li>
+        <li>執行 <code>range(d$刊登日期)</code>。因為日期被正確判定成 date 型別，這行才會成功；試試看如果它是文字會怎樣。</li>
+        <li>執行 <code>d$說明[1]</code> 印出第一筆質詢全文，實際讀一下你這學期要分析的東西長什麼樣。</li>
+        <li>故意打錯檔名執行一次 <code>read_csv()</code>，把錯誤訊息完整讀一遍，注意它有告訴你「現在的工作目錄是哪裡」。</li>
+      </ol></div>
+
+      <h2 id="s06-s">8. 本章小結</h2>
+      <ul>
+        <li>用 <code>read_csv()</code> 不用 <code>read.csv()</code>：UTF-8、速度快、回傳 tibble、會報告欄位型別。</li>
+        <li>讀完必做三檢查：<code>dim()</code>、<code>glimpse()</code>、<code>summary()</code>。</li>
+        <li>檢查重點：筆數對不對、日期有沒有被讀成日期、中文有沒有亂碼。</li>
+        <li>tibble 只印前 10 列，不會噴滿 Console。</li>
+        <li>中文亂碼先查 RStudio 編碼設定，再用 <code>locale(encoding = ...)</code> 指定。</li>
+        <li>本課語料的說明欄中位數 569.5 字、平均 631.1 字，分布右偏。</li>
+      </ul>
+      <footer class="foot">程式碼與輸出皆在 R 4.6.1 + readr 實際執行驗證；對照 <a href="https://readr.tidyverse.org/" target="_blank" rel="noopener">readr 官方文件</a> 撰寫（查證日 2026-09-17）。</footer>
+      <div class="chap-foot"><a class="nextlink" data-go="ch07"><span class="k">下一章 →</span> 07 · 管線與 dplyr 五動詞</a></div>
+    </section>
+
+    <!-- ===================== ch07 ===================== -->
+    <section class="chapter" id="ch07">
+      <div class="crumb">第二篇 · R 語言最小必要集 / 07</div>
+      <h1 class="ch">管線與 dplyr 五動詞</h1>
+      <p class="lead">本章目標：用五個動詞加一根管線，把「誰的質詢最長」這種問題變成一段可以從左讀到右的程式碼。</p>
+      <div class="pagetoc"><div class="tt">本頁章節</div>
+        <a href="#s07-pipe">管線是什麼</a><a href="#s07-five">五個動詞</a><a href="#s07-filter">filter 與 select</a><a href="#s07-mutate">mutate 與 arrange</a><a href="#s07-group">group_by 與 summarise</a><a href="#s07-full">串成完整管線</a><a href="#s07-p">動手練習</a><a href="#s07-s">本章小結</a>
+      </div>
+
+      <h2 id="s07-pipe">1. 管線是什麼</h2>
+      <p>假設要做三件事：算字數、只留第 1 會期、由長到短排序。不用管線的寫法是層層包住：</p>
+      <div class="codeblock"><span class="lang">R · 難讀的寫法</span><button class="copyb">複製</button><pre>arrange(filter(mutate(d, 字數 = nchar(說明)), 會期 == 1), desc(字數))</pre></div>
+      <p>這行要<strong>從裡往外</strong>讀，而且括號數量會隨步驟增加而失控。管線 <code>|&gt;</code> 把它攤平成從左到右的一串動作：</p>
+      <div class="codeblock"><span class="lang">R · 管線寫法</span><button class="copyb">複製</button><pre>d |&gt;
+  mutate(字數 = nchar(說明)) |&gt;
+  filter(會期 == 1) |&gt;
+  arrange(desc(字數))</pre></div>
+      <p><code>x |&gt; f()</code> 的意思就是 <code>f(x)</code>——把左邊的東西送進右邊函數的第一個位置。快捷鍵 <span class="kbd">Cmd/Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">M</span>（需先完成第 2 章的必改設定第 2 項）。</p>
+      <p>讀這段程式碼時，在心裡把 <code>|&gt;</code> 唸成「然後」：拿 d，<em>然後</em>算字數，<em>然後</em>只留第 1 會期，<em>然後</em>由長到短排。</p>
+      <div class="callout note"><div class="ct">▍<code>|&gt;</code> 與 <code>%&gt;%</code></div>
+        <p>你會在網路教學與論文附錄裡看到 <code>%&gt;%</code>，那是 magrittr 套件的管線，比 <code>|&gt;</code> 早出現很多年。在本課的用途上兩者等價。差別是 <code>|&gt;</code> 是 R 4.1 起<strong>內建</strong>的，不需要載入任何套件。本教材一律用 <code>|&gt;</code>；看到 <code>%&gt;%</code> 時直接當成同一個東西讀即可。</p>
+      </div>
+
+      <h2 id="s07-five">2. 五個動詞</h2>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:18%">動詞</th><th style="width:22%">做什麼</th><th>改變了什麼</th></tr></thead>
+        <tbody>
+          <tr><td><code>filter()</code></td><td>挑<strong>列</strong></td><td>列數變少，欄數不變</td></tr>
+          <tr><td><code>select()</code></td><td>挑<strong>欄</strong></td><td>欄數變少，列數不變</td></tr>
+          <tr><td><code>mutate()</code></td><td>新增或修改欄</td><td>欄數變多，列數不變</td></tr>
+          <tr><td><code>arrange()</code></td><td>排序</td><td>列的順序改變，內容不變</td></tr>
+          <tr><td><code>summarise()</code></td><td>聚合成摘要</td><td>多列變一列（搭配 <code>group_by()</code> 則變成每組一列）</td></tr>
+        </tbody>
+      </table></div>
+      <p>五個動詞有一個共同規則：<strong>第一個參數都是資料，回傳的也都是資料</strong>。正因如此它們才能用管線無限串接。</p>
+
+      <div class="videobox" data-vid="Gvhkp-Yw65U" data-start="0">
+        <div class="vhead"><span class="play">▶</span> 影片示範 · dplyr 核心動詞（英文，11 分 21 秒） <span class="seg">點縮圖開啟</span></div>
+        <div class="vthumb" role="button" tabindex="0" aria-label="播放影片：Dplyr Essentials" style="background-image:url('https://i.ytimg.com/vi/Gvhkp-Yw65U/hqdefault.jpg')">
+          <div class="vplay">▶</div><div class="vopen">在 YouTube 開啟 ↗</div>
+        </div>
+        <div class="vcap">「Dplyr Essentials (easy data manipulation in R)」— Dataslice（8 萬觀看）。完整示範 filter、select、mutate、arrange、group_by 與 summarise。這是 2021 年的影片，當年的教學普遍使用 magrittr 的 <code>%&gt;%</code>；看到時請直接對應成本章的 <code>|&gt;</code>。版權屬原作者。</div>
+      </div>
+
+      <h2 id="s07-filter">3. filter 與 select</h2>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>d |&gt;
+  filter(會期 == 1) |&gt;
+  select(委員, 事由)
+#&gt; # A tibble: 59 × 2
+#&gt;   委員   事由
+#&gt;   &lt;chr&gt;  &lt;chr&gt;
+#&gt; 1 羅智強 本院羅委員智強，就文化部發放文化成年禮金政策…
+#&gt; 2 黃健豪 本院黃委員健豪，鑑於近年來機場海關扣押大量加熱菸品…</pre></div>
+      <p>注意 <code>==</code> 是兩個等號。一個等號是賦值，兩個才是「等於嗎」。這是所有程式語言新手都會犯一次的錯，犯過就記住了。</p>
+      <p>條件可以組合，逗號代表「而且」：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>d |&gt; filter(會期 == 1, 委員 == "羅智強")     # 而且
+d |&gt; filter(會期 == 1 | 會期 == 3)           # 或（直立線）
+d |&gt; filter(會期 %in% c(1, 3))               # 同上，更好讀
+d |&gt; filter(!委員 == "羅智強")               # 驚嘆號＝否定</pre></div>
+
+      <h2 id="s07-mutate">4. mutate 與 arrange</h2>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>d |&gt;
+  mutate(字數 = nchar(說明)) |&gt;
+  arrange(desc(字數)) |&gt;
+  select(委員, 會期, 字數)
+#&gt; # A tibble: 162 × 3
+#&gt;   委員    會期  字數
+#&gt;   &lt;chr&gt;  &lt;dbl&gt; &lt;int&gt;
+#&gt; 1 陳菁徽     3  2573
+#&gt; 2 羅智強     1  2183
+#&gt; 3 羅智強     1  1893
+#&gt; 4 羅智強     2  1819
+#&gt; 5 羅智強     1  1472</pre></div>
+      <p><code>arrange()</code> 預設由小到大，<code>desc()</code> 反過來。</p>
+      <div class="callout warn"><div class="ct">▍管線不會改變原始資料</div>
+        <p>上面這段跑完，<code>d</code> 本身<strong>沒有</strong>多出「字數」這一欄——結果只是印在 Console 上。要保留就得存起來：<code>d2 &lt;- d |&gt; mutate(...)</code>。新手常以為 mutate 會「就地修改」，結果下一行找不到那一欄。</p>
+      </div>
+
+      <h2 id="s07-group">5. group_by 與 summarise</h2>
+      <p>這組是 dplyr 最有威力的地方：先分組，再對每組算摘要。</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>d |&gt;
+  mutate(字數 = nchar(說明)) |&gt;
+  group_by(會期) |&gt;
+  summarise(件數 = n(),
+            平均字數 = round(mean(字數)),
+            最長 = max(字數))
+#&gt; # A tibble: 3 × 4
+#&gt;    會期  件數 平均字數  最長
+#&gt;   &lt;dbl&gt; &lt;int&gt;    &lt;dbl&gt; &lt;int&gt;
+#&gt; 1     1    59      617  2183
+#&gt; 2     2    68      626  1819
+#&gt; 3     3    35      665  2573</pre></div>
+      <p><code>n()</code> 是「這組有幾列」，只能用在 <code>summarise()</code> 或 <code>mutate()</code> 裡面。</p>
+      <p>單純只想數個數的話，有更短的寫法 <code>count()</code>：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>count(d, 會期)                      # 等同 group_by(會期) |&gt; summarise(n = n())
+d |&gt; count(委員, sort = TRUE) |&gt; head(5)
+#&gt; # A tibble: 5 × 2
+#&gt;   委員       n
+#&gt;   &lt;chr&gt;  &lt;int&gt;
+#&gt; 1 羅智強    67
+#&gt; 2 陳菁徽    14
+#&gt; 3 萬美玲    12
+#&gt; 4 吳宗憲    10
+#&gt; 5 顏寬恒     8</pre></div>
+      <p>這個結果本身就值得停下來想一想：162 筆裡有 67 筆出自同一位委員，佔了四成。<strong>如果你之後要比較「不同委員的用詞差異」，這種極度不平衡的分布會嚴重影響結論</strong>——這正是課程第 5 週「描述與比較文本」要處理的問題。工具課看到的數字，往往就是方法課的題目。</p>
+
+      <h2 id="s07-full">6. 串成完整管線</h2>
+      <p>把學到的全部串起來，回答一個實質問題：質詢量達 5 篇以上的委員裡，誰平均寫得最長？</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>d |&gt;
+  mutate(字數 = nchar(說明)) |&gt;
+  group_by(委員) |&gt;
+  summarise(件數 = n(), 平均字數 = round(mean(字數))) |&gt;
+  filter(件數 &gt;= 5) |&gt;
+  arrange(desc(平均字數)) |&gt;
+  head(5)
+#&gt; # A tibble: 5 × 3
+#&gt;   委員    件數 平均字數
+#&gt;   &lt;chr&gt;  &lt;int&gt;    &lt;dbl&gt;
+#&gt; 1 羅智強    67      747
+#&gt; 2 陳菁徽    14      732
+#&gt; 3 吳宗憲    10      653
+#&gt; 4 鍾佳濱     6      549
+#&gt; 5 顏寬恒     8      539</pre></div>
+      <p>六行程式碼，從原始資料到一個可以寫進報告的結果。注意 <code>filter()</code> 出現在 <code>summarise()</code> 之後——這時它篩的是「每位委員一列」的摘要表，不是原始的 162 列。<strong>同一個動詞放在管線的不同位置，意義完全不同</strong>，這是讀懂別人程式碼的關鍵。</p>
+      <div class="callout tip"><div class="ct">▍除錯管線的方法</div>
+        <p>管線出錯時，從最上面開始，一次只執行到某一個 <code>|&gt;</code> 為止（選取那幾行按 <span class="kbd">Cmd/Ctrl</span>+<span class="kbd">Enter</span>），看每一步的中間結果。哪一步的列數或欄數不對，問題就在那裡。</p>
+      </div>
+
+      <h2 id="s07-p">7. 動手練習</h2>
+      <div class="practice"><ol>
+        <li>算出每位委員的質詢<strong>件數</strong>與<strong>最長</strong>一篇的字數，只留件數 3 篇以上的，依最長排序。</li>
+        <li>找出第 2 會期裡字數超過 1,000 字的質詢，印出委員與事由。</li>
+        <li><code>count(d, 委員, 會期)</code> 會得到什麼？想清楚再執行，驗證你的預期。</li>
+        <li>把第 6 節那段完整管線<strong>逐步執行</strong>：先只跑到 <code>mutate</code>，再跑到 <code>group_by</code>，再跑到 <code>summarise</code>，觀察每一步資料的形狀怎麼變。</li>
+        <li>故意把 <code>filter(件數 &gt;= 5)</code> 移到 <code>group_by()</code> 前面，看看結果為什麼不一樣、錯誤訊息說什麼。</li>
+      </ol></div>
+
+      <h2 id="s07-s">8. 本章小結</h2>
+      <ul>
+        <li><code>|&gt;</code> 把巢狀呼叫攤平成從左到右；心裡唸成「然後」。快捷鍵 <span class="kbd">Cmd/Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">M</span>。</li>
+        <li>五個動詞：filter 挑列、select 挑欄、mutate 加欄、arrange 排序、summarise 聚合。</li>
+        <li><code>group_by()</code> + <code>summarise()</code> 是分組分析的主力；只數個數用 <code>count()</code>。</li>
+        <li>管線不會改變原始資料，要存才留得住。</li>
+        <li>同一個動詞放在管線不同位置，作用對象不同。</li>
+        <li>管線出錯就逐步執行，看哪一步的形狀不對。</li>
+      </ul>
+      <footer class="foot">程式碼與輸出皆在 R 4.6.1 + dplyr 實際執行驗證；對照 <a href="https://dplyr.tidyverse.org/" target="_blank" rel="noopener">dplyr 官方文件</a> 撰寫（查證日 2026-09-17）。</footer>
+      <div class="chap-foot"><a class="nextlink" data-go="ch08"><span class="k">下一章 →</span> 08 · 字串處理 stringr</a></div>
+    </section>
+
+    <!-- ===================== ch08 ===================== -->
+    <section class="chapter" id="ch08">
+      <div class="crumb">第二篇 · R 語言最小必要集 / 08</div>
+      <h1 class="ch">字串處理 stringr</h1>
+      <p class="lead">本章目標：學會六個 stringr 函數與最小必要的正規表達式，然後動手解決這份語料真正的髒污——漢字之間的空白。</p>
+      <div class="pagetoc"><div class="tt">本頁章節</div>
+        <a href="#s08-six">六個函數</a><a href="#s08-regex">正規表達式最小集</a><a href="#s08-dirty">問題現場</a><a href="#s08-fix">動手清理</a><a href="#s08-search">關鍵詞檢索</a><a href="#s08-extract">抽取</a><a href="#s08-p">動手練習</a><a href="#s08-s">本章小結</a>
+      </div>
+
+      <h2 id="s08-six">1. 六個函數就夠用</h2>
+      <p>stringr 的函數全部以 <code>str_</code> 開頭，第一個參數都是字串向量，而且全部向量化——你對一個字串怎麼做，對 162 筆就怎麼做。</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>library(stringr)
+s &lt;- "本院羅委員智強，就文化部發放文化成年禮金政策"
+
+str_length(s)                    #&gt; [1] 22          幾個字元
+str_sub(s, 1, 6)                 #&gt; [1] "本院羅委員智"   取第 1 到 6 個字
+str_detect(s, "文化")            #&gt; [1] TRUE        有沒有出現
+str_count(s, "文化")             #&gt; [1] 2           出現幾次
+str_replace_all(s, "文化", "教育")
+#&gt; [1] "本院羅委員智強，就教育部發放教育成年禮金政策"
+str_split("能源、教育、交通", "、")
+#&gt; [[1]]
+#&gt; [1] "能源" "教育" "交通"</pre></div>
+      <div class="callout note"><div class="ct">▍<code>str_replace()</code> 與 <code>str_replace_all()</code></div>
+        <p>沒有 <code>_all</code> 的版本只換<strong>第一個</strong>。清理資料時幾乎永遠要用 <code>_all</code>，這個差別造成的錯誤很難發現，因為程式不會報錯，只是沒換乾淨。</p>
+      </div>
+
+      <h2 id="s08-regex">2. 正規表達式最小集</h2>
+      <p>正規表達式（regex）是描述「什麼樣的字串」的語法。完整學會要花很久，但文本分析日常只需要這幾個：</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:20%">寫法</th><th style="width:28%">意思</th><th>例子</th></tr></thead>
+        <tbody>
+          <tr><td><code>.</code></td><td>任意一個字元</td><td><code>"能.政策"</code> 可配「能源政策」</td></tr>
+          <tr><td><code>\\d</code></td><td>一個數字</td><td><code>"\\d+"</code> 抓「93,800」裡的數字串</td></tr>
+          <tr><td><code>\\s</code></td><td>一個空白</td><td>本章主角</td></tr>
+          <tr><td><code>+</code> / <code>*</code></td><td>前面那個出現 1 次以上 / 0 次以上</td><td><code>"\\s+"</code> 連續空白</td></tr>
+          <tr><td><code>[abc]</code></td><td>括號內任一個</td><td><code>"[，。；]"</code> 中文標點</td></tr>
+          <tr><td><code>^</code> / <code>$</code></td><td>開頭 / 結尾</td><td><code>"^本院"</code> 以「本院」開頭</td></tr>
+          <tr><td><code>\\p{Han}</code></td><td><strong>一個漢字</strong></td><td>處理中文的關鍵武器</td></tr>
+          <tr><td><code>(?&lt;=X)</code> <code>(?=X)</code></td><td>前面是 X／後面是 X（但不含 X 本身）</td><td>見下一節</td></tr>
+        </tbody>
+      </table></div>
+      <div class="callout warn"><div class="ct">▍為什麼是兩個反斜線</div>
+        <p>regex 本身要的是 <code>\d</code>，但 R 的字串裡 <code>\</code> 是逃脫字元，所以你得打 <code>\\d</code>，R 才會把一個 <code>\</code> 傳給 regex 引擎。這是 R 初學者在 regex 上卡最久的一件事，記住「regex 裡的反斜線在 R 裡要打兩次」就好。</p>
+      </div>
+
+      <div class="videobox" data-vid="_DXSHUN0Vcc" data-start="0">
+        <div class="vhead"><span class="play">▶</span> 影片示範 · 用 stringr 寫正規表達式（英文，4 分 54 秒） <span class="seg">點縮圖開啟</span></div>
+        <div class="vthumb" role="button" tabindex="0" aria-label="播放影片：Working with Regular Expressions Using StringR in R" style="background-image:url('https://i.ytimg.com/vi/_DXSHUN0Vcc/hqdefault.jpg')">
+          <div class="vplay">▶</div><div class="vopen">在 YouTube 開啟 ↗</div>
+        </div>
+        <div class="vcap">「Working with Regular Expressions Using StringR in R」— Duke Center for Computational Thinking。五分鐘帶過 regex 與 stringr 的搭配，與第 1 章那支同一個系列。版權屬原作者。</div>
+      </div>
+
+      <h2 id="s08-dirty">3. 問題現場</h2>
+      <p>把第 2 筆質詢的中段印出來看：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>str_sub(d$說明[2], 150, 210)
+#&gt; [1] "023 年查扣非法走私之加熱菸即高達 93,800 多條，早就塞爆海關 倉庫。其間，造成海關人員的負擔，不僅要負擔人力與保"</pre></div>
+      <p>看到「海關 倉庫」中間那個空白了嗎？原始資料來自立法院的 PDF 公報，PDF 為了左右對齊會在字元之間插入空白，轉成文字時就留下來了。第 1 章提過的「被 沒 收」也是同一個來源。</p>
+      <p>為什麼非清不可：<strong>斷詞工具會把空白當成詞的邊界</strong>。不清的話，「海關倉庫」會被切成「海關」和「倉庫」兩個詞——這個例子看起來還好，但「被 沒 收」會被切成三個單字，你的詞頻表就會多出一堆莫名其妙的單字詞。這會直接污染第 13 章的文件特徵矩陣。</p>
+
+      <h2 id="s08-fix">4. 動手清理</h2>
+      <p>我們要的規則是：<strong>當一個空白的前面是漢字、後面也是漢字時，刪掉它</strong>。前後都是漢字才刪，是為了保留「93,800 多條」這種數字與中文之間的合理空白。</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>乾淨 &lt;- str_replace_all(d$說明[2], "(?&lt;=\\p{Han})\\s+(?=\\p{Han})", "")
+
+str_sub(乾淨, 150, 210)
+#&gt; [1] "023 年查扣非法走私之加熱菸即高達 93,800 多條，早就塞爆海關倉庫。其間，造成海關人員的負擔，不僅要負擔人力與保管"</pre></div>
+      <p>拆解這個 regex：<code>(?&lt;=\\p{Han})</code> 是「往回看，前面得是漢字」，<code>\\s+</code> 是「一個以上的空白」（這才是要被刪掉的部分），<code>(?&lt;=...)</code> 與 <code>(?=...)</code> 這兩個往回看／往前看的條件<strong>不會被替換掉</strong>，所以漢字本身安然無恙。替換成 <code>""</code> 就是刪除。</p>
+      <p>套用到整欄，並確認影響範圍：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>d &lt;- d |&gt;
+  mutate(說明清理 = str_replace_all(說明, "(?&lt;=\\p{Han})\\s+(?=\\p{Han})", ""))
+
+round(mean(str_length(d$說明)))        #&gt; [1] 631   清理前
+round(mean(str_length(d$說明清理)))    #&gt; [1] 620   清理後
+sum(d$說明 != d$說明清理)              #&gt; [1] 162</pre></div>
+      <p>最後這個數字是本章最重要的發現：<strong>162 筆全部都被改動過</strong>，平均每筆刪掉約 11 個假空白。也就是說，如果你沒做這一步就直接斷詞，<strong>整份語料沒有一筆是乾淨的</strong>。</p>
+      <div class="callout tip"><div class="ct">▍清理過的資料要另存一欄</div>
+        <p>注意我們是 <code>mutate()</code> 出一個新欄位 <code>說明清理</code>，而不是覆蓋 <code>說明</code>。保留原始欄位讓你隨時能回頭比對、驗證清理有沒有做錯事。這也呼應第 3 章的紀律：原始資料只讀不改。</p>
+      </div>
+
+      <h2 id="s08-search">5. 關鍵詞檢索</h2>
+      <p><code>str_detect()</code> 回傳邏輯向量，正好餵給 <code>filter()</code>：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>d |&gt; filter(str_detect(說明清理, "能源")) |&gt; count(會期)
+#&gt; # A tibble: 2 × 2
+#&gt;    會期     n
+#&gt;   &lt;dbl&gt; &lt;int&gt;
+#&gt; 1     1     2
+#&gt; 2     2     1
+
+d |&gt;
+  mutate(提到能源 = str_count(說明清理, "能源")) |&gt;
+  filter(提到能源 &gt; 0) |&gt;
+  arrange(desc(提到能源)) |&gt;
+  select(委員, 會期, 提到能源)
+#&gt; # A tibble: 3 × 3
+#&gt;   委員    會期 提到能源
+#&gt;   &lt;chr&gt;  &lt;dbl&gt;    &lt;int&gt;
+#&gt; 1 陳菁徽     1        5
+#&gt; 2 鍾佳濱     1        1
+#&gt; 3 羅智強     2        1</pre></div>
+      <p>162 筆裡只有 3 筆提到「能源」。這提醒一件事：<strong>這份 162 筆的樣本是為了教學而抓的一小部分，不足以支撐任何實質的政治學結論</strong>。真正做研究時，你需要的是完整的母體或有設計的抽樣——那是課程第 8 週「檢索、載入與整理文本語料庫」的內容。</p>
+      <div class="callout warn"><div class="ct">▍關鍵詞法的先天限制</div>
+        <p><code>str_detect(說明, "能源")</code> 只能抓到字面上出現「能源」兩個字的，抓不到講「電價」「核電」「綠電」「再生能源政策」但沒寫「能源」二字的。這就是課程第 4 週字典法會討論的效度問題，也是為什麼後面要走到詞嵌入與 Transformer。工具的限制，就是方法的動機。</p>
+      </div>
+
+      <h2 id="s08-extract">6. 抽取：str_extract</h2>
+      <p><code>str_extract()</code> 把符合的部分「抓出來」而不是判斷有沒有：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>str_extract(head(d$事由, 3), "本院(.+?)委員(.+?)，")
+#&gt; [1] "本院羅委員智強，" "本院黃委員健豪，" "本院馬委員文君，"</pre></div>
+      <p><code>.+?</code> 裡的問號代表「非貪婪」——盡量少抓。沒有問號的 <code>.+</code> 會一路抓到整句最後一個「，」為止。貪婪與非貪婪是 regex 第二個容易踩的坑，記得先試小樣本再套用全欄。</p>
+
+      <h2 id="s08-p">7. 動手練習</h2>
+      <div class="practice"><ol>
+        <li>對 <code>d$說明[1]</code> 做一次清理，用 <code>str_length()</code> 比較清理前後的長度差幾個字。</li>
+        <li>找出提到「教育」的質詢有幾筆，分別屬於哪些會期。</li>
+        <li>用 <code>str_count(d$說明清理, "，")</code> 算每筆的逗號數，再和字數做比較——想想這個數字能不能當成「句子複雜度」的粗略代理指標，以及它的問題在哪。</li>
+        <li>試著寫一個 regex 抓出說明裡所有的數字（提示：<code>\\d+</code>），用 <code>str_extract_all()</code>，觀察它跟 <code>str_extract()</code> 回傳的結構差在哪。</li>
+        <li>把清理用的 regex 改成 <code>"\\s+"</code>（不加前後條件）套用一次，比較兩者結果——你會看到「93,800 多條」被黏成什麼樣子。這個對照能讓你真正理解那兩個條件在做什麼。</li>
+      </ol></div>
+
+      <h2 id="s08-s">8. 本章小結</h2>
+      <ul>
+        <li>六個函數走天下：<code>str_length</code>、<code>str_sub</code>、<code>str_detect</code>、<code>str_count</code>、<code>str_replace_all</code>、<code>str_split</code>。</li>
+        <li>regex 在 R 裡反斜線要打兩次；<code>\\p{Han}</code> 是處理中文的關鍵。</li>
+        <li>本課語料 162 筆<strong>全部</strong>含有 PDF 排版造成的假空白，不清理會直接污染斷詞結果。</li>
+        <li>清理結果存成新欄位，不覆蓋原始欄位。</li>
+        <li><code>str_detect()</code> 回傳邏輯向量，可直接餵給 <code>filter()</code>。</li>
+        <li>關鍵詞法抓不到同義表達——這是後面所有進階方法的動機。</li>
+      </ul>
+      <footer class="foot">程式碼與輸出皆在 R 4.6.1 + stringr 實際執行驗證；對照 <a href="https://stringr.tidyverse.org/" target="_blank" rel="noopener">stringr 官方文件</a> 與 <a href="https://stringr.tidyverse.org/articles/regular-expressions.html" target="_blank" rel="noopener">regex vignette</a> 撰寫（查證日 2026-09-17）。</footer>
+      <div class="chap-foot"><a class="nextlink" data-go="ch09"><span class="k">下一章 →</span> 09 · 迴圈與 purrr</a></div>
+    </section>
+
+    <!-- ===================== ch09 ===================== -->
+    <section class="chapter" id="ch09">
+      <div class="crumb">第二篇 · R 語言最小必要集 / 09</div>
+      <h1 class="ch">迴圈與 purrr</h1>
+      <p class="lead">本章目標：知道怎麼對 162 筆資料重複做同一件事，並理解為什麼 R 社群偏好 <code>map()</code> 勝過 <code>for</code>。</p>
+      <div class="pagetoc"><div class="tt">本頁章節</div>
+        <a href="#s09-for">for 迴圈</a><a href="#s09-map">map 家族</a><a href="#s09-seg">用 map 接斷詞</a><a href="#s09-why">為什麼偏好 map</a><a href="#s09-when">什麼時候還是要用 for</a><a href="#s09-p">動手練習</a><a href="#s09-s">本章小結</a>
+      </div>
+
+      <h2 id="s09-for">1. for 迴圈：先看你原本會怎麼寫</h2>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>結果 &lt;- character(0)           # 先準備一個空容器
+for (s in head(d$事由, 3)) {
+  結果 &lt;- c(結果, str_sub(s, 1, 10))
+}
+結果
+#&gt; [1] "本院羅委員智強，就文" "本院黃委員健豪，鑑於" "本院馬委員文君，鑑於"</pre></div>
+      <p>這段能跑，邏輯也清楚。但它有三個問題：你得自己準備容器、自己記得容器該是什麼型別、而且 <code>結果 &lt;- c(結果, ...)</code> 這種每圈都重建一次向量的寫法，在資料量大時會明顯變慢。</p>
+      <p>更麻煩的是，迴圈跑完之後 <code>s</code> 這個變數還留在你的環境裡，而且是最後一筆的值。這種「殘留物」是很多難以察覺的錯誤的來源。</p>
+
+      <h2 id="s09-map">2. map 家族：同一件事，一行</h2>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>library(purrr)
+
+map_chr(head(d$事由, 3), \(s) str_sub(s, 1, 10))
+#&gt; [1] "本院羅委員智強，就文" "本院黃委員健豪，鑑於" "本院馬委員文君，鑑於"</pre></div>
+      <p>讀法是：拿第一個參數裡的每一個元素，餵進後面那個函數，把結果收集起來。<code>\(s)</code> 是 R 4.1 起的簡寫，等同 <code>function(s)</code>——你可以把它唸成「給我一個東西，我叫它 s」。</p>
+      <p>函數名稱的後綴決定回傳什麼型別，這是 purrr 最重要的設計：</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:20%">函數</th><th style="width:26%">回傳</th><th>什麼時候用</th></tr></thead>
+        <tbody>
+          <tr><td><code>map_chr()</code></td><td>文字向量</td><td>每筆產生一段文字，例如斷詞結果</td></tr>
+          <tr><td><code>map_int()</code></td><td>整數向量</td><td>每筆產生一個計數，例如詞數</td></tr>
+          <tr><td><code>map_dbl()</code></td><td>數值向量</td><td>每筆產生一個小數，例如平均值</td></tr>
+          <tr><td><code>map_lgl()</code></td><td>邏輯向量</td><td>每筆產生一個判斷</td></tr>
+          <tr><td><code>map()</code></td><td>list（清單）</td><td>每筆產生的東西長度不一或結構複雜</td></tr>
+        </tbody>
+      </table></div>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>map_int(head(d$說明清理, 5), str_length)
+#&gt; [1] 803 469 532 488 753
+
+map_dbl(list(c(1, 2, 3), c(10, 20)), mean)
+#&gt; [1]  2 15</pre></div>
+
+      <div class="videobox" data-vid="nd-Y8b22YaQ" data-start="0">
+        <div class="vhead"><span class="play">▶</span> 影片示範 · purrr 的 map 家族（英文，17 分 45 秒） <span class="seg">點縮圖開啟</span></div>
+        <div class="vthumb" role="button" tabindex="0" aria-label="播放影片：How to purrr" style="background-image:url('https://i.ytimg.com/vi/nd-Y8b22YaQ/hqdefault.jpg')">
+          <div class="vplay">▶</div><div class="vopen">在 YouTube 開啟 ↗</div>
+        </div>
+        <div class="vcap">「How to purrr」— Equitable Equations（與第 3 章 Project 那支同一位作者）。完整介紹 map 家族與各種後綴變體。本章只用到 <code>map_chr</code>、<code>map_int</code>、<code>map_dbl</code> 三個，影片後段的進階內容可以之後需要時再看。版權屬原作者。</div>
+      </div>
+
+      <h2 id="s09-seg">3. 用 map 接斷詞（本章的實際用途）</h2>
+      <p>中文斷詞的 <code>segment()</code> 一次只能處理一段文字，回傳的是一串詞。要把 162 筆全部斷完，正是 map 的主場：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>library(jiebaR)
+w &lt;- worker()      # 建立斷詞器，只要做一次
+
+詞 &lt;- map_chr(head(d$說明清理, 3), \(s) paste(segment(s, w), collapse = " "))
+
+str_sub(詞, 1, 60)
+#&gt; [1] "由 藝 FUN 券 轉型 而來 的 文化 成年 禮金 今年 起 擴大 發放 文化部 每年 列 20 億 預算 發給 16"
+#&gt; [2] "一 日前 媒體 報導 日本 觀光客 來 臺 旅遊 入境 時 隨身攜帶 之 加熱 菸 產品 通通 被 海關 沒收 讓 他們"
+#&gt; [3] "一 據 國家 發展 委員會 推估 於 2028 年 台灣 生育率 將降 至 新低 出生 人口 推估 僅剩 14 萬人 基"</pre></div>
+      <p>請注意第二筆裡的「被 海關 沒收」——<strong>「沒收」被正確地當成一個詞</strong>。這就是第 8 章清理的成果：如果沒有先刪掉假空白，jieba 會看到「被 沒 收」，切成三個單字。一個上游的小清理，決定了下游整個詞頻表的品質。</p>
+      <p>數每筆有幾個詞：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>map_int(head(d$說明清理, 5), \(s) length(segment(s, w)))
+#&gt; [1] 388 228 240 222 318</pre></div>
+      <p>對照第 6 章的字元數（803、469、532、488、753），可以看出這份語料<strong>大約每 2.2 個字元構成一個詞</strong>。這個比例之後估算語料規模時會用到。</p>
+
+      <h2 id="s09-why">4. 為什麼偏好 map</h2>
+      <p>不是因為時髦，是因為三個實際好處。</p>
+      <p>第一，<strong>型別有保證</strong>。<code>map_chr()</code> 承諾回傳文字向量，如果某一筆意外產生了數字，它會當場報錯，而不是安靜地把整個向量轉型。for 迴圈沒有這個保護，錯誤會一路傳到最後才爆炸。</p>
+      <p>第二，<strong>能直接接進管線</strong>。map 是「資料進、資料出」，可以和第 7 章的五動詞串在一起，整段分析維持同一種讀法。</p>
+      <p>第三，<strong>不留殘留物</strong>。迴圈變數不會留在環境裡污染後續程式碼。</p>
+      <div class="callout tip"><div class="ct">▍先確定它對，再套用全部</div>
+        <p>教材裡所有 map 範例都用 <code>head(..., 3)</code> 或 <code>head(..., 5)</code>，這是刻意的習慣：<strong>先在三五筆上確認結果正確，再拿掉 head 跑完整份資料</strong>。斷詞或呼叫 API 這類耗時的操作，這個習慣能省下大量時間。</p>
+      </div>
+
+      <h2 id="s09-when">5. 什麼時候還是要用 for</h2>
+      <p>map 不是萬靈丹。當每一圈都依賴上一圈的結果時（例如累積計算、逐步逼近的模型），for 反而清楚。當你要做的事情沒有回傳值、只是產生副作用（例如把 100 張圖存到硬碟），purrr 有個專門的 <code>walk()</code>。</p>
+      <p>不要為了避免 for 而把程式碼寫得更難懂。<strong>能讀懂的 for 迴圈，永遠好過一個你自己都看不懂的 map</strong>。</p>
+
+      <h2 id="s09-p">6. 動手練習</h2>
+      <div class="practice"><ol>
+        <li>用 <code>map_int()</code> 算出前 10 筆質詢各有幾個「，」（提示：搭配 <code>str_count()</code>）。</li>
+        <li>把第 3 節的斷詞從 <code>head(..., 3)</code> 改成全部 162 筆，用 <code>system.time()</code> 包起來看跑多久。</li>
+        <li>用 <code>mutate()</code> 把詞數加成 d 的新欄位：<code>mutate(詞數 = map_int(說明清理, \(s) length(segment(s, w))))</code>，然後接第 7 章的 <code>group_by()</code> 算各會期平均詞數。</li>
+        <li>故意用錯後綴：把第 2 節的 <code>map_chr()</code> 改成 <code>map_int()</code> 執行，讀一下錯誤訊息。這就是「型別有保證」的實際樣子。</li>
+        <li>用 for 迴圈重寫練習 1，比較兩種寫法的行數與可讀性，自己判斷哪個好。</li>
+      </ol></div>
+
+      <h2 id="s09-s">7. 本章小結</h2>
+      <ul>
+        <li><code>map_*(資料, 函數)</code>：對每個元素做同一件事，收集結果。</li>
+        <li>後綴決定回傳型別：<code>_chr</code> 文字、<code>_int</code> 整數、<code>_dbl</code> 數值、<code>_lgl</code> 邏輯，無後綴回傳 list。</li>
+        <li><code>\(x)</code> 是 <code>function(x)</code> 的簡寫（R 4.1 起）。</li>
+        <li>map 的三個好處：型別有保證、可接管線、不留殘留變數。</li>
+        <li>先用 <code>head()</code> 試三五筆，確認無誤再跑全部。</li>
+        <li>累積型運算或純副作用時，for 與 <code>walk()</code> 仍有其位置。</li>
+      </ul>
+      <footer class="foot">程式碼與輸出皆在 R 4.6.1 + purrr + jiebaR 實際執行驗證；對照 <a href="https://purrr.tidyverse.org/" target="_blank" rel="noopener">purrr 官方文件</a> 撰寫（查證日 2026-09-17）。</footer>
+      <div class="chap-foot"><a class="nextlink" data-go="ch10"><span class="k">下一章 →</span> 10 · 讀懂錯誤訊息</a></div>
+    </section>
+
+    <!-- ===================== ch10 ===================== -->
+    <section class="chapter" id="ch10">
+      <div class="crumb">第二篇 · R 語言最小必要集 / 10</div>
+      <h1 class="ch">讀懂錯誤訊息</h1>
+      <p class="lead">本章目標：把「一片紅字」變成可以逐句讀懂的資訊，認得六種最常見的錯誤，並學會判斷問題出在你還是別人。</p>
+      <div class="pagetoc"><div class="tt">本頁章節</div>
+        <a href="#s10-three">三種紅字</a><a href="#s10-anat">錯誤訊息的解剖</a><a href="#s10-six">六種常見錯誤</a><a href="#s10-whose">判斷是誰壞了</a><a href="#s10-ask">怎麼問問題</a><a href="#s10-ai">AI 協助與課程規定</a><a href="#s10-p">動手練習</a><a href="#s10-s">本章小結</a>
+      </div>
+
+      <h2 id="s10-three">1. 三種紅字，嚴重程度不同</h2>
+      <p>R 印出來的紅字有三種，新手常一律當成「壞了」，其實只有第一種真的停下來。</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:16%">類型</th><th style="width:26%">意思</th><th>你該做什麼</th></tr></thead>
+        <tbody>
+          <tr><td><code>Error</code></td><td><strong>停了</strong>，那行沒有執行完</td><td>必須處理。後面的程式碼是在錯誤的狀態下跑的，不要忽略。</td></tr>
+          <tr><td><code>Warning</code></td><td>跑完了，但結果可能不是你要的</td><td><strong>一定要看懂</strong>。Warning 常代表資料被安靜地改掉了。</td></tr>
+          <tr><td><code>Message</code></td><td>只是在跟你說話</td><td>通常可以忽略。<code>library()</code> 的載入訊息、readr 的欄位型別報告都屬於這類。</td></tr>
+        </tbody>
+      </table></div>
+      <div class="codeblock"><span class="lang">R Console</span><button class="copyb">複製</button><pre>log("abc")
+#&gt; Error in log("abc") : non-numeric argument to mathematical function
+
+as.numeric("abc")
+#&gt; [1] NA
+#&gt; Warning message:
+#&gt; NAs introduced by coercion</pre></div>
+      <p>第二個例子正是 Warning 的危險之處：<strong>它回傳了一個 NA，而且程式繼續往下跑</strong>。如果這是在清理資料的中途，你的整欄數字可能已經悄悄變成一堆 NA，卻要到很後面算平均時才發現不對。</p>
+
+      <h2 id="s10-anat">2. 錯誤訊息的解剖</h2>
+      <p>現代 R（tidyverse 套件尤其如此）的錯誤訊息是有結構的。以打錯欄位名為例：</p>
+      <div class="codeblock"><span class="lang">R Console</span><button class="copyb">複製</button><pre>d |&gt; filter(會其 == 1)
+
+#&gt; Error in `filter()`:                 ← ① 哪個函數出的錯
+#&gt; ℹ In argument: `會其 == 1`.          ← ② 哪個參數有問題
+#&gt; Caused by error:                     ← ③ 真正的原因在下一行
+#&gt; ! object '會其' not found             ← ④ 找不到叫「會其」的東西</pre></div>
+      <p>讀的順序是<strong>由下往上</strong>：先看最後一行的真正原因（④），再往上找它發生在哪裡（②①）。這裡的原因是「會其」不存在——因為正確的欄位名是「會期」。</p>
+      <div class="callout tip"><div class="ct">▍三個讀訊息的訣竅</div>
+        <p>第一，找引號裡的名字，那通常就是打錯的東西。第二，看到 <code>not found</code> 先想「打錯字」或「忘了載入套件」。第三，訊息很長時，最有用的資訊在<strong>最後一行</strong>，中間那一大串 Backtrace 是給套件開發者看的，你多半不需要。</p>
+      </div>
+
+      <h2 id="s10-six">3. 六種常見錯誤</h2>
+      <p>下面六個涵蓋你這學期八成的狀況，全部是實際執行產生的真實訊息。</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:40%">訊息</th><th style="width:26%">真正的原因</th><th>怎麼修</th></tr></thead>
+        <tbody>
+          <tr><td><code>object '質詢資料' not found</code></td><td>變數不存在：打錯字，或那一行你根本沒執行</td><td>看 Environment 面板有沒有這個物件；往上把該跑的行跑一次</td></tr>
+          <tr><td><code>could not find function "str_detekt"</code></td><td>函數不存在：打錯字，<strong>或忘了 <code>library()</code></strong></td><td>檢查拼字；確認套件已載入</td></tr>
+          <tr><td><code>'沒有這個檔.csv' does not exist in current working directory: '/Users/yourname/...'</code></td><td>檔案路徑不對，通常是 R 站錯位置</td><td><code>getwd()</code>、<code>list.files()</code>；用 Project 與 <code>here()</code></td></tr>
+          <tr><td><code>invalid 'type' (character) of argument</code></td><td>對文字做算術，例如 <code>sum("一百")</code></td><td><code>class()</code> 確認型別；該轉數字就轉</td></tr>
+          <tr><td><code>subscript out of bounds</code></td><td>索引超出範圍，例如只有 162 筆卻要第 999 筆</td><td><code>length()</code> 或 <code>nrow()</code> 確認實際大小</td></tr>
+          <tr><td><code>In argument: `會其 == 1`. Caused by error: object '會其' not found</code></td><td>dplyr 動詞裡的欄位名打錯</td><td><code>names(d)</code> 確認正確欄名</td></tr>
+        </tbody>
+      </table></div>
+      <div class="callout warn"><div class="ct">▍中文欄位名的實務建議</div>
+        <p>本課語料的欄位名是中文（會期、委員、說明），R 完全支援，教材也一路這樣用。但中文欄位名容易打錯（會期／會其），而且在某些套件或匯出成其他格式時可能出狀況。做正式研究時，可以考慮把欄位改成英文，中文另外存一份對照表。這是取捨，不是規定。</p>
+      </div>
+
+      <h2 id="s10-whose">4. 判斷是誰壞了</h2>
+      <p>這是本章最重要、也最難的一節。當程式不動時，可能性有四種，解法完全不同：</p>
+      <div class="diagram">
+<pre><b>程式不動了</b>
+│
+├─ 訊息說某個<b>名字</b>找不到 ─────────► <i>你打錯字，或沒載入套件／沒執行某行</i>
+│
+├─ 訊息說<b>型別</b>或<b>維度</b>不對 ──────► <i>你的資料不是你以為的樣子 → class(), dim(), glimpse()</i>
+│
+├─ 安裝時 <b>compilation failed</b> ─────► <i>套件本身的問題（第 4 章的 jiebaR 案例）</i>
+│
+└─ 程式碼沒改過，<b>昨天可以今天不行</b> ► <i>外部世界變了：套件更新、API 改版、網路或權限</i></pre>
+        <div class="dcap">四種可能性的分流。前兩種是你的問題，後兩種不是——分清楚才不會浪費時間往錯的方向修。</div>
+      </div>
+      <p>第四種最容易讓人懷疑人生，而本課的語料就有一個現成案例。授課教師維護的 <code>legisTaiwan</code> 套件，原本是抓立法院資料最方便的方式，但在 2026-09-17 實測時：</p>
+      <div class="codeblock"><span class="lang">R Console</span><button class="copyb">複製</button><pre>library(legisTaiwan)
+get_ly_interpellations(term = 11, limit = 20)
+#&gt; Fetching interpellation data...
+#&gt; Error: API request failed with status code: 404</pre></div>
+      <p>你的程式碼沒有錯，套件也安裝成功了。404 的意思是「伺服器上沒有這個位址」。這時候要做的<strong>不是</strong>反覆重裝套件，而是繞過套件、直接問 API 本人：</p>
+      <div class="codeblock"><span class="lang">terminal</span><button class="copyb">複製</button><pre>curl -s -o /dev/null -w "%{http_code}\n" "https://ly.govapi.tw/v2/interpellations?limit=2"
+# 200</pre></div>
+      <p>API 回 200，表示<strong>資料來源是好的，壞的是套件裡寫死的那個網址</strong>——套件呼叫的端點與現行 API 版本已經不一致。判斷出這一點之後，解法就清楚了：直接用 <code>httr2</code> 呼叫 API（本課語料的取材腳本 <code>fetch-corpus.R</code> 就是這樣寫的），並到套件的 GitHub 開一個 issue 告知作者。</p>
+      <div class="callout note"><div class="ct">▍這個判斷力才是重點</div>
+        <p>「先確認底層服務活著，再回頭懷疑中間那層」是通用的除錯思路，不限於 R。這門課後面會大量依賴外部套件與 API——Hugging Face 的模型、各種資料來源——每一個都可能在學期中途改版。能自己做這個判斷，你就不會卡住。</p>
+      </div>
+
+      <h2 id="s10-ask">5. 怎麼問問題</h2>
+      <p>自己判斷不出來時，要問得讓別人能回答。R 社群的共識做法是提供一個 <strong>reprex</strong>（reproducible example，可重現的最小範例）：用<strong>內建或自造的小資料</strong>重現問題，不需要對方有你的檔案。</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>install.packages("reprex")   # 只需一次
+
+# 把有問題的程式碼複製到剪貼簿後執行：
+reprex::reprex()
+# 它會執行你的程式碼、連同輸出排版好，再放回剪貼簿，可直接貼到 GitHub issue</pre></div>
+      <p>附上環境資訊也幾乎是必要的——第一個被問的問題通常就是版本：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>sessionInfo()
+#&gt; R version 4.6.1 (2026-06-24)
+#&gt; Running under: macOS 27.0
+#&gt; other attached packages: jiebaR, purrr, stringr, dplyr, readr …
+
+packageVersion("quanteda")   # 單獨查某個套件的版本</pre></div>
+      <p>本課的求助管道，課綱寫得很明確：<strong>技術問題先到 GitHub Classroom 提問</strong>；如果判斷是套件本身的問題，可以直接到該套件作者的 GitHub 開 issue；其他事項寄信預約。</p>
+
+      <h2 id="s10-ai">6. AI 協助與課程規定</h2>
+      <p>用 AI 解讀錯誤訊息是合理且高效的——課綱明文允許 AI 輔助概念化、文獻初篩、寫作編輯。但有兩件事必須說清楚。</p>
+      <p>第一，<strong>驗證責任在你</strong>。課綱寫得很直接：不得把未驗證的 AI 引用、資料、程式碼、分析或文字當成自己的作品。AI 給的程式碼要自己跑過、看懂、確認結果合理，才能用。</p>
+      <p>第二，<strong>必須聲明</strong>。每一份作業、實驗報告、海報、論文都要揭露使用的工具與版本、你請它做什麼、輸出怎麼用、你怎麼驗證。<strong>沒有附 AI 聲明的作業不予受理，直到補齊為止</strong>。即使完全沒用 AI，也要寫上原文指定的那句聲明：</p>
+      <div class="codeblock"><span class="lang">聲明範例</span><button class="copyb">複製</button><pre>No generative AI tools were used in the preparation of this assignment.</pre></div>
+      <div class="callout warn"><div class="ct">▍不要把未發表的資料丟進開放系統</div>
+        <p>課綱另有一條限制容易被忽略：除合法、必要且適當保護外，不得把個資、敏感資料、未發表研究或機密審稿內容輸入開放系統。你的期末論文資料如果涉及這些，貼進線上 AI 服務前要先想清楚。</p>
+      </div>
+
+      <div class="videobox pending">
+        <div class="vhead"><span class="play">▶</span> 影片示範 · 讀懂 R 的錯誤訊息 <span class="seg">待補</span></div>
+        <div class="ph">這個主題目前找不到品質足夠的示範影片——搜尋到的幾支不是觀看數極低就是內容偏離（查證日 2026-09-17）。與其硬塞，這裡先留白。替代閱讀建議：<a href="https://adv-r.hadley.nz/debugging.html" target="_blank" rel="noopener">Advanced R 的 Debugging 章節</a>（英文，免費線上版）。</div>
+      </div>
+
+      <h2 id="s10-p">7. 動手練習</h2>
+      <div class="practice"><ol>
+        <li>刻意製造本章表格裡的六種錯誤各一次，每次把訊息完整讀一遍，練習指出「引號裡的名字」是什麼。</li>
+        <li>執行 <code>as.numeric(c("1", "2", "三"))</code>，觀察它<strong>回傳了什麼</strong>以及警告說什麼。想一想：如果這是你資料清理流程的中間一步，你會在哪裡發現出事了？</li>
+        <li>執行 <code>sessionInfo()</code>，把輸出存成文字檔放進專案，當作這學期的環境快照。</li>
+        <li>安裝 reprex，拿練習 2 的程式碼實際產生一個 reprex，看看它排版成什麼樣子。</li>
+        <li>找一個你看不懂的錯誤訊息，先<strong>自己</strong>用本章的四種分流判斷一次，再去問 AI 或同學，比對你的判斷對不對。</li>
+      </ol></div>
+
+      <h2 id="s10-s">8. 本章小結</h2>
+      <ul>
+        <li>Error 停了要處理，Warning 跑完但可能被安靜改掉資料，Message 多半可忽略。</li>
+        <li>錯誤訊息由下往上讀，重點在最後一行；引號裡的名字通常就是打錯的東西。</li>
+        <li>六種常見錯誤：物件不存在、函數不存在、檔案路徑不對、型別不對、索引超界、欄位名打錯。</li>
+        <li>四種分流：打錯字／資料不如預期／套件本身壞了／外部世界變了。</li>
+        <li>套件壞掉時先確認底層服務是否正常（legisTaiwan 回 404 但 API 回 200）。</li>
+        <li>求助用 reprex 加 <code>sessionInfo()</code>；本課技術問題先走 GitHub Classroom。</li>
+        <li>AI 可以用，但驗證責任在你，而且<strong>每份作業都要附 AI 聲明，沒有就不予受理</strong>。</li>
+      </ul>
+      <footer class="foot">錯誤訊息皆為 R 4.6.1 實際執行擷取；課程規定對照 2026-09-10 版課綱第 38–41 頁；legisTaiwan 與 API 狀態為實測結果（查證日 2026-09-17）。</footer>
+      <div class="chap-foot" style="color:var(--text-faint);font-size:13.5px;">第二篇到此結束。第三篇「文本分析第一次實戰」尚未撰寫。</div>
     </section>
 
     <div class="pagemeta">
-      課程版本 v0.3（導論＋第一篇，含示範影片與示意圖）· 更新日 2026-09-17 · 查證日 2026-09-17<br>
+      課程版本 v0.4（導論＋第一、二篇）· 更新日 2026-09-17 · 查證日 2026-09-17<br>
       課程資料整理 © Jerry。課綱內容版權屬國立臺灣大學與授課教師；外部連結之文件與影片版權分屬各原創作者。
     </div>
   </main>
@@ -768,12 +1546,12 @@ data.frame(套件 = pkgs,
       ["04","套件管理","ch04",1]
     ]},
     {title:"第二篇 · R 語言最小必要集",items:[
-      ["05","物件、向量與資料框","",0],
-      ["06","讀檔與 tibble","",0],
-      ["07","管線與 dplyr 五動詞","",0],
-      ["08","字串處理 stringr","",0],
-      ["09","迴圈與 purrr","",0],
-      ["10","讀懂錯誤訊息","",0]
+      ["05","物件、向量與資料框","ch05",1],
+      ["06","讀檔與 tibble","ch06",1],
+      ["07","管線與 dplyr 五動詞","ch07",1],
+      ["08","字串處理 stringr","ch08",1],
+      ["09","迴圈與 purrr","ch09",1],
+      ["10","讀懂錯誤訊息","ch10",1]
     ]},
     {title:"第三篇 · 文本分析實戰",items:[
       ["11","從 CSV 到 corpus","",0],
@@ -786,7 +1564,7 @@ data.frame(套件 = pkgs,
       ["16","GitHub Desktop 與 Classroom","",0],
       ["17","Positron","",0],
       ["18","reticulate 接 Python","",0],
-      ["19","除錯、求助與 AI 聲明","",0]
+      ["19","從 Lab 到期末論文的工作流","",0]
     ]},
     {title:"附錄",items:[
       ["A","快捷鍵速查","",0],
@@ -795,7 +1573,7 @@ data.frame(套件 = pkgs,
       ["D","環境安裝紀錄","",0]
     ]}
   ];
-  var order=['ch00','ch01','ch02','ch03','ch04'];
+  var order=['ch00','ch01','ch02','ch03','ch04','ch05','ch06','ch07','ch08','ch09','ch10'];
 
   var navbody=document.getElementById('navbody');
   groups.forEach(function(g){
