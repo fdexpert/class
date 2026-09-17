@@ -84,6 +84,12 @@
   .videobox .vhead{display:flex;align-items:center;gap:9px;padding:10px 14px;font-size:13.5px;font-weight:600;border-bottom:1px solid var(--border);}
   .videobox .vhead .play{color:var(--accent);} .videobox .vhead .seg{margin-left:auto;font-family:ui-monospace,monospace;font-size:11.5px;color:var(--text-faint);border:1px solid var(--border);border-radius:5px;padding:1px 7px;}
   .videobox .ph{padding:18px 16px;color:var(--text-dim);font-size:13.5px;}
+  .vthumb{position:relative;width:100%;aspect-ratio:16/9;background:#000 center/cover no-repeat;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .vthumb::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.30);}
+  .vthumb .vplay{position:relative;z-index:2;width:60px;height:60px;border-radius:50%;background:rgba(20,20,20,.7);border:2px solid #fff;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;padding-left:5px;}
+  .vthumb:hover .vplay{background:#c00;border-color:#c00;}
+  .vthumb .vopen{position:absolute;z-index:2;bottom:10px;right:12px;font-size:12px;color:#fff;background:rgba(0,0,0,.62);padding:4px 10px;border-radius:7px;}
+  .videobox .vcap{padding:8px 14px;font-size:12px;color:var(--text-faint);border-top:1px solid var(--border-soft);line-height:1.6;}
   .chap-foot{margin-top:30px;padding-top:16px;border-top:1px solid var(--border);}
   .nextlink{color:var(--accent);text-decoration:none;font-weight:600;cursor:pointer;}
   .nextlink .k{color:var(--text-faint);font-weight:400;margin-right:6px;}
@@ -181,6 +187,7 @@
 
       <h2 id="s00-how">6. 怎麼用這份教材</h2>
       <p>左側導覽切換章節，底部「下一章」或鍵盤 <span class="kbd">←</span> <span class="kbd">→</span> 翻頁，右上角切換深淺色。程式碼區塊右上角有複製鈕。</p>
+      <p>各章嵌入的示範影片<strong>都是英文</strong>。中文的 RStudio 教學影片不是沒有，但內容深度與版本新舊都對不上這門課的需求，與其硬塞，不如給你品質好的英文影片——它們都有自動字幕，YouTube 也能自動翻成中文。點縮圖會另開視窗並<strong>直接跳到該段落的時間點</strong>，不用自己找。影片是補充，不看也能讀完教材。</p>
       <p>最重要的一件事：<strong>每一段程式碼都要自己敲一遍</strong>，不要只用複製鈕。複製貼上學不會程式，打錯字才學得會——你會因此認識錯誤訊息，而認識錯誤訊息是這份教材真正想給你的能力。</p>
       <footer class="foot">課程需求對照 2026-09-10 版課綱（NTLDEV7191）整理；環境資訊為本機實測（查證日 2026-09-17）。</footer>
       <div class="chap-foot"><a class="nextlink" data-go="ch01"><span class="k">下一章 →</span> 01 · 四件工具的分工</a></div>
@@ -227,9 +234,12 @@
       <p>好消息是課綱明說「不要求 Git 經驗」，你會用 <strong>GitHub Desktop</strong>，一個圖形介面工具，不用背指令。第 16 章會完整走一遍。</p>
       <p>這裡先建立一個觀念：Git 管的是<strong>程式碼和文字檔的歷史</strong>，不是拿來存資料的雲端硬碟。把幾百 MB 的語料推上 GitHub 是新手最常犯的錯之一，第 16 章會教你用 <code>.gitignore</code> 擋掉。</p>
 
-      <div class="videobox pending">
-        <div class="vhead"><span class="play">▶</span> 影片示範 · 四件工具的關係 <span class="seg">待補</span></div>
-        <div class="ph">目前尚未找到品質與內容都合適的中文示範影片（查證日 2026-09-17）。找到後會補上並標註來源；不以不相關影片充數。</div>
+      <div class="videobox" data-vid="IJc2J-qewiU" data-start="0">
+        <div class="vhead"><span class="play">▶</span> 影片示範 · R 與 RStudio 的差別（英文，5 分 09 秒） <span class="seg">點縮圖開啟</span></div>
+        <div class="vthumb" role="button" tabindex="0" aria-label="播放影片：What's the Difference Between R and RStudio?" style="background-image:url('https://i.ytimg.com/vi/IJc2J-qewiU/hqdefault.jpg')">
+          <div class="vplay">▶</div><div class="vopen">在 YouTube 開啟 ↗</div>
+        </div>
+        <div class="vcap">「What's the Difference Between R and RStudio?」— Duke Center for Computational Thinking。除了 R 與 RStudio 的分工，後半也帶到套件的概念，可與第 4 章對照。英文發音、有自動字幕。版權屬原作者。</div>
       </div>
 
       <h2 id="s01-tab">6. 速查對照表</h2>
@@ -360,9 +370,12 @@
         <p>設定入口是 <strong>Tools → Global Options…</strong>，沒有 macOS 的 RStudio → Settings 路徑。所有快捷鍵把 <span class="kbd">Cmd</span> 換成 <span class="kbd">Ctrl</span>。另外 Windows 的預設編碼可能不是 UTF-8，第 (4) 項對 Windows 使用者<strong>特別關鍵</strong>，務必手動確認。</p>
       </div>
 
-      <div class="videobox pending">
-        <div class="vhead"><span class="play">▶</span> 影片示範 · RStudio 介面與設定 <span class="seg">待補</span></div>
-        <div class="ph">尚未找到內容與版本都對得上（RStudio 2026.09）的中文示範影片（查證日 2026-09-17）。找到後補上。</div>
+      <div class="videobox" data-vid="Kgwfuycn9_I" data-start="20">
+        <div class="vhead"><span class="play">▶</span> 影片示範 · RStudio 四大窗格與執行程式碼（英文，5 分 08 秒） <span class="seg">從 0:20 開始</span></div>
+        <div class="vthumb" role="button" tabindex="0" aria-label="播放影片：RStudio for beginners" style="background-image:url('https://i.ytimg.com/vi/Kgwfuycn9_I/hqdefault.jpg')">
+          <div class="vplay">▶</div><div class="vopen">在 YouTube 開啟 ↗</div>
+        </div>
+        <div class="vcap">「RStudio for beginners」— R Programming 101。直接跳到 0:20 的 Layout 段落；後續章節為 1:10 存檔、1:42 執行程式碼、3:11 資料物件，正好對應本章第 1 至 4 節。影片版本較舊，介面細節與 RStudio 2026.09 略有出入，但窗格配置一致。版權屬原作者。</div>
       </div>
 
       <h2 id="s02-p">7. 動手練習</h2>
@@ -418,6 +431,14 @@ list.files()  # 這個資料夾裡有什麼</pre></div>
         <p>它是純文字檔，記錄這個專案的設定（編碼、縮排、是否還原 workspace 等）。你不需要編輯它，但它會被 Git 一起管理，讓協作者拿到同樣的專案設定。</p>
       </div>
       <p>確認一下：專案開啟後在 Console 打 <code>getwd()</code>，回傳的應該正是專案資料夾。</p>
+
+      <div class="videobox" data-vid="MdTtTN8PUqU" data-start="0">
+        <div class="vhead"><span class="play">▶</span> 影片示範 · 為什麼要用 RStudio Project（英文，3 分 14 秒） <span class="seg">點縮圖開啟</span></div>
+        <div class="vthumb" role="button" tabindex="0" aria-label="播放影片：Using RStudio projects" style="background-image:url('https://i.ytimg.com/vi/MdTtTN8PUqU/hqdefault.jpg')">
+          <div class="vplay">▶</div><div class="vopen">在 YouTube 開啟 ↗</div>
+        </div>
+        <div class="vcap">「Using RStudio projects」— Equitable Equations。三分鐘講完 Project 如何讓工作變得有組織、可攜帶、可重現，論點與本章第 2 節一致。版權屬原作者。</div>
+      </div>
 
       <h2 id="s03-struct">4. 資料夾結構</h2>
       <p>在專案裡建立以下四個子資料夾。可以用 Files 面板的 New Folder 按鈕，也可以直接在 Console 執行：</p>
@@ -505,6 +526,14 @@ d &lt;- readr::read_csv(here("data", "立法院質詢_第11屆.csv"))</pre></div
       </table></div>
       <p>GitHub 安裝的格式是 <code>"帳號/儲存庫"</code>。你在課程資料或論文裡看到某個套件時，可以先在 CRAN 搜尋，找不到再看作者的 GitHub。</p>
 
+      <div class="videobox" data-vid="GM6MCBkVNtQ" data-start="66">
+        <div class="vhead"><span class="play">▶</span> 影片示範 · 套件從哪裡來、怎麼裝（英文，20 分 31 秒） <span class="seg">從 1:06 開始</span></div>
+        <div class="vthumb" role="button" tabindex="0" aria-label="播放影片：How to install packages in R? What is CRAN?" style="background-image:url('https://i.ytimg.com/vi/GM6MCBkVNtQ/hqdefault.jpg')">
+          <div class="vplay">▶</div><div class="vopen">在 YouTube 開啟 ↗</div>
+        </div>
+        <div class="vcap">「How to install packages in R? What is CRAN? What is Bioconductor?」— Bioinformagician。從 1:06「Sources of R packages」開始看即可；<strong>13:03 的「Install package from Github」</strong>正是本課 flaiR、legisTaiwan、conText 的安裝方式，建議一併看。18:41 講套件存放位置。影片含 Bioconductor 段落，那是生物資訊的套件庫，本課用不到，可略過。版權屬原作者。</div>
+      </div>
+
       <h2 id="s04-list">3. 本課套件清單與出場週次</h2>
       <p>下表是這門課會用到的主要套件，依課綱週次排列。你的電腦上這些<strong>全部已經安裝並通過載入測試</strong>（2026-09-17，41/41）。</p>
       <div class="tablewrap"><table>
@@ -589,7 +618,7 @@ data.frame(套件 = pkgs,
     </section>
 
     <div class="pagemeta">
-      課程版本 v0.1（導論＋第一篇）· 更新日 2026-09-17 · 查證日 2026-09-17<br>
+      課程版本 v0.2（導論＋第一篇，四支示範影片）· 更新日 2026-09-17 · 查證日 2026-09-17<br>
       課程資料整理 © Jerry（d14741006.ntu@gmail.com）。課綱內容版權屬國立臺灣大學與授課教師；外部連結之文件與影片版權分屬各原創作者。
     </div>
   </main>
