@@ -1,49 +1,53 @@
-# class：文本即數據課程資料
+# class：課程資料彙整站
 
-「文本即數據：社會科學研究的計算方法」（國立臺灣大學國家發展研究所，115-1）的自學資料，含雙語互動課程手冊與 RStudio 課前教材。
+修課筆記、互動課程手冊與自製教材的彙整站。**每門課一個資料夾**，資料夾內自成一個小網站，彼此不互相依賴。
 
-## 閱讀
+正式站：https://fdexpert.github.io/class/
 
-- 首頁：https://fdexpert.github.io/class/
-- 雙語互動課程手冊：https://fdexpert.github.io/class/text-as-data-course.html
-- RStudio 入門課前教材：https://fdexpert.github.io/class/rstudio-intro.html
-- Vercel 鏡像（僅課程手冊，手動上傳、不自動更新）：https://text-as-data-course.vercel.app/
+## 收錄的課程
 
-**GitHub Pages 是本專案的唯一正式站**，上面四項內容都會隨 `main` 分支自動更新。Vercel 是早期以單檔部署的鏡像，未連接此儲存庫，只有課程手冊、沒有 RStudio 教材與練習語料；內容以 GitHub Pages 為準。
+### text-as-data — 文本即數據：社會科學研究的計算方法
 
-本機閱讀：以瀏覽器直接開啟對應的 `.html` 檔即可，不需安裝相依套件或進行建置。
+國立臺灣大學國家發展研究所，115-1（2026 秋季），2 學分，課號 NTLDEV7191。
 
-## 內容
+- 課程頁：https://fdexpert.github.io/class/text-as-data/
+- 雙語互動課程手冊：https://fdexpert.github.io/class/text-as-data/text-as-data-course.html
+- RStudio 入門課前教材：https://fdexpert.github.io/class/text-as-data/rstudio-intro.html
 
-### text-as-data-course.html — 雙語互動課程手冊
+內容詳見該資料夾。依 2026-09-17 版課綱整理。
 
-16 週課程索引與閱讀、作業、報告要求；中英文即時切換並保留目前週次與閱讀勾選；專有名詞提示、全文搜尋、文獻分隔閱讀窗；個人閱讀進度保留於瀏覽器，可匯出並列印課綱。
+## 目錄結構
 
-### rstudio-intro.html — RStudio 入門課前教材
+```
+class/
+├── index.html          課程清單（站台首頁）
+├── .nojekyll
+├── README.md
+├── text-as-data/       一門課一個資料夾
+│   ├── index.html         該課程首頁
+│   ├── text-as-data-course.html
+│   ├── rstudio-intro.html
+│   └── data/              該課程的資料與腳本
+└── <next-course>/      下一門課照樣擺
+```
 
-寫給零 R 基礎修課學生的課前準備教材，規劃四篇十九章約 8 小時，目前為 **v0.6，含導論與第一至三篇共 14 章，已對齊 2026-09-17 版課綱**（四件工具的分工、RStudio 介面與必改設定、Project 工作流、套件管理、向量與資料框、讀檔與 tibble、管線與 dplyr、stringr、purrr、讀懂錯誤訊息、從 CSV 到 corpus、中英文斷詞、dfm 與停用詞、描述統計與第一張圖），其餘章節在側欄顯示為待撰寫。深淺主題、章節路由、鍵盤翻頁、程式碼複製、Windows 操作差異逐章註記；十章各嵌一支已驗證的英文示範影片，點縮圖會跳到對應時間點；另含四張自繪示意圖（工具關係、RStudio 窗格配置、專案資料夾結構、除錯分流），未使用任何軟體截圖；所有 R 程式碼與輸出均在 R 4.6.1 實機執行驗證。教材內容不含特定機器的路徑或個人資訊，可直接分享給同學。
+根目錄另有兩個轉址檔 `text-as-data-course.html` 與 `rstudio-intro.html`，以及 `data/index.html`，用來讓 2026-09-18 目錄調整前分享出去的舊網址繼續可用。新連結請一律使用 `text-as-data/` 底下的路徑。
 
-**2026-09-17 課綱改版後的重點差異**：課後 Lab 改為不計分的自主練習；四項計分作業（摘要 10%、期中研究設計 20%、海報 25%、期末論文 25%）一律使用課程 LaTeX 範本、透過各自獨立的 Overleaf 專案繳交並開放 Editor 權限，Quarto 不得作為計分文件格式；技術問題改以 NTU COOL 討論區為主要管道；16 週中有 4 週停課（中秋、國慶補假、校慶、行憲），實際授課 11 週。
+## 新增一門課程
 
-### data/ — 練習語料
+1. 建立課程資料夾，名稱用小寫英文與連字號（例如 `research-methods`）。
+2. 放入該課程的 `index.html` 與內容檔；課程資料夾內部一律使用相對路徑。
+3. 編輯根目錄 `index.html`，複製一張課程卡片（標示為 `===== 課程卡片 =====` 的區塊），改掉標題、連結、學期與說明，並更新頁面上方的課程數。
+4. 在本 README 的「收錄的課程」新增一節。
 
-立法院第 11 屆書面質詢 162 筆（第 1–3 會期、28 位委員），取自立法院開放資料 API v2，含事由與完整說明（平均 617 字）。
-
-- `立法院質詢_第11屆.csv` — 語料本體
-- `fetch-corpus.R` — 取材腳本（可重新抓取或調整範圍）
-- `pipeline-demo.R` — 清理、jieba 斷詞、建立 dfm、詞頻的完整示範
-- `quanteda-pipeline.R` — 教材第三篇的全部程式碼（corpus、ICU 與 jieba 斷詞對照、自訂詞典、dfm、tf-idf、keyness、ggplot 出圖）
-
-注意：授課教師維護的 `legisTaiwan` 套件在 2026-09-17 實測時，`get_ly_interpellations()` 等函數回傳 HTTP 404（套件內部端點與現行 API 不一致），底層 API 本身正常，因此取材腳本直接呼叫 API v2。
+課程資料夾彼此獨立，刪掉任何一個都不影響其他課。
 
 ## 部署與更新
 
-GitHub Pages 使用 `main` 分支根目錄，`.nojekyll` 表示直接發布靜態檔案。更新對應 HTML 並提交到 `main` 後會自動發布。HTML 均已內嵌資料、樣式與程式，不依賴 CDN。
+GitHub Pages 使用 `main` 分支根目錄，`.nojekyll` 表示直接發布靜態檔案。提交到 `main` 後會自動發布。所有 HTML 均已內嵌資料、樣式與程式，不依賴 CDN 或建置流程。
 
-Vercel 站未連接本儲存庫，推送不會同步過去；若要更新該鏡像，需自行重新上傳課程手冊的單一 HTML 檔。
+另有一個早期的 Vercel 鏡像 `text-as-data-course.vercel.app`，只有「文本即數據」的課程手冊、未連接本儲存庫，推送不會同步過去；若要更新該鏡像需自行重新上傳單一 HTML 檔。內容一律以 GitHub Pages 為準。
 
-## 來源及限制
+## 權利
 
-課程資料依 2026-09-17 版英文課綱整理，中文為編者翻譯、非官方譯本，以英文原文為準；名詞解釋與教材內容為編者補充，不代表授課教師的額外要求。原課綱的週次與截止日矛盾已保留提示，實際要求以授課教師公告為準。
-
-DOI 與文獻原站需要連網；部分出版社禁止嵌入，請使用「另開原站」。立法院質詢資料為政府開放資料，著作權依其原始授權條款。原課綱及所引用文獻的權利歸各自權利人所有；本專案未另行授予其內容的再授權。
+各課程之課綱、教材與所引用文獻的權利歸各自權利人所有；本站未另行授予其內容的再授權。課程資料整理 © Jerry。

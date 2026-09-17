@@ -1,0 +1,2162 @@
+<!DOCTYPE html>
+<!--
+  RStudio 入門 · 文本即數據課前教材（單檔互動課程）
+  版本 v0.1（第一篇）· 2026-09-17
+-->
+<html lang="zh-Hant" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RStudio 入門 · 文本即數據課前教材</title>
+<style>
+  :root{
+    --bg:#0f1115; --bg-elev:#151922; --surface:#171c26; --surface-2:#1d2330;
+    --text:#e6e9ef; --text-dim:#aab2c0; --text-faint:#7c8696;
+    --border:#28303f; --border-soft:#23283a;
+    --accent:#3794ff; --accent-soft:#1f4d7a;
+    --ok:#3fb950; --warn:#d29922; --danger:#f85149;
+    --code-bg:#11151d;
+  }
+  html[data-theme="light"]{
+    --bg:#f5f6f8; --bg-elev:#eceef2; --surface:#ffffff; --surface-2:#f3f5f8;
+    --text:#1b2430; --text-dim:#4a5566; --text-faint:#7c8696;
+    --border:#dce0e8; --border-soft:#e6e9ef;
+    --accent:#0a66c2; --accent-soft:#cfe2f7;
+    --ok:#1a7f37; --warn:#9a6700; --danger:#cf222e;
+    --code-bg:#f3f5f8;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Microsoft JhengHei",sans-serif;
+    line-height:1.7;font-size:16px;-webkit-font-smoothing:antialiased;}
+  a{color:var(--accent);}
+  #bar{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:60;transition:width .1s;}
+  .wrap{display:flex;min-height:100vh;}
+  nav.side{width:280px;flex:0 0 280px;background:var(--bg-elev);border-right:1px solid var(--border);
+    position:sticky;top:0;height:100vh;overflow-y:auto;padding:18px 0 40px;}
+  nav.side .brand{font-weight:700;font-size:15px;padding:6px 20px 14px;color:var(--text);display:flex;align-items:center;gap:8px;}
+  nav.side .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);flex:0 0 auto;}
+  .nav-group{margin:10px 0;}
+  .nav-group .gtitle{font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--text-faint);padding:6px 20px;}
+  nav.side a.item{display:flex;gap:9px;padding:7px 20px;font-size:13.7px;color:var(--text-dim);text-decoration:none;cursor:pointer;border-left:2px solid transparent;}
+  nav.side a.item:hover{background:var(--surface);color:var(--text);}
+  nav.side a.item.active{color:var(--accent);border-left-color:var(--accent);background:var(--surface);}
+  nav.side a.item .num{font-family:ui-monospace,monospace;font-size:12px;color:var(--text-faint);min-width:22px;}
+  nav.side a.item.soon{opacity:.5;cursor:not-allowed;}
+  main{flex:1;min-width:0;padding:34px 46px 90px;max-width:980px;}
+  .topbar{display:flex;align-items:center;gap:12px;margin-bottom:22px;}
+  .menubtn{display:none;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 11px;cursor:pointer;font-size:15px;}
+  .themebtn{margin-left:auto;border:1px solid var(--border);border-radius:8px;padding:6px 13px;cursor:pointer;font-size:13px;font-weight:600;
+    background:var(--text);color:var(--bg);}
+  section.chapter{display:none;}
+  section.chapter.show{display:block;animation:fade .25s;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .crumb{font-size:12.5px;color:var(--text-faint);letter-spacing:.03em;margin-bottom:6px;}
+  h1.ch{font-size:30px;line-height:1.25;margin:0 0 10px;}
+  h2{font-size:21px;margin:30px 0 10px;padding-top:6px;}
+  h3{font-size:16.5px;margin:20px 0 6px;color:var(--text);}
+  .lead{font-size:17px;color:var(--text-dim);margin:0 0 18px;}
+  .pagetoc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin:18px 0;}
+  .pagetoc .tt{font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-faint);margin-bottom:6px;}
+  .pagetoc a{display:inline-block;margin:3px 12px 3px 0;font-size:13.5px;color:var(--text-dim);text-decoration:none;}
+  .pagetoc a:hover{color:var(--accent);}
+  .callout{border:1px solid var(--border);border-left-width:3px;border-radius:9px;padding:12px 15px;margin:16px 0;background:var(--surface);}
+  .callout .ct{font-weight:700;font-size:13.5px;margin-bottom:3px;}
+  .callout.note{border-left-color:var(--accent);} .callout.tip{border-left-color:var(--ok);}
+  .callout.warn{border-left-color:var(--warn);} .callout.example{border-left-color:var(--accent-soft);}
+  .callout.win{border-left-color:var(--danger);}
+  .callout p{margin:4px 0;font-size:14.5px;color:var(--text-dim);}
+  .callout code{background:var(--code-bg);padding:1px 5px;border-radius:4px;font-size:13px;}
+  .codeblock{position:relative;background:var(--code-bg);border:1px solid var(--border);border-radius:9px;margin:14px 0;overflow:hidden;}
+  .codeblock .lang{display:inline-block;font-size:11.5px;color:var(--text-faint);padding:7px 12px 0;font-family:ui-monospace,monospace;}
+  .codeblock .copyb{position:absolute;top:6px;right:8px;background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);
+    border-radius:6px;font-size:12px;padding:3px 9px;cursor:pointer;}
+  .codeblock .copyb.done{color:var(--ok);border-color:var(--ok);}
+  .codeblock pre{margin:4px 0 0;padding:6px 14px 14px;overflow-x:auto;font-family:ui-monospace,"SFMono-Regular",monospace;font-size:13px;line-height:1.6;color:var(--text);}
+  p code, li code, td code{background:var(--code-bg);border:1px solid var(--border-soft);padding:1px 5px;border-radius:4px;font-size:13.5px;font-family:ui-monospace,monospace;overflow-wrap:anywhere;}
+  .tablewrap{overflow-x:auto;margin:14px 0;}
+  table{border-collapse:collapse;width:100%;font-size:13.7px;}
+  th,td{border:1px solid var(--border);padding:7px 10px;text-align:left;vertical-align:top;}
+  th{background:var(--surface);color:var(--text);}
+  .practice{background:var(--surface);border:1px dashed var(--border);border-radius:9px;padding:6px 16px;margin:16px 0;}
+  .diagram{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin:18px 0;padding:14px 16px 10px;}
+  .diagram svg{display:block;width:100%;height:auto;}
+  .diagram .dcap{font-size:12.5px;color:var(--text-faint);margin-top:9px;padding-top:8px;border-top:1px solid var(--border-soft);}
+  .diagram pre{margin:2px 0;font-family:ui-monospace,"SFMono-Regular",monospace;font-size:12.5px;line-height:1.55;
+    color:var(--text-dim);overflow-x:auto;white-space:pre;}
+  .diagram pre b{color:var(--accent);font-weight:600;}
+  .diagram pre i{color:var(--text-faint);font-style:normal;}
+  svg .dbox{fill:var(--surface-2);stroke:var(--border);stroke-width:1;}
+  svg .dbox-hi{fill:var(--surface-2);stroke:var(--accent);stroke-width:1.5;}
+  svg .dbar{fill:var(--bg-elev);stroke:var(--border);stroke-width:1;}
+  svg .dt{fill:var(--text);font-size:13px;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,"PingFang TC",sans-serif;}
+  svg .ds{fill:var(--text-dim);font-size:11.5px;font-family:-apple-system,BlinkMacSystemFont,"PingFang TC",sans-serif;}
+  svg .dk{fill:var(--text-faint);font-size:10.5px;font-family:ui-monospace,monospace;}
+  svg .dacc{fill:var(--accent);font-size:11.5px;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,"PingFang TC",sans-serif;}
+  svg .dline{stroke:var(--accent);stroke-width:1.6;fill:none;}
+  svg .dline-soft{stroke:var(--text-faint);stroke-width:1.2;fill:none;stroke-dasharray:4 3;}
+  svg .ddot{fill:var(--accent);}
+  .videobox{display:block;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:20px 0;background:var(--surface);}
+  .videobox.pending{background:var(--bg-elev);border-style:dashed;}
+  .videobox .vhead{display:flex;align-items:center;gap:9px;padding:10px 14px;font-size:13.5px;font-weight:600;border-bottom:1px solid var(--border);}
+  .videobox .vhead .play{color:var(--accent);} .videobox .vhead .seg{margin-left:auto;font-family:ui-monospace,monospace;font-size:11.5px;color:var(--text-faint);border:1px solid var(--border);border-radius:5px;padding:1px 7px;}
+  .videobox .ph{padding:18px 16px;color:var(--text-dim);font-size:13.5px;}
+  .vthumb{position:relative;width:100%;aspect-ratio:16/9;background:#000 center/cover no-repeat;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .vthumb::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.30);}
+  .vthumb .vplay{position:relative;z-index:2;width:60px;height:60px;border-radius:50%;background:rgba(20,20,20,.7);border:2px solid #fff;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;padding-left:5px;}
+  .vthumb:hover .vplay{background:#c00;border-color:#c00;}
+  .vthumb .vopen{position:absolute;z-index:2;bottom:10px;right:12px;font-size:12px;color:#fff;background:rgba(0,0,0,.62);padding:4px 10px;border-radius:7px;}
+  .videobox .vcap{padding:8px 14px;font-size:12px;color:var(--text-faint);border-top:1px solid var(--border-soft);line-height:1.6;}
+  .chap-foot{margin-top:30px;padding-top:16px;border-top:1px solid var(--border);}
+  .nextlink{color:var(--accent);text-decoration:none;font-weight:600;cursor:pointer;}
+  .nextlink .k{color:var(--text-faint);font-weight:400;margin-right:6px;}
+  .foot{margin-top:24px;font-size:12.5px;color:var(--text-faint);}
+  .pagemeta{margin-top:40px;padding:14px 0 0;border-top:1px solid var(--border);font-size:12px;color:var(--text-faint);}
+  .kbd{display:inline-block;border:1px solid var(--border);border-bottom-width:2px;border-radius:5px;padding:1px 6px;font-family:ui-monospace,monospace;font-size:12.5px;background:var(--surface-2);}
+  #scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:40;}
+  @media(max-width:860px){
+    nav.side{position:fixed;left:0;top:0;z-index:50;transform:translateX(-100%);transition:transform .2s;}
+    nav.side.open{transform:none;}
+    #scrim.open{display:block;}
+    .menubtn{display:inline-block;}
+    main{padding:20px 18px 80px;}
+    h1.ch{font-size:25px;}
+    .diagram{overflow-x:auto;}
+    .diagram svg{min-width:600px;}
+    .diagram .dcap,.diagram pre{min-width:0;}
+    .diagram .dcap::before{content:"（圖可左右滑動）";display:block;color:var(--accent);margin-bottom:4px;}
+    }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div class="wrap">
+  <nav class="side" id="side">
+    <div class="brand"><span class="dot"></span>RStudio 入門 · 文本即數據</div>
+    <div id="navbody"></div>
+  </nav>
+
+  <main>
+    <div class="topbar">
+      <button class="menubtn" id="menuBtn" aria-label="選單">☰</button>
+      <button class="themebtn" id="themeBtn">☀️ 淺色</button>
+    </div>
+
+    <!-- ===================== 導論 ===================== -->
+    <section class="chapter" id="ch00">
+      <div class="crumb">導論</div>
+      <h1 class="ch">課程定位與學習地圖</h1>
+      <p class="lead">這份教材的唯一目的：讓你在「文本即數據」第一堂課走進教室時，筆電上的環境是好的、手是熱的，聽得懂老師在講哪一層。</p>
+      <div class="pagetoc"><div class="tt">本頁章節</div>
+        <a href="#s00-who">適合誰</a><a href="#s00-why">為什麼需要這份教材</a><a href="#s00-req">課程的硬性要求</a><a href="#s00-map">課程地圖</a><a href="#s00-case">貫穿範例</a><a href="#s00-env">環境與版本</a><a href="#s00-how">怎麼用</a>
+      </div>
+
+      <h2 id="s00-who">1. 適合誰</h2>
+      <p>寫給修習國立臺灣大學國家發展研究所「文本即數據：社會科學研究的計算方法」（115-1）而<strong>完全沒寫過 R</strong> 的研究生。你可能用過 SPSS、Stata，或只用過 Excel，甚至完全沒碰過任何程式語言——都沒關係，這份教材從「什麼是 Console」開始講。</p>
+      <p>如果你有 Python 經驗，第二篇可以跳著讀，但請不要跳過第三章的 Project 工作流，那是 R 社群和 Python 習慣差最多的地方。</p>
+
+      <h2 id="s00-why">2. 為什麼需要這份教材</h2>
+      <p>課綱的「先備知識」寫得很直接：具備 R 使用經驗與基本程式設計能力，能自在執行一些 Python 程式碼，能自在使用 RStudio 或 Positron。<strong>第 1 週不需要安裝任何軟體、也沒有程式練習</strong>，環境設定指南會在第 2 週前提供——但第 2 週的 Lab 就要一口氣完成安裝套件、建立專案、設定 GitHub Desktop、複製課程儲存庫、還要在 Overleaf 編譯出一份 LaTeX PDF。到了第 4 週，就直接用 quanteda 從語料庫做到 token 與 DFM。</p>
+      <p>換句話說，這門課把 R 當成<strong>已經會的工具</strong>，把課堂時間留給方法論。工具不熟的人會在第 3 到第 5 週之間迅速掉隊——不是因為聽不懂主題模型，而是因為卡在讀不進檔案、中文變亂碼、套件裝不起來這些跟課程內容無關的事。這份教材就是要把那些事提前解決掉。</p>
+      <div class="callout note"><div class="ct">▍這份教材不教什麼</div>
+        <p>不教統計、不教文本分析方法本身、不教主題模型怎麼解讀——那些是課堂的事。這裡只處理「手」的問題：怎麼把想法變成能跑的程式碼，怎麼把結果變成可以交出去的檔案。</p>
+      </div>
+
+      <h2 id="s00-req">3. 課程的硬性要求</h2>
+      <p>工具要學到什麼程度，是由課程要求決定的。下表整理 2026-09-17 版課綱的評分項目，每一項後面標出它對工具能力的實際要求。</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:24%">項目</th><th style="width:8%">佔比</th><th style="width:24%">截止</th><th>對工具的要求</th></tr></thead>
+        <tbody>
+          <tr><td>研究論文摘要</td><td>10%</td><td>10/23（W7）23:59</td><td>Overleaf ＋ LaTeX 範本；英文 1,000 字內</td></tr>
+          <tr><td>期中研究設計報告</td><td>20%</td><td>12/4（W13）23:59</td><td>同上；10 頁 / 2,500 字內；此時你的分析要跑得出初步結果</td></tr>
+          <tr><td>課堂參與</td><td>20%</td><td>整學期</td><td>NTU COOL 討論區與 GitHub Issues 的提問與回答也計入</td></tr>
+          <tr><td>期末海報發表</td><td>25%</td><td>12/18（W15）課堂</td><td>PolMeth 海報規範；LaTeX 範本 ＋ Overleaf；5 分鐘概述</td></tr>
+          <tr><td>期末研究論文</td><td>25%</td><td>待公告（NTU COOL）</td><td>PSRM 風格 Research Note；4,000 字內；<strong>另附 GitHub 或 CodeOcean 可重現儲存庫</strong></td></tr>
+        </tbody>
+      </table></div>
+      <div class="callout warn"><div class="ct">▍三件最容易誤解的事</div>
+        <p><strong>一、課後 Lab 不計分。</strong>它是自主練習，不是獨立的計分項目——但期中與期末合計 45% 要你真的跑得動分析，Lab 是唯一的練習場。</p>
+        <p><strong>二、繳交走 Overleaf，不是 GitHub。</strong>四項計分作業都用課程提供的 LaTeX 範本，各自獨立的 Overleaf 專案，權限要開到 Editor（只給 View 不算）。Quarto 只能當你自己的分析筆記本，<strong>不能當計分文件的格式</strong>。</p>
+        <p><strong>三、第 1 週不用裝任何軟體。</strong>環境設定指南第 2 週前才提供，但第 2 週的 Lab 就要一次完成套件安裝、專案建立、GitHub Desktop 設定、clone 課程儲存庫、Overleaf 編譯 PDF。這份教材的第一、二篇就是為了讓你那天不手忙腳亂。</p>
+      </div>
+      <div class="callout note"><div class="ct">▍16 週裡有 4 週停課</div>
+        <p>W3 中秋節、W5 國慶日補假、W11 臺大校慶運動會、W16 行憲紀念日。<strong>實際授課只有 11 週</strong>，而進度表沒有因此變鬆——W4 一次講完斷詞、DFM、字典法與情緒分析。這是提前準備工具的另一個理由。</p>
+      </div>
+
+      <h2 id="s00-map">4. 課程地圖</h2>
+      <p>全課約 8 小時，設計成分四次消化，每次約 2 小時。建議不要一天讀完；第二篇之後的內容需要你實際敲過鍵盤才會留下來。</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:23%">篇章</th><th style="width:10%">時數</th><th>內容與目的</th></tr></thead>
+        <tbody>
+          <tr><td><strong>第一篇 · 建立地基</strong><br>01–04</td><td>約 2 小時</td><td>各個工具的分工（含 Overleaf 為何才是交件窗口）、RStudio 介面與必改設定、Project 工作流、套件管理。讀完你的環境不會再出現「檔案找不到」「中文亂碼」這類問題。</td></tr>
+          <tr><td><strong>第二篇 · R 語言最小必要集</strong><br>05–10</td><td>約 2.5 小時</td><td>物件與向量、讀檔與 tibble、管線與 dplyr、字串處理、purrr，最後一章專講怎麼讀懂錯誤訊息與求助（含課程的 AI 聲明規定）。只教文本分析會用到的部分，刻意不教物件導向與 base 繪圖。</td></tr>
+          <tr><td><strong>第三篇 · 文本分析第一次實戰</strong><br>11–14</td><td>約 1.5 小時</td><td>從 CSV 到 corpus、英文與中文斷詞、dfm 與停用詞、第一張圖。等於把課程第 4 週的 Lab 先預演一次。</td></tr>
+          <tr><td><strong>第四篇 · 交付與協作</strong><br>15–19</td><td>約 2 小時</td><td>Quarto 分析筆記本、Overleaf 與 LaTeX 繳交流程、GitHub Desktop 與課程儲存庫、Positron、reticulate 接 Python。對應摘要、期中研究設計、海報與期末論文的實際繳交要求。</td></tr>
+          <tr><td><strong>附錄</strong><br>A–D</td><td>查閱用</td><td>快捷鍵速查、Windows 操作對照、課前自我檢查清單、環境安裝紀錄。</td></tr>
+        </tbody>
+      </table></div>
+      <div class="callout tip"><div class="ct">▍目前進度</div>
+        <p>你現在看到的是 <strong>v0.6，包含導論與第一至三篇（共 14 章）</strong>。第四篇與附錄在側欄顯示為灰色，尚未撰寫。</p>
+        <p><strong>本版已依 2026-09-17 更新版課綱全面校對</strong>：評分項目、繳交管道（改為 Overleaf）、課後 Lab 定位、求助管道與週次對應皆已更新。若你讀過 9 月 17 日以前的版本，這些地方都變了。</p>
+      </div>
+
+      <h2 id="s00-case">5. 貫穿範例：立法院書面質詢</h2>
+      <p>全課程用同一份真實資料串起來：<strong>立法院第 11 屆書面質詢 162 筆</strong>，取自立法院開放資料 API，涵蓋第 1 至第 3 會期、28 位委員，每筆有「事由」（一句話摘要）與「說明」（完整質詢內容，平均 617 字）。</p>
+      <p>選這份資料有三個理由。第一，它是中文，你會真實遇到中文斷詞的問題，而不是拿英文範例練完、上課換中文就傻眼。第二，它是政治文本，正好是課程第 12 週建議的期末題目方向之一（台灣立法行為、立法演說分析）。第三，它<strong>不乾淨</strong>——原始 PDF 排版在漢字之間塞了空白，會出現「造成許多觀光客抱怨臺灣政策之反覆與延宕」被拆成「造 成 許 多 觀 光 客」的狀況。真實資料就長這樣，我們會在第三篇正面處理它。</p>
+      <div class="callout warn"><div class="ct">▍關於 legisTaiwan 套件</div>
+        <p>授課教師維護的 <code>legisTaiwan</code> 套件原本是抓這份資料最方便的方式，但 <strong>2026-09-17 實測，它的 <code>get_ly_interpellations()</code> 與 <code>get_ly_legislators_by_term()</code> 都回傳 HTTP 404</strong>，套件內部呼叫的端點與現行 API 已不一致。底層 API（<code>ly.govapi.tw/v2</code>）本身正常。因此本教材的取材腳本改為直接呼叫 API。這件事本身就是很好的一課：<strong>套件會壞，API 會變，你要有能力判斷是誰壞了</strong>。第十章會教你怎麼做這個判斷。</p>
+      </div>
+
+      <h2 id="s00-env">6. 環境與版本</h2>
+      <p>教材中的每一段程式碼都在下列環境實際執行並驗證過（macOS，Apple Silicon，2026-09-17）。版本不必完全一致，但如果你的 R 明顯較舊（例如 4.1 以下），部分寫法會不適用。</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>項目</th><th>版本</th><th>用途</th></tr></thead>
+        <tbody>
+          <tr><td>R</td><td>4.6.1 (2026-06-24)</td><td>運算引擎</td></tr>
+          <tr><td>RStudio</td><td>2026.09.0+174</td><td>主要開發環境</td></tr>
+          <tr><td>Positron</td><td>1.130.0</td><td>備選 IDE（第 17 章）</td></tr>
+          <tr><td>Quarto</td><td>1.10.18</td><td>可重現報告，出 PDF</td></tr>
+          <tr><td>TinyTeX</td><td>透過 <code>quarto install tinytex</code></td><td>Quarto 出 PDF 的排版引擎</td></tr>
+          <tr><td>GitHub Desktop</td><td>最新版</td><td>作業繳交</td></tr>
+          <tr><td>R 套件</td><td>41 個</td><td>quanteda 家族、stm、jiebaR、conText、flaiR、legisTaiwan 等，清單見第 4 章</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="s00-how">7. 怎麼用這份教材</h2>
+      <p>左側導覽切換章節，底部「下一章」或鍵盤 <span class="kbd">←</span> <span class="kbd">→</span> 翻頁，右上角切換深淺色。程式碼區塊右上角有複製鈕。</p>
+      <p>各章嵌入的示範影片<strong>都是英文</strong>。中文的 RStudio 教學影片不是沒有，但內容深度與版本新舊都對不上這門課的需求，與其硬塞，不如給你品質好的英文影片——它們都有自動字幕，YouTube 也能自動翻成中文。點縮圖會另開視窗並<strong>直接跳到該段落的時間點</strong>，不用自己找。影片是補充，不看也能讀完教材。</p>
+      <p>最重要的一件事：<strong>每一段程式碼都要自己敲一遍</strong>，不要只用複製鈕。複製貼上學不會程式，打錯字才學得會——你會因此認識錯誤訊息，而認識錯誤訊息是這份教材真正想給你的能力。</p>
+      <footer class="foot">課程需求對照 <strong>2026-09-17 版課綱</strong>（NTLDEV7191，46 頁）整理；環境與版本資訊為實機測試結果（查證日 2026-09-18）。</footer>
+      <div class="chap-foot"><a class="nextlink" data-go="ch01"><span class="k">下一章 →</span> 01 · 工具的分工</a></div>
+    </section>
+
+    <!-- ===================== ch01 ===================== -->
+    <section class="chapter" id="ch01">
+      <div class="crumb">第一篇 · 建立地基 / 01</div>
+      <h1 class="ch">R、RStudio、Quarto、GitHub、Overleaf：工具的分工</h1>
+      <p class="lead">本章目標：搞懂這幾個工具各自負責什麼、哪一個才是真正的交件窗口，以後看到錯誤訊息也才知道該去哪裡找。</p>
+      <div class="pagetoc"><div class="tt">本頁章節</div>
+        <a href="#s01-why">為什麼要先講這個</a><a href="#s01-r">R 是引擎</a><a href="#s01-rs">RStudio 是駕駛艙</a><a href="#s01-q">Quarto 是排版廠</a><a href="#s01-gh">GitHub 的角色</a><a href="#s01-ol">Overleaf</a><a href="#s01-tab">速查對照表</a><a href="#s01-p">動手練習</a><a href="#s01-s">本章小結</a>
+      </div>
+
+      <h2 id="s01-why">1. 為什麼要先講這個</h2>
+      <p>新手最常見的困惑不是「這行程式碼怎麼寫」，而是「我到底該在哪裡打這行字」。有人在終端機裡打 R 的指令，有人在 R 的 Console 裡打 <code>brew install</code>，然後對著錯誤訊息發呆。這些困惑的根源都一樣：分不清楚這幾個東西的界線。</p>
+      <p>先把界線畫清楚，後面十八章都會輕鬆很多。</p>
+
+      <div class="diagram">
+        <svg viewBox="0 0 800 300" role="img" aria-label="工具關係圖：你在 RStudio 或 Positron 寫程式碼，送去 R 執行；分析結果用 Quarto 整理成筆記本，正式書面作業與海報用 LaTeX 範本在 Overleaf 撰寫並繳交；GitHub Desktop 用來取得課程教材與存放可重現程式碼">
+          <defs><marker id="ah" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+            <path d="M0,0 L7,3 L0,6 Z" fill="var(--accent)"/></marker>
+            <marker id="ah2" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+            <path d="M0,0 L7,3 L0,6 Z" fill="var(--text-faint)"/></marker>
+          </defs>
+
+          <rect class="dbox" x="8" y="26" width="150" height="62" rx="8"/>
+          <text class="dt" x="83" y="52" text-anchor="middle">你</text>
+          <text class="ds" x="83" y="72" text-anchor="middle">寫程式碼、看結果</text>
+
+          <rect class="dbox-hi" x="196" y="16" width="184" height="82" rx="8"/>
+          <text class="dt" x="288" y="42" text-anchor="middle">RStudio／Positron</text>
+          <text class="ds" x="288" y="62" text-anchor="middle">駕駛艙 · IDE</text>
+          <text class="dk" x="288" y="82" text-anchor="middle">編輯 / 送出 / 顯示</text>
+
+          <rect class="dbox-hi" x="424" y="16" width="160" height="82" rx="8"/>
+          <text class="dt" x="504" y="42" text-anchor="middle">R</text>
+          <text class="ds" x="504" y="62" text-anchor="middle">引擎 · 真正在算的</text>
+          <text class="dk" x="504" y="82" text-anchor="middle">套件裝在這裡</text>
+
+          <rect class="dbox" x="628" y="26" width="164" height="62" rx="8"/>
+          <text class="dt" x="710" y="52" text-anchor="middle">套件</text>
+          <text class="dk" x="710" y="72" text-anchor="middle">quanteda · stm · jiebaR</text>
+
+          <path class="dline" d="M158,50 L190,50" marker-end="url(#ah)"/>
+          <path class="dline" d="M380,42 L418,42" marker-end="url(#ah)"/>
+          <path class="dline-soft" d="M418,74 L382,74" marker-end="url(#ah2)"/>
+          <text class="dk" x="400" y="34" text-anchor="middle">送出</text>
+          <text class="dk" x="400" y="92" text-anchor="middle">結果</text>
+          <path class="dline-soft" d="M584,57 L622,57" marker-end="url(#ah2)"/>
+
+          <path class="dline" d="M288,98 L288,150" marker-end="url(#ah)"/>
+          <rect class="dbox" x="180" y="158" width="216" height="72" rx="8"/>
+          <text class="dt" x="288" y="184" text-anchor="middle">Quarto ／ Overleaf</text>
+          <text class="ds" x="288" y="203" text-anchor="middle">分析筆記本 ／ LaTeX 繳交</text>
+          <text class="dk" x="288" y="221" text-anchor="middle">計分文件一律走 LaTeX</text>
+
+          <path class="dline" d="M396,194 L448,194" marker-end="url(#ah)"/>
+          <rect class="dbox" x="456" y="158" width="216" height="72" rx="8"/>
+          <text class="dt" x="564" y="184" text-anchor="middle">GitHub Desktop</text>
+          <text class="ds" x="564" y="203" text-anchor="middle">版本紀錄與繳交</text>
+          <text class="dk" x="564" y="221" text-anchor="middle">課程教材 · 可重現程式碼</text>
+
+          <text class="dacc" x="8" y="268">上排＝寫程式的迴圈（每天幾百次）</text>
+          <text class="dacc" x="8" y="288">下排＝交件的路徑（每份繳交一次）</text>
+        </svg>
+        <div class="dcap">工具的分工。實線是你主動觸發的動作，虛線是自動回流的結果。注意：套件掛在 R 底下，不是掛在 RStudio 底下——換 IDE 不用重裝套件，換 R 版本才要。</div>
+      </div>
+
+      <h2 id="s01-r">2. R 是引擎</h2>
+      <p>R 是一個程式語言，也是執行這個語言的程式。它本身沒有漂亮的介面——你可以在終端機打 <code>R</code> 直接啟動它，看到的就是一個 <code>&gt;</code> 提示符號，你打指令、它算給你看，如此而已。</p>
+      <div class="codeblock"><span class="lang">terminal</span><button class="copyb">複製</button><pre>R --version
+# R version 4.6.1 (2026-06-24) -- "Great Square Root"</pre></div>
+      <p>所有真正的運算——讀檔案、算詞頻、跑主題模型——都是 R 在做。套件（package）也是裝在 R 裡面，不是裝在 RStudio 裡面。這個觀念很重要：<strong>你換 IDE，套件不用重裝；你換 R 版本，套件要重裝</strong>。</p>
+      <div class="callout note"><div class="ct">▍你的 R 裝在哪</div>
+        <p>macOS 上官方版 R 裝在 <code>/Library/Frameworks/R.framework/</code>，指令在 <code>/usr/local/bin/R</code>。套件裝在 <code>/Library/Frameworks/R.framework/Versions/4.6/Resources/library</code>。這條路徑之後排查問題時會用到。</p>
+      </div>
+
+      <h2 id="s01-rs">3. RStudio 是駕駛艙</h2>
+      <p>RStudio 是一個 IDE（整合開發環境）。它自己不會算任何東西，它做的事情是：幫你編輯程式碼、把你的程式碼送去給 R 執行、把 R 吐回來的結果排版顯示、順便管理你的檔案、畫圖、查說明文件。</p>
+      <p>用車來比喻：R 是引擎，RStudio 是方向盤、儀表板和音響。沒有 RStudio 你還是能開（用終端機跑 R），但很難開。沒有 R，RStudio 就是一個打不著火的空殼——事實上 RStudio 啟動時如果找不到 R，會直接跳錯誤。</p>
+      <div class="callout tip"><div class="ct">▍一個立刻能用的判斷法</div>
+        <p>當你看到錯誤訊息時，先問：這是 R 說的，還是 RStudio 說的？<code>Error in library(quanteda) : there is no package called 'quanteda'</code> 是 R 說的，跟 RStudio 無關，重裝 RStudio 不會有幫助。而「Console 字太小」「面板不見了」則是 RStudio 的事，跟 R 無關。</p>
+      </div>
+
+      <h2 id="s01-q">4. Quarto 是排版廠</h2>
+      <p>Quarto 是一個獨立的命令列工具（不是 R 套件），它把「文字 + 程式碼 + 程式碼跑出來的結果」組合成一份完整文件，輸出成 PDF、HTML 或 Word。</p>
+      <p>Quarto 一次解決兩件事——你的報告和你的程式碼是同一份檔案，改了數據重新 render，表格和圖自己更新，不會出現「論文裡的數字跟程式碼跑出來的不一樣」這種學術災難。</p>
+      <div class="callout warn"><div class="ct">▍但這門課的計分文件不能用 Quarto</div>
+        <p>2026-09-17 版課綱把這件事講得很死：<strong>書面作業與海報必須使用課程提供的 LaTeX 範本，透過各自獨立的共用 Overleaf 專案繳交，並開放授課教師 Editor（可編輯）權限</strong>。課綱原文明寫「分析筆記本可使用 Quarto，但 Quarto 不能取代 LaTeX，作為計分書面作業或海報的撰寫格式」。</p>
+        <p>所以兩者分工是：<strong>Quarto 用來做你自己的分析筆記本</strong>（跑程式、看結果、留紀錄），<strong>Overleaf 上的 LaTeX 用來寫要交出去的東西</strong>（摘要、期中研究設計、海報、期末論文）。Quarto 仍然值得學，它是你私下工作的主力，只是別拿它當繳交格式。</p>
+      </div>
+      <p>Quarto 底下還串了兩個工具：<strong>Pandoc</strong> 負責格式轉換，<strong>LaTeX</strong>（我們裝的是 TinyTeX）負責排出 PDF。你不用直接操作它們，但出錯時錯誤訊息可能來自它們，知道有這層會少走很多冤枉路。</p>
+      <div class="codeblock"><span class="lang">terminal</span><button class="copyb">複製</button><pre>quarto --version
+# 1.10.18</pre></div>
+
+      <h2 id="s01-gh">5. GitHub 是教材來源，Overleaf 才是交件窗口</h2>
+      <p>Git 是版本控制系統，GitHub 是把 Git 儲存庫放在網路上的服務。<strong>在這門課，GitHub 的角色是取得東西而不是交出東西</strong>：課綱寫明「GitHub 是課程教材與程式碼的主要來源」，教材另外同步鏡像到 NTU COOL 供公告與討論。第 2 週的 Lab 就要你設定 GitHub Desktop 並複製（clone）課程儲存庫。</p>
+      <p>好消息是課綱明說「不需要 Git 經驗」，你會用 <strong>GitHub Desktop</strong>，一個圖形介面工具，不用背指令。第 16 章會完整走一遍。</p>
+      <p>GitHub 在期末還有一個角色：<strong>期末論文要附一個 GitHub 或 CodeOcean 的可重現程式碼儲存庫</strong>。所以你整學期的程式碼怎麼組織，到期末會直接變成交出去的東西的一部分——這是第 3 章那些資料夾紀律的最終理由。</p>
+      <p>這裡先建立一個觀念：Git 管的是<strong>程式碼和文字檔的歷史</strong>，不是拿來存資料的雲端硬碟。把幾百 MB 的語料推上 GitHub 是新手最常犯的錯之一，第 16 章會教你用 <code>.gitignore</code> 擋掉。</p>
+
+      <h2 id="s01-ol">6. Overleaf：真正的交件窗口</h2>
+      <p>Overleaf 是線上的 LaTeX 編輯器，瀏覽器裡就能寫、即時編譯出 PDF、多人可同時編輯。這門課四項計分繳交——研究論文摘要、期中研究設計報告、期末海報、期末研究論文——<strong>全部走 Overleaf</strong>。</p>
+      <p>兩個容易出錯的細節：每一項作業用<strong>各自獨立的</strong> Overleaf 專案，不要全部塞在同一個；權限必須開到 <strong>Editor（可編輯）</strong>，只給 View（僅檢視）不算繳交。課綱把這兩點都明確寫出來，代表過去有人踩過。</p>
+      <div class="callout note"><div class="ct">▍第 2 週就會用到</div>
+        <p>第 2 週的 Lab 要求你在 Overleaf 建立一份簡短的 LaTeX 文件、編譯成 PDF、並邀請授課教師取得 Editor 權限。<strong>建議現在就去 overleaf.com 註冊一個免費帳號</strong>，用學校信箱註冊，之後要加入課程專案比較單純。實際的 LaTeX 撰寫會在第 15 章談。</p>
+      </div>
+
+      <div class="videobox" data-vid="IJc2J-qewiU" data-start="0">
+        <div class="vhead"><span class="play">▶</span> 影片示範 · R 與 RStudio 的差別（英文，5 分 09 秒） <span class="seg">點縮圖開啟</span></div>
+        <div class="vthumb" role="button" tabindex="0" aria-label="播放影片：What's the Difference Between R and RStudio?" style="background-image:url('https://i.ytimg.com/vi/IJc2J-qewiU/hqdefault.jpg')">
+          <div class="vplay">▶</div><div class="vopen">在 YouTube 開啟 ↗</div>
+        </div>
+        <div class="vcap">「What's the Difference Between R and RStudio?」— Duke Center for Computational Thinking。除了 R 與 RStudio 的分工，後半也帶到套件的概念，可與第 4 章對照。英文發音、有自動字幕。版權屬原作者。</div>
+      </div>
+
+      <h2 id="s01-tab">7. 速查對照表</h2>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:14%">工具</th><th style="width:16%">身分</th><th>負責什麼</th><th style="width:26%">出問題時的徵兆</th></tr></thead>
+        <tbody>
+          <tr><td><strong>R</strong></td><td>程式語言＋執行引擎</td><td>所有運算、套件的家</td><td><code>Error in ...</code>、<code>there is no package called</code></td></tr>
+          <tr><td><strong>RStudio</strong></td><td>IDE（駕駛艙）</td><td>編輯、執行、顯示、檔案與圖形管理</td><td>面板消失、字體亂掉、專案打不開</td></tr>
+          <tr><td><strong>Positron</strong></td><td>另一款 IDE</td><td>同上，但 R 與 Python 並重</td><td>同上（第 17 章）</td></tr>
+          <tr><td><strong>Quarto</strong></td><td>獨立命令列工具</td><td>分析筆記本（<strong>不可當計分文件格式</strong>）</td><td>render 失敗、LaTeX 錯誤、中文字不出來</td></tr>
+          <tr><td><strong>GitHub Desktop</strong></td><td>Git 圖形介面</td><td>取得課程教材、保存可重現程式碼</td><td>push 被拒、合併衝突</td></tr>
+          <tr><td><strong>Overleaf</strong></td><td>線上 LaTeX 編輯器</td><td><strong>四項計分作業的繳交管道</strong></td><td>編譯錯誤、權限沒開到 Editor</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="callout win"><div class="ct">▍Windows 差異</div>
+        <p>路徑不同：R 通常在 <code>C:\Program Files\R\R-4.6.1\</code>，套件預設裝在使用者資料夾 <code>C:\Users\你的名字\AppData\Local\R\win-library\4.6</code>。另外 Windows 需要額外安裝 <strong>Rtools</strong>（<a href="https://cran.r-project.org/bin/windows/Rtools/" target="_blank" rel="noopener">cran.r-project.org/bin/windows/Rtools</a>）才能編譯需要 C++ 的套件；macOS 的對應物是 Xcode Command Line Tools。本課有幾個套件（如 jiebaR）會用到編譯，沒裝 Rtools 會失敗。</p>
+      </div>
+
+      <h2 id="s01-p">8. 動手練習</h2>
+      <div class="practice"><ol>
+        <li>打開「終端機」（macOS 內建，在 應用程式 → 工具程式；Windows 用 PowerShell），輸入 <code>R --version</code>、<code>quarto --version</code>，確認兩個版本號都印得出來。</li>
+        <li>在同一個終端機輸入 <code>R</code> 進入 R 的 Console，打 <code>1 + 1</code> 按 Enter，看到 <code>[1] 2</code>。然後打 <code>q()</code>、再打 <code>n</code> 離開。你剛剛用的就是「沒有 RStudio 的 R」。</li>
+        <li>打開 RStudio，在它的 Console 裡一樣打 <code>1 + 1</code>。對照一下：同一個引擎，不同的駕駛艙。</li>
+        <li>在 RStudio 的 Console 打 <code>R.home()</code>，看看它指到的路徑是不是上面提過的那個。</li>
+      </ol></div>
+
+      <h2 id="s01-s">9. 本章小結</h2>
+      <ul>
+        <li>R 是引擎，負責運算，套件裝在 R 裡；RStudio 是駕駛艙，負責讓你舒服地操作 R。</li>
+        <li>Quarto 是獨立工具，適合做自己的分析筆記本；<strong>但課綱明定它不能當計分書面作業或海報的格式</strong>。</li>
+        <li>GitHub 是<strong>取得</strong>教材與程式碼的地方，也是期末可重現儲存庫的所在；用 GitHub Desktop 操作即可，不需要背指令。</li>
+        <li><strong>Overleaf 才是交件窗口</strong>：四項計分作業各用獨立專案，權限要開到 Editor。</li>
+        <li>看到錯誤訊息，先判斷是誰在說話——這是整份教材最省時間的一個習慣。</li>
+      </ul>
+      <footer class="foot">對照 <a href="https://cran.r-project.org/" target="_blank" rel="noopener">CRAN</a>、<a href="https://quarto.org/docs/guide/" target="_blank" rel="noopener">Quarto 官方指南</a>、<a href="https://docs.posit.co/ide/user/" target="_blank" rel="noopener">RStudio 使用者指南</a>與實機測試結果撰寫（查證日 2026-09-17）。</footer>
+      <div class="chap-foot"><a class="nextlink" data-go="ch02"><span class="k">下一章 →</span> 02 · RStudio 介面導覽與必改設定</a></div>
+    </section>
+
+    <!-- ===================== ch02 ===================== -->
+    <section class="chapter" id="ch02">
+      <div class="crumb">第一篇 · 建立地基 / 02</div>
+      <h1 class="ch">RStudio 介面導覽與必改設定</h1>
+      <p class="lead">本章目標：認識四大窗格、學會用鍵盤送程式碼去執行，並完成六項開課前一定要改的設定。</p>
+      <div class="pagetoc"><div class="tt">本頁章節</div>
+        <a href="#s02-panes">四大窗格</a><a href="#s02-cs">Console 與 Script 的差別</a><a href="#s02-run">執行快捷鍵</a><a href="#s02-env">Environment 面板</a><a href="#s02-help">Help 與 Files</a><a href="#s02-opt">六項必改設定</a><a href="#s02-p">動手練習</a><a href="#s02-s">本章小結</a>
+      </div>
+
+      <h2 id="s02-panes">1. 四大窗格</h2>
+      <p>第一次打開 RStudio 只會看到三個窗格，左上角的 Source（編輯器）要等你開啟或新建檔案才會出現。下圖是四個窗格的相對位置，實際畫面請對照本節的示範影片。</p>
+
+      <div class="diagram">
+        <svg viewBox="0 0 800 430" role="img" aria-label="RStudio 視窗配置示意圖：左上 Source 編輯器、左下 Console、右上 Environment 與 History、右下 Files Plots Packages Help">
+          <rect class="dbar" x="4" y="4" width="792" height="30" rx="8"/>
+          <circle class="ddot" cx="24" cy="19" r="4.5" opacity="0.85"/>
+          <circle class="ddot" cx="40" cy="19" r="4.5" opacity="0.5"/>
+          <circle class="ddot" cx="56" cy="19" r="4.5" opacity="0.3"/>
+          <text class="dk" x="400" y="23" text-anchor="middle">RStudio — text-as-data-lab</text>
+
+          <rect class="dbox-hi" x="4" y="42" width="392" height="186" rx="8"/>
+          <rect class="dbar" x="4" y="42" width="392" height="26" rx="8"/>
+          <text class="dk" x="16" y="60">01-import.R ×</text>
+          <text class="dt" x="16" y="94">左上 · Source（編輯器）</text>
+          <text class="ds" x="16" y="116">寫程式碼的地方，內容會存檔。</text>
+          <text class="ds" x="16" y="136">這裡的程式碼不會自動執行，</text>
+          <text class="ds" x="16" y="156">要按 Cmd/Ctrl + Enter 送去 Console。</text>
+          <text class="dacc" x="16" y="186">▍你 90% 的時間在這裡</text>
+          <text class="dk" x="16" y="212">開啟檔案前這格不會出現</text>
+
+          <rect class="dbox-hi" x="4" y="236" width="392" height="190" rx="8"/>
+          <rect class="dbar" x="4" y="236" width="392" height="26" rx="8"/>
+          <text class="dk" x="16" y="254">Console | Terminal | Background Jobs</text>
+          <text class="dt" x="16" y="288">左下 · Console（主控台）</text>
+          <text class="ds" x="16" y="310">打一行、按 Enter、立刻算給你看。</text>
+          <text class="ds" x="16" y="330">這裡打的東西不會被保存 —— 草稿紙。</text>
+          <text class="dacc" x="16" y="358">▍&gt; 等你下指令　+ 表示括號沒關</text>
+          <text class="ds" x="16" y="386">Terminal 分頁是系統終端機，</text>
+          <text class="ds" x="16" y="406">吃 shell 指令而不是 R 語言。</text>
+
+          <rect class="dbox" x="404" y="42" width="392" height="186" rx="8"/>
+          <rect class="dbar" x="404" y="42" width="392" height="26" rx="8"/>
+          <text class="dk" x="416" y="60">Environment | History | Connections</text>
+          <text class="dt" x="416" y="94">右上 · Environment</text>
+          <text class="ds" x="416" y="116">目前記憶體裡有哪些物件。</text>
+          <text class="dk" x="416" y="146">d    162 obs. of 8 variables</text>
+          <text class="dk" x="416" y="166">x    10</text>
+          <text class="ds" x="416" y="196">確認「到底讀進幾筆」最快的地方。</text>
+
+          <rect class="dbox" x="404" y="236" width="392" height="190" rx="8"/>
+          <rect class="dbar" x="404" y="236" width="392" height="26" rx="8"/>
+          <text class="dk" x="416" y="254">Files | Plots | Packages | Help | Viewer</text>
+          <text class="dt" x="416" y="288">右下 · 檔案與說明</text>
+          <text class="ds" x="416" y="310">Files：專案資料夾內容</text>
+          <text class="ds" x="416" y="330">Plots：畫出來的圖</text>
+          <text class="ds" x="416" y="350">Packages：已安裝套件清單</text>
+          <text class="ds" x="416" y="370">Help：?function 的結果出現在這</text>
+          <text class="dacc" x="416" y="400">▍查說明文件先看最下面的 Examples</text>
+        </svg>
+        <div class="dcap">RStudio 預設的四窗格配置示意（非實際截圖）。藍框的兩格是你最常互動的。窗格位置可在 Settings → Pane Layout 自由調換，因此同學的畫面未必與此圖一致。</div>
+      </div>
+
+      <p>左下角窗格還有一個常被忽略的分頁：<strong>Terminal</strong>。它是真正的系統終端機（macOS 上是 zsh），跟 Console 完全不同——Console 吃 R 語言，Terminal 吃 shell 指令。課綱的先備知識裡「會用終端機」指的就是這個。你不用精通，但要知道 <code>brew install</code>、<code>git status</code> 這類指令屬於 Terminal，不屬於 Console。</p>
+
+      <h2 id="s02-cs">2. Console 與 Script 的差別（本章最重要）</h2>
+      <p>這是新手最容易混淆、也最影響學習效率的一件事。</p>
+      <p><strong>Console</strong> 適合試探：想知道 <code>nchar("測試")</code> 回傳什麼，直接在 Console 打，看到答案，丟掉。它是草稿紙。</p>
+      <p><strong>Script</strong>（<code>.R</code> 檔）適合累積：你的分析流程——讀檔、清理、斷詞、建 dfm——要寫在 Script 裡，存檔，明天打開還在，下週改一個參數重跑一次。它是你的作品。</p>
+      <div class="callout warn"><div class="ct">▍新手最常犯的錯</div>
+        <p>整個分析流程都打在 Console 裡，跑出漂亮結果，然後關掉 RStudio。隔天要重現，全部消失。期末論文要附<strong>可重現的程式碼儲存庫</strong>，Console 裡的東西交不出去。從第一天就養成習慣：<strong>凡是會想再跑第二次的，都寫進 Script</strong>。</p>
+      </div>
+      <p>新建 Script 的方式：選單 File → New File → R Script，或直接按 <span class="kbd">Cmd</span>+<span class="kbd">Shift</span>+<span class="kbd">N</span>。</p>
+
+      <h2 id="s02-run">3. 執行快捷鍵</h2>
+      <p>在 Script 裡寫好程式碼後，要把它「送」去 Console 執行。用滑鼠複製貼上是可以，但你一天會做幾百次，請從第一天就用鍵盤。</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:30%">動作</th><th style="width:26%">macOS</th><th style="width:26%">Windows</th><th>說明</th></tr></thead>
+        <tbody>
+          <tr><td>執行目前這一行／選取範圍</td><td><span class="kbd">Cmd</span>+<span class="kbd">Enter</span></td><td><span class="kbd">Ctrl</span>+<span class="kbd">Enter</span></td><td>最常用的一個。執行完游標自動跳下一行。</td></tr>
+          <tr><td>執行整份 Script</td><td><span class="kbd">Cmd</span>+<span class="kbd">Shift</span>+<span class="kbd">Enter</span></td><td><span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">Enter</span></td><td>Source with echo，從頭跑到尾。</td></tr>
+          <tr><td>新建 R Script</td><td><span class="kbd">Cmd</span>+<span class="kbd">Shift</span>+<span class="kbd">N</span></td><td><span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">N</span></td><td></td></tr>
+          <tr><td>存檔</td><td><span class="kbd">Cmd</span>+<span class="kbd">S</span></td><td><span class="kbd">Ctrl</span>+<span class="kbd">S</span></td><td></td></tr>
+          <tr><td>插入管線 <code>|&gt;</code></td><td><span class="kbd">Cmd</span>+<span class="kbd">Shift</span>+<span class="kbd">M</span></td><td><span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">M</span></td><td>第 7 章會大量用到。需先在設定中啟用原生管線。</td></tr>
+          <tr><td>中斷執行中的程式</td><td><span class="kbd">Esc</span></td><td><span class="kbd">Esc</span></td><td>跑太久或卡住時按這個，游標要在 Console 裡。</td></tr>
+          <tr><td>清空 Console 畫面</td><td><span class="kbd">Ctrl</span>+<span class="kbd">L</span></td><td><span class="kbd">Ctrl</span>+<span class="kbd">L</span></td><td>只清畫面，不清記憶體裡的物件。</td></tr>
+          <tr><td>查看所有快捷鍵</td><td><span class="kbd">Alt</span>+<span class="kbd">Shift</span>+<span class="kbd">K</span></td><td><span class="kbd">Alt</span>+<span class="kbd">Shift</span>+<span class="kbd">K</span></td><td>忘記時按它。</td></tr>
+        </tbody>
+      </table></div>
+      <div class="callout note"><div class="ct">▍Console 裡的兩個符號</div>
+        <p>看到 <code>&gt;</code> 表示 R 在等你下新指令，一切正常。看到 <code>+</code> 表示 R 認為你上一行還沒寫完（通常是括號或引號沒關），它在等你補完——這時候按 <span class="kbd">Esc</span> 取消，回頭檢查括號。這個 <code>+</code> 讓非常多新手以為電腦當機。</p>
+      </div>
+
+      <h2 id="s02-env">4. Environment 面板怎麼讀</h2>
+      <p>右上角 Environment 列出目前記憶體裡所有的物件。你執行 <code>x &lt;- 5</code> 之後，這裡就會出現一列 <code>x  5</code>。讀資料進來之後，會出現類似 <code>d  162 obs. of 8 variables</code>——這是快速確認「我到底讀進了幾筆資料」最方便的地方。</p>
+      <p>資料框旁邊有個表格圖示，點下去會用試算表的樣子打開資料，適合肉眼檢查。也可以在 Console 打 <code>View(d)</code> 達到同樣效果。</p>
+      <p>面板上方那把掃帚圖示會清空所有物件（等同 <code>rm(list = ls())</code>）。這是好習慣的一部分：如果你的 Script 只有在「清空環境後從頭跑」才會成功，它才是真的可重現。</p>
+
+      <h2 id="s02-help">5. Help 與 Files</h2>
+      <p>在 Console 打問號加函數名稱，說明文件會出現在右下角 Help 面板。</p>
+      <div class="codeblock"><span class="lang">R Console</span><button class="copyb">複製</button><pre>?mean          # 查 mean 這個函數
+?dfm           # 查 quanteda 的 dfm（需先 library(quanteda)）
+??"topic model"  # 兩個問號＝全文搜尋，不確定函數名時用</pre></div>
+      <p>R 的說明文件格式固定：Description（做什麼）、Usage（怎麼呼叫）、Arguments（每個參數的意思）、Value（回傳什麼）、<strong>Examples</strong>（可以直接複製執行的範例）。新手直接跳到最下面的 Examples 往往最快。</p>
+
+      <h2 id="s02-opt">6. 六項必改設定</h2>
+      <p>打開設定：macOS 是選單 <strong>RStudio → Settings…</strong>（舊版顯示為 Preferences），Windows 是 <strong>Tools → Global Options…</strong>。以下六項請在上課前改好，每一項都會實際影響你這學期的順暢度。</p>
+
+      <h3>(1) 關閉工作區自動儲存 — General → Basic</h3>
+      <p>把 <strong>Restore .RData into workspace at startup</strong> 的勾取消，並把 <strong>Save workspace to .RData on exit</strong> 設為 <strong>Never</strong>。</p>
+      <p>理由：預設行為會在你關閉 RStudio 時把所有變數存下來、下次開啟時還原。聽起來貼心，實際上是可重現性的頭號殺手——你的 Script 會依賴一個「上次殘留在記憶體裡、但程式碼裡根本沒有」的物件，自己跑得很順，助教跑就報錯。關掉它，強迫自己的 Script 完整。</p>
+
+      <h3>(2) 啟用原生管線 — Code → Editing</h3>
+      <p>勾選 <strong>Use native pipe operator, |&gt; (requires R 4.1+)</strong>。</p>
+      <p>理由：這樣 <span class="kbd">Cmd</span>+<span class="kbd">Shift</span>+<span class="kbd">M</span> 插入的會是 R 內建的 <code>|&gt;</code> 而不是 magrittr 的 <code>%&gt;%</code>。兩者在本課用途上幾乎等價，但 <code>|&gt;</code> 是語言內建、不依賴套件，教材全程使用它。</p>
+
+      <h3>(3) 開啟軟換行 — Code → Editing</h3>
+      <p>勾選 <strong>Soft-wrap R source files</strong>。</p>
+      <p>理由：質詢文本一筆動輒六百字，沒有軟換行時你得一路往右捲。</p>
+
+      <h3>(4) 確認編碼為 UTF-8 — Code → Saving</h3>
+      <p>在 <strong>Default text encoding</strong> 按 Change… 選 <strong>UTF-8</strong>。</p>
+      <p>理由：這是中文資料的生死線。macOS 的預設通常已經是 UTF-8，但請親眼確認一次。編碼設錯的症狀是中文變成 <code>\u5b78</code> 或一堆問號，而且往往在你已經做了一堆分析之後才發現。</p>
+
+      <h3>(5) 打開診斷提示 — Code → Diagnostics</h3>
+      <p>勾選 <strong>Show diagnostics for R</strong> 以及 <strong>Warn if variable used has no definition in scope</strong>。</p>
+      <p>理由：RStudio 會在你打錯變數名或少一個括號時，在行號旁邊畫紅色驚嘆號。對零基礎的人來說，這能攔掉一半以上的低級錯誤。</p>
+
+      <h3>(6) 顯示行號與空白 — Code → Display</h3>
+      <p>勾選 <strong>Show line numbers</strong>（通常預設已開）與 <strong>Show whitespace characters</strong>。</p>
+      <p>理由：行號是你跟別人討論程式碼的座標；而顯示空白字元，在處理「被 沒 收」這種漢字間夾空白的髒資料時，能讓你直接看見問題。</p>
+
+      <div class="callout tip"><div class="ct">▍順手可調</div>
+        <p>Appearance 分頁可以改主題與字體。中文顯示建議挑等寬中文字體避免對不齊。這項純屬舒適度，不影響正確性。</p>
+      </div>
+      <div class="callout win"><div class="ct">▍Windows 差異</div>
+        <p>設定入口是 <strong>Tools → Global Options…</strong>，沒有 macOS 的 RStudio → Settings 路徑。所有快捷鍵把 <span class="kbd">Cmd</span> 換成 <span class="kbd">Ctrl</span>。另外 Windows 的預設編碼可能不是 UTF-8，第 (4) 項對 Windows 使用者<strong>特別關鍵</strong>，務必手動確認。</p>
+      </div>
+
+      <div class="videobox" data-vid="Kgwfuycn9_I" data-start="20">
+        <div class="vhead"><span class="play">▶</span> 影片示範 · RStudio 四大窗格與執行程式碼（英文，5 分 08 秒） <span class="seg">從 0:20 開始</span></div>
+        <div class="vthumb" role="button" tabindex="0" aria-label="播放影片：RStudio for beginners" style="background-image:url('https://i.ytimg.com/vi/Kgwfuycn9_I/hqdefault.jpg')">
+          <div class="vplay">▶</div><div class="vopen">在 YouTube 開啟 ↗</div>
+        </div>
+        <div class="vcap">「RStudio for beginners」— R Programming 101。直接跳到 0:20 的 Layout 段落；後續章節為 1:10 存檔、1:42 執行程式碼、3:11 資料物件，正好對應本章第 1 至 4 節。影片版本較舊，介面細節與 RStudio 2026.09 略有出入，但窗格配置一致。版權屬原作者。</div>
+      </div>
+
+      <h2 id="s02-p">7. 動手練習</h2>
+      <div class="practice"><ol>
+        <li>開啟 RStudio，按 <span class="kbd">Cmd</span>+<span class="kbd">Shift</span>+<span class="kbd">N</span> 新建 Script，輸入下面三行，用 <span class="kbd">Cmd</span>+<span class="kbd">Enter</span> 逐行執行，觀察 Console 與 Environment 的變化。
+          <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>x &lt;- 10
+y &lt;- x * 3
+c(x, y)</pre></div>
+        </li>
+        <li>故意打錯：在 Console 輸入 <code>c(1, 2</code>（少一個括號）按 Enter，看到 <code>+</code>。按 <span class="kbd">Esc</span> 脫身。記住這個畫面。</li>
+        <li>完成上述六項設定，然後<strong>完全關閉 RStudio 再重開</strong>。如果設定 (1) 生效，重開後 Environment 應該是空的，而且不會問你要不要存 workspace。</li>
+        <li>按 <span class="kbd">Alt</span>+<span class="kbd">Shift</span>+<span class="kbd">K</span> 打開快捷鍵總表，瀏覽三十秒。</li>
+        <li>在 Console 打 <code>?paste</code>，在 Help 面板把 Examples 段落的第一行複製到 Console 執行看看。</li>
+      </ol></div>
+
+      <h2 id="s02-s">8. 本章小結</h2>
+      <ul>
+        <li>四大窗格：Source 寫稿、Console 試探、Environment 看物件、右下角查檔案與說明；Terminal 是系統終端機，跟 Console 吃的語言不同。</li>
+        <li>會想跑第二次的東西一律寫進 Script，Console 只當草稿紙。</li>
+        <li><span class="kbd">Cmd</span>+<span class="kbd">Enter</span> 是你這學期按最多次的組合鍵。</li>
+        <li>Console 出現 <code>+</code> 不是當機，是括號沒關，按 <span class="kbd">Esc</span>。</li>
+        <li>六項設定中，關閉 workspace 自動儲存與確認 UTF-8 這兩項，會在學期中救你至少一次。</li>
+      </ul>
+      <footer class="foot">依 RStudio 2026.09.0+174 實機介面與 <a href="https://docs.posit.co/ide/user/ide/guide/ui/ui-panes.html" target="_blank" rel="noopener">Posit 官方 RStudio User Guide</a> 撰寫（查證日 2026-09-17）。</footer>
+      <div class="chap-foot"><a class="nextlink" data-go="ch03"><span class="k">下一章 →</span> 03 · Project 工作流與檔案結構</a></div>
+    </section>
+
+    <!-- ===================== ch03 ===================== -->
+    <section class="chapter" id="ch03">
+      <div class="crumb">第一篇 · 建立地基 / 03</div>
+      <h1 class="ch">Project 工作流與檔案結構</h1>
+      <p class="lead">本章目標：學會用 RStudio Project 管理這門課的所有檔案，並徹底戒掉 <code>setwd()</code>。</p>
+      <div class="pagetoc"><div class="tt">本頁章節</div>
+        <a href="#s03-wd">工作目錄是什麼</a><a href="#s03-setwd">為什麼不要用 setwd()</a><a href="#s03-proj">建立你的課程 Project</a><a href="#s03-struct">資料夾結構</a><a href="#s03-here">here 套件</a><a href="#s03-p">動手練習</a><a href="#s03-s">本章小結</a>
+      </div>
+
+      <h2 id="s03-wd">1. 工作目錄是什麼</h2>
+      <p>R 在任何時刻都「站在」某個資料夾裡，那個資料夾叫工作目錄（working directory）。當你寫 <code>read_csv("質詢.csv")</code>，R 就是去工作目錄裡找這個檔名。找不到就報錯：</p>
+      <div class="codeblock"><span class="lang">R Console</span><button class="copyb">複製</button><pre>getwd()   # 我現在站在哪裡
+list.files()  # 這個資料夾裡有什麼</pre></div>
+      <p>新手 90% 的「檔案讀不進來」都是這個問題：R 站的位置跟你以為的不一樣。<code>getwd()</code> 和 <code>list.files()</code> 這兩行是排查第一步，請記起來。</p>
+
+      <h2 id="s03-setwd">2. 為什麼不要用 setwd()</h2>
+      <p>網路上的舊教學會教你在 Script 開頭寫：</p>
+      <div class="codeblock"><span class="lang">R · 請不要這樣做</span><button class="copyb">複製</button><pre>setwd("/Users/yourname/Documents/text-as-data/data")   # macOS
+setwd("C:/Users/yourname/Documents/text-as-data/data") # Windows</pre></div>
+      <p>這行在你的電腦上完全正常，但它讓你的程式碼<strong>只能在你的電腦上跑</strong>。助教拿到你的作業，第一行就失敗，因為他的電腦裡沒有 <code>/Users/yourname/</code> 這個路徑。這門課的期末論文要附 GitHub 或 CodeOcean 的可重現儲存庫，<code>setwd()</code> 等於在可重現性上自己開一槍。</p>
+      <p>正確做法是使用 <strong>RStudio Project</strong>：當你透過 <code>.Rproj</code> 檔開啟專案時，RStudio 自動把工作目錄設在專案資料夾。你的程式碼裡只出現相對路徑（<code>data/質詢.csv</code>），誰拿到都能跑。</p>
+
+      <h2 id="s03-proj">3. 建立你的課程 Project</h2>
+      <p>選單 <strong>File → New Project… → New Directory → New Project</strong>，資料夾名稱建議 <code>text-as-data-lab</code>，位置放在你習慣的地方。</p>
+      <p>建好之後你會發現三件事：RStudio 重新啟動了一次、右上角出現專案名稱、資料夾裡多了一個 <code>text-as-data-lab.Rproj</code> 檔案。以後開這門課的東西，就是<strong>雙擊那個 .Rproj 檔</strong>，而不是單獨打開某個 .R 檔。</p>
+      <div class="callout note"><div class="ct">▍.Rproj 檔裡有什麼</div>
+        <p>它是純文字檔，記錄這個專案的設定（編碼、縮排、是否還原 workspace 等）。你不需要編輯它，但它會被 Git 一起管理，讓協作者拿到同樣的專案設定。</p>
+      </div>
+      <p>確認一下：專案開啟後在 Console 打 <code>getwd()</code>，回傳的應該正是專案資料夾。</p>
+
+      <div class="videobox" data-vid="MdTtTN8PUqU" data-start="0">
+        <div class="vhead"><span class="play">▶</span> 影片示範 · 為什麼要用 RStudio Project（英文，3 分 14 秒） <span class="seg">點縮圖開啟</span></div>
+        <div class="vthumb" role="button" tabindex="0" aria-label="播放影片：Using RStudio projects" style="background-image:url('https://i.ytimg.com/vi/MdTtTN8PUqU/hqdefault.jpg')">
+          <div class="vplay">▶</div><div class="vopen">在 YouTube 開啟 ↗</div>
+        </div>
+        <div class="vcap">「Using RStudio projects」— Equitable Equations。三分鐘講完 Project 如何讓工作變得有組織、可攜帶、可重現，論點與本章第 2 節一致。版權屬原作者。</div>
+      </div>
+
+      <h2 id="s03-struct">4. 資料夾結構</h2>
+      <p>在專案裡建立以下四個子資料夾。可以用 Files 面板的 New Folder 按鈕，也可以直接在 Console 執行：</p>
+      <div class="codeblock"><span class="lang">R Console</span><button class="copyb">複製</button><pre>dir.create("data")     # 原始資料，只讀不改
+dir.create("R")        # 你的分析腳本
+dir.create("output")   # 產生的圖表、清理後的資料
+dir.create("report")   # Quarto 分析筆記本
+list.files()</pre></div>
+
+      <div class="diagram">
+<pre><b>text-as-data-lab/</b>            <i>← 專案根目錄，雙擊 .Rproj 就從這裡開始</i>
+├── <b>text-as-data-lab.Rproj</b>   <i>← 開這個檔，不要單獨開 .R 檔</i>
+├── <b>data/</b>                    <i>原始資料：只讀不改</i>
+│   └── 立法院質詢_第11屆.csv
+├── <b>R/</b>                       <i>分析腳本：用數字開頭排順序</i>
+│   ├── 01-import.R
+│   ├── 02-clean.R
+│   └── 03-dfm.R
+├── <b>output/</b>                  <i>產出：全部可由程式碼重新生成</i>
+│   ├── dfm-top-terms.png
+│   └── 質詢_已清理.csv
+└── <b>report/</b>                  <i>Quarto 分析筆記本（第 15 章）</i>
+    ├── lab01.qmd
+    └── lab01.pdf</pre>
+        <div class="dcap">建議的專案結構。資料由左往右流動：<code>data/</code> 的原始檔經過 <code>R/</code> 的腳本處理，結果落在 <code>output/</code>，最後在 <code>report/</code> 整理成分析筆記本，數字與圖再帶進 Overleaf 的正式文件。</div>
+      </div>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:16%">資料夾</th><th>放什麼</th><th style="width:30%">紀律</th></tr></thead>
+        <tbody>
+          <tr><td><code>data/</code></td><td>原始資料，例如立法院質詢 CSV</td><td><strong>永遠不要修改或覆蓋原始檔</strong>。清理過的版本另存到 output/</td></tr>
+          <tr><td><code>R/</code></td><td><code>01-import.R</code>、<code>02-clean.R</code>、<code>03-dfm.R</code></td><td>用數字開頭命名，執行順序一目瞭然</td></tr>
+          <tr><td><code>output/</code></td><td>圖檔、清理後資料、模型結果</td><td>這裡的東西應該<strong>全部能由程式碼重新生成</strong></td></tr>
+          <tr><td><code>report/</code></td><td>Quarto 分析筆記本（<code>.qmd</code>）與其輸出</td><td>計分文件寫在 Overleaf，不放這裡；第 15 章說明兩者怎麼銜接</td></tr>
+        </tbody>
+      </table></div>
+      <p>「output 裡的東西全部能重新生成」這條紀律背後有個判斷標準：如果你把 output 資料夾整個刪掉，再從頭執行 R 資料夾裡的腳本，應該能得到一模一樣的結果。做得到，你的分析就是可重現的；做不到，表示有某個步驟你是手動做的而沒寫進程式碼——那正是期末繳交時會出事的地方。</p>
+
+      <h2 id="s03-here">5. here 套件</h2>
+      <p>專案內的相對路徑已經解決了大部分問題，但有一個例外：Quarto 報告放在 <code>report/</code> 子資料夾裡，render 時的工作目錄是該 <code>.qmd</code> 所在的資料夾，於是 <code>data/質詢.csv</code> 就找不到了。</p>
+      <p><code>here</code> 套件解決這件事——它永遠從<strong>專案根目錄</strong>算起，不管你的檔案放多深。</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>library(here)
+here()                       # 專案根目錄在哪
+here("data", "質詢.csv")     # 組出完整路徑，跨作業系統通用
+# 讀檔時這樣寫：
+# d &lt;- readr::read_csv(here("data", "質詢.csv"))</pre></div>
+      <p>注意 <code>here("data", "質詢.csv")</code> 用逗號分隔而不是自己拼斜線。這是刻意的：macOS 用 <code>/</code>、Windows 用 <code>\</code>，交給 <code>here()</code> 處理，你的程式碼就跨平台。</p>
+      <div class="callout win"><div class="ct">▍Windows 差異</div>
+        <p>Windows 路徑用反斜線 <code>\</code>，但在 R 字串裡 <code>\</code> 是逃脫字元，必須寫成 <code>\\</code> 或改用 <code>/</code>。這是 Windows 使用者的經典陷阱，<code>here()</code> 正好幫你完全避開。</p>
+      </div>
+
+      <h2 id="s03-p">6. 動手練習</h2>
+      <div class="practice"><ol>
+        <li>建立 <code>text-as-data-lab</code> 專案，確認 <code>getwd()</code> 指向它。</li>
+        <li>建立 data／R／output／report 四個資料夾。</li>
+        <li>把教材附的 <code>立法院質詢_第11屆.csv</code> 複製到 <code>data/</code>。</li>
+        <li>執行 <code>library(here); here()</code>，確認回傳的是專案根目錄而不是 data 資料夾。</li>
+        <li>在 <code>R/</code> 建立 <code>01-import.R</code>，只寫兩行並存檔（先不用管 read_csv 的細節，第 6 章會講）：
+          <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>library(here)
+d &lt;- readr::read_csv(here("data", "立法院質詢_第11屆.csv"))</pre></div>
+        </li>
+        <li>壓力測試：關閉 RStudio，改用雙擊 <code>.Rproj</code> 的方式重開，直接執行 <code>01-import.R</code>。如果成功，你的專案結構是對的。</li>
+      </ol></div>
+
+      <h2 id="s03-s">7. 本章小結</h2>
+      <ul>
+        <li>R 永遠站在某個工作目錄裡；<code>getwd()</code> 與 <code>list.files()</code> 是檔案讀不到時的第一組排查指令。</li>
+        <li><code>setwd()</code> 會讓程式碼只能在你的電腦上跑，與本課的可重現性要求直接衝突。</li>
+        <li>用 <code>.Rproj</code> 開啟專案，工作目錄自動就位，程式碼裡只寫相對路徑。</li>
+        <li>data 只讀不改、output 全部可重新生成——這兩條紀律是期末可重現儲存庫的基礎。</li>
+        <li>跨資料夾或跨平台時用 <code>here()</code> 組路徑。</li>
+      </ul>
+      <footer class="foot">對照 <a href="https://docs.posit.co/ide/user/ide/guide/code/projects.html" target="_blank" rel="noopener">Posit RStudio Projects 官方說明</a>、<a href="https://here.r-lib.org/" target="_blank" rel="noopener">here 套件官方文件</a>與實機測試結果撰寫（查證日 2026-09-17）。</footer>
+      <div class="chap-foot"><a class="nextlink" data-go="ch04"><span class="k">下一章 →</span> 04 · 套件管理</a></div>
+    </section>
+
+    <!-- ===================== ch04 ===================== -->
+    <section class="chapter" id="ch04">
+      <div class="crumb">第一篇 · 建立地基 / 04</div>
+      <h1 class="ch">套件管理</h1>
+      <p class="lead">本章目標：分清楚 install 與 library、知道套件從哪裡來，並且能看懂三種常見的安裝失敗訊息。</p>
+      <div class="pagetoc"><div class="tt">本頁章節</div>
+        <a href="#s04-two">install 與 library</a><a href="#s04-where">套件從哪裡來</a><a href="#s04-list">本課套件清單</a><a href="#s04-fail">三種安裝失敗</a><a href="#s04-conflict">函數名稱衝突</a><a href="#s04-renv">renv</a><a href="#s04-p">動手練習</a><a href="#s04-s">本章小結</a>
+      </div>
+
+      <h2 id="s04-two">1. install 與 library：一次性 vs 每次都要</h2>
+      <p>這是 R 新手第二常見的混淆（第一名是 Console 與 Script）。</p>
+      <p><code>install.packages("quanteda")</code> 是<strong>下載安裝到硬碟</strong>，一台電腦做一次就好，之後永遠都在。</p>
+      <p><code>library(quanteda)</code> 是<strong>把已安裝的套件載入這次的 R 工作階段</strong>，每次重開 R 都要再做一次。</p>
+      <p>用手機比喻：install 是去 App Store 下載，library 是點開那個 App。你不會每次用 App 都重新下載，但每次用都要點開。</p>
+      <div class="callout warn"><div class="ct">▍寫進 Script 的規則</div>
+        <p><code>library()</code> 寫在 Script 開頭，<code>install.packages()</code> <strong>不要</strong>寫進 Script。理由：別人執行你的 Script 時，不該被強制安裝或升級套件。需要說明相依套件時，寫成註解或放在 README。</p>
+      </div>
+
+      <h2 id="s04-where">2. 套件從哪裡來</h2>
+      <p>本課的套件有三個來源，安裝方式不同。</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:18%">來源</th><th style="width:34%">安裝指令</th><th>說明</th></tr></thead>
+        <tbody>
+          <tr><td><strong>CRAN</strong></td><td><code>install.packages("quanteda")</code></td><td>R 的官方套件庫，經過審查，多數套件在這裡。macOS 上會直接下載編譯好的二進位檔，很快。</td></tr>
+          <tr><td><strong>GitHub</strong></td><td><code>remotes::install_github("davidycliao/flaiR")</code></td><td>開發者直接發布，沒有 CRAN 審查，通常是最新版或 CRAN 上沒有的套件。<strong>本課教師的 flaiR、legisTaiwan 都在這裡。</strong>需要從原始碼編譯。</td></tr>
+          <tr><td><strong>原始碼</strong></td><td><code>R CMD INSTALL 資料夾</code></td><td>最後手段。當套件原始碼需要修改才能編譯時使用（例如下方的 jiebaR 案例）。</td></tr>
+        </tbody>
+      </table></div>
+      <p>GitHub 安裝的格式是 <code>"帳號/儲存庫"</code>。你在課程資料或論文裡看到某個套件時，可以先在 CRAN 搜尋，找不到再看作者的 GitHub。</p>
+
+      <div class="videobox" data-vid="GM6MCBkVNtQ" data-start="66">
+        <div class="vhead"><span class="play">▶</span> 影片示範 · 套件從哪裡來、怎麼裝（英文，20 分 31 秒） <span class="seg">從 1:06 開始</span></div>
+        <div class="vthumb" role="button" tabindex="0" aria-label="播放影片：How to install packages in R? What is CRAN?" style="background-image:url('https://i.ytimg.com/vi/GM6MCBkVNtQ/hqdefault.jpg')">
+          <div class="vplay">▶</div><div class="vopen">在 YouTube 開啟 ↗</div>
+        </div>
+        <div class="vcap">「How to install packages in R? What is CRAN? What is Bioconductor?」— Bioinformagician。從 1:06「Sources of R packages」開始看即可；<strong>13:03 的「Install package from Github」</strong>正是本課 flaiR、legisTaiwan、conText 的安裝方式，建議一併看。18:41 講套件存放位置。影片含 Bioconductor 段落，那是生物資訊的套件庫，本課用不到，可略過。版權屬原作者。</div>
+      </div>
+
+      <h2 id="s04-list">3. 本課套件清單與出場週次</h2>
+      <p>下表是這門課會用到的主要套件，依課綱週次排列。上課前建議至少把 W1–W4 那幾列裝起來；本章最後的動手練習附了一段檢查指令，可以確認你自己機器上的狀況。</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:14%">週次</th><th style="width:34%">套件</th><th>做什麼</th></tr></thead>
+        <tbody>
+          <tr><td>W1–W2</td><td><code>tidyverse</code>, <code>here</code>, <code>usethis</code>, <code>renv</code>, <code>quarto</code></td><td>基礎工作流與可重現報告</td></tr>
+          <tr><td>W3</td><td><code>quanteda</code>, <code>readtext</code>, <code>stopwords</code>, <code>jiebaR</code>, <code>legisTaiwan</code></td><td>語料庫、斷詞、文件特徵矩陣、中文斷詞</td></tr>
+          <tr><td>W4</td><td><code>quanteda.textstats</code>, <code>sentimentr</code>, <code>syuzhet</code>, <code>textdata</code></td><td>字典法與情緒分析</td></tr>
+          <tr><td>W5–W6</td><td><code>quanteda.textmodels</code>, <code>quanteda.textplots</code></td><td>描述比較、Wordfish／Wordscores 尺度分析</td></tr>
+          <tr><td>W7</td><td><code>stm</code>, <code>seededlda</code>, <code>topicmodels</code>, <code>LSX</code>, <code>stminsights</code>, <code>oolong</code></td><td>主題模型與人工驗證</td></tr>
+          <tr><td>W8</td><td><code>rvest</code>, <code>httr2</code>, <code>jsonlite</code>, <code>xml2</code></td><td>抓取與整理語料</td></tr>
+          <tr><td>W9</td><td><code>glmnet</code>, <code>tidymodels</code>, <code>caret</code></td><td>監督式文本分類</td></tr>
+          <tr><td>W10–W11</td><td><code>text2vec</code>, <code>word2vec</code>, <code>udpipe</code>, <code>conText</code>, <code>flaiR</code></td><td>詞嵌入、embedding regression、Transformer</td></tr>
+          <tr><td>W12</td><td><code>reticulate</code></td><td>在 R 裡呼叫 Python，接 transformers 與 LLM</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="s04-fail">4. 三種安裝失敗訊息</h2>
+      <p>套件裝不起來是必然會遇到的事。重點不是避免它，而是能讀懂訊息、判斷是哪一種問題。以下三種涵蓋你這學期八成的狀況，第三種是撰寫本教材時真實遇到的案例。</p>
+
+      <h3>(A) 套件根本不存在或打錯字</h3>
+      <div class="codeblock"><span class="lang">R Console</span><button class="copyb">複製</button><pre>Warning message:
+package ‘quantedaa’ is not available for this version of R</pre></div>
+      <p>先檢查拼字。拼字沒錯的話，表示 CRAN 上沒有適用你這個 R 版本的版本——可能是套件已下架、或作者尚未跟上新版 R。解法：去 CRAN 查該套件狀態，或改從 GitHub 安裝。</p>
+
+      <h3>(B) 缺少系統相依</h3>
+      <div class="codeblock"><span class="lang">R Console</span><button class="copyb">複製</button><pre>configure: error: libgit2 not found
+ERROR: configuration failed for package ‘gert’</pre></div>
+      <p>這不是 R 的問題，是作業系統缺少某個函式庫。關鍵字是 <code>configure: error</code> 加上一個聽起來像系統套件的名字。macOS 的解法是在<strong>終端機</strong>（不是 Console）執行 <code>brew install libgit2</code>，Windows 則多半是缺 Rtools。</p>
+
+      <h3>(C) 編譯失敗：真實案例 jiebaR</h3>
+      <p>2026-09-17 在 R 4.6.1 安裝中文斷詞套件 jiebaR 時，CRAN 回報「not available for this version of R」（情況 A），改從 GitHub 安裝後出現：</p>
+      <div class="codeblock"><span class="lang">R Console</span><button class="copyb">複製</button><pre>../inst/include/lib/limonp/StringUtil.hpp:88:60: error:
+    no member named 'not1' in namespace 'std'
+make: *** [RcppExports.o] Error 1
+ERROR: compilation failed for package ‘jiebaR’</pre></div>
+      <p>這是套件原始碼本身跟不上時代：<code>std::not1</code> 是 C++ 標準在 C++17 移除的功能，而 R 4.6 預設用 C++20 編譯。不是你的電腦壞了，也不是你裝錯，是<strong>上游套件的程式碼過時了</strong>。</p>
+      <p>可行的處理方式是下載原始碼、把那兩行改寫成現代的 lambda 寫法，再用 <code>R CMD INSTALL</code> 手動安裝——這也是前面表格裡「原始碼」那一列存在的理由。如果你遇到這個錯誤而不想自己改原始碼，替代方案是改用 Python 的 jieba（透過第 18 章的 reticulate），或先用 quanteda 內建的斷詞器處理中文，第 12 章會比較兩者差異。</p>
+      <div class="callout warn"><div class="ct">▍這類問題會反覆出現</div>
+        <p>修補後的版本只存在於你自己的電腦上。<strong>日後重裝或更新同一個套件，會再撞到同一個錯</strong>，所以請把處理步驟記在專案的 README 或筆記裡。等到上游作者修正後，就能恢復用一般方式安裝。</p>
+      </div>
+      <div class="callout tip"><div class="ct">▍為什麼要跟你講這麼細</div>
+        <p>因為這正是課綱第 10 章要教你的判斷力：看到一大片紅字時，能分辨「我打錯了」「我的系統缺東西」「這個套件本身壞了」。三種問題的解法完全不同，而新手最常見的反應是三種都用同一招——重裝——然後浪費一個下午。</p>
+      </div>
+
+      <h2 id="s04-conflict">5. 函數名稱衝突</h2>
+      <p>載入套件時常看到這類訊息，它<strong>不是錯誤</strong>：</p>
+      <div class="codeblock"><span class="lang">R Console</span><button class="copyb">複製</button><pre>The following objects are masked from ‘package:stats’:
+    filter, lag</pre></div>
+      <p>意思是 dplyr 的 <code>filter()</code> 蓋掉了 stats 的 <code>filter()</code>。多數時候你要的正是後載入的那個，所以沒事。但當你確實需要指定時，用雙冒號：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>dplyr::filter(d, 會期 == 1)   # 明確指定用 dplyr 的
+stats::filter(x, rep(1, 3))   # 明確指定用 stats 的</pre></div>
+      <p><code>套件::函數</code> 這個寫法還有個好處：不用 <code>library()</code> 也能呼叫。教材裡偶爾出現的 <code>readr::read_csv()</code> 就是這個用法，目的是讓你一眼看出這個函數屬於哪個套件。</p>
+
+      <h2 id="s04-renv">6. renv：把版本鎖起來</h2>
+      <p><code>renv</code> 為單一專案建立獨立的套件庫，並記錄每個套件的版本。別人拿到你的專案，執行 <code>renv::restore()</code> 就能重建一模一樣的套件環境。</p>
+      <div class="codeblock"><span class="lang">R Console</span><button class="copyb">複製</button><pre>renv::init()      # 在專案中啟用，掃描並建立獨立套件庫
+renv::snapshot()  # 把目前用到的套件版本寫進 renv.lock
+renv::restore()   # 依 renv.lock 還原（別人拿到你的專案時用）</pre></div>
+      <p>要不要現在用？<strong>建議先不要</strong>。renv 會讓每個專案各自安裝一份套件，你剛裝好的 41 個套件不會自動被新專案看到，對新手是額外的困惑來源。等到期末要交可重現儲存庫時，再回來用它，那時它的價值才真正顯現。這裡先讓你知道有這個東西，以及它解決什麼問題。</p>
+
+      <h2 id="s04-p">7. 動手練習</h2>
+      <div class="practice"><ol>
+        <li>在 Console 執行 <code>library(quanteda)</code>，觀察它印出的啟動訊息與 masked 提示。</li>
+        <li>執行下面這行，確認你的機器上關鍵套件都在：
+          <div class="codeblock"><span class="lang">R Console</span><button class="copyb">複製</button><pre>pkgs &lt;- c("quanteda", "jiebaR", "stm", "conText", "flaiR", "tidyverse")
+data.frame(套件 = pkgs,
+           已安裝 = sapply(pkgs, requireNamespace, quietly = TRUE))</pre></div>
+        </li>
+        <li>故意製造情況 A：執行 <code>install.packages("quantedaaa")</code>，讀一次那個警告訊息。這是你之後會看到很多次的句型。</li>
+        <li>在右下角 Packages 面板找到 quanteda，點擊套件名稱進入說明索引，隨便點一個函數看它的文件。</li>
+        <li>執行 <code>packageVersion("quanteda")</code>。把版本號記下來——回報問題給套件作者時，第一件被問的就是這個。</li>
+      </ol></div>
+
+      <h2 id="s04-s">8. 本章小結</h2>
+      <ul>
+        <li><code>install.packages()</code> 一台電腦做一次；<code>library()</code> 每次開 R 都要做。後者寫進 Script，前者不要。</li>
+        <li>CRAN 用 <code>install.packages()</code>，GitHub 用 <code>remotes::install_github("帳號/儲存庫")</code>；本課教師的套件在 GitHub。</li>
+        <li>安裝失敗分三類：打錯字或版本不合、缺系統相依（<code>configure: error</code>）、套件原始碼過時（<code>compilation failed</code>）。三種解法完全不同。</li>
+        <li>masked 訊息不是錯誤；需要明確指定時用 <code>套件::函數</code>。</li>
+        <li>renv 留到期末交可重現儲存庫時再用。</li>
+      </ul>
+      <footer class="foot">對照 <a href="https://cran.r-project.org/doc/manuals/r-release/R-admin.html#Installing-packages" target="_blank" rel="noopener">R Installation and Administration</a>、<a href="https://rstudio.github.io/renv/" target="_blank" rel="noopener">renv 官方文件</a>與實機安裝測試結果撰寫（查證日 2026-09-17）。</footer>
+      <div class="chap-foot"><a class="nextlink" data-go="ch05"><span class="k">下一章 →</span> 05 · 物件、向量與資料框</a></div>
+    </section>
+
+    <!-- ===================== ch05 ===================== -->
+    <section class="chapter" id="ch05">
+      <div class="crumb">第二篇 · R 語言最小必要集 / 05</div>
+      <h1 class="ch">物件、向量與資料框</h1>
+      <p class="lead">本章目標：學會把東西存進變數、認識四種你這學期會反覆遇到的資料型別，並理解 R 最重要的特性——向量化。</p>
+      <div class="pagetoc"><div class="tt">本頁章節</div>
+        <a href="#s05-assign">賦值</a><a href="#s05-type">四種型別</a><a href="#s05-vec">向量與向量化</a><a href="#s05-index">取值</a><a href="#s05-na">NA</a><a href="#s05-df">資料框</a><a href="#s05-p">動手練習</a><a href="#s05-s">本章小結</a>
+      </div>
+
+      <h2 id="s05-assign">1. 賦值：把東西存起來</h2>
+      <p>R 用 <code>&lt;-</code> 把右邊的東西存進左邊的名字。快捷鍵是 <span class="kbd">Alt</span>+<span class="kbd">-</span>（macOS 與 Windows 相同），它會自動補上前後空格。</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>x &lt;- 10
+y &lt;- x * 3
+c(x, y)
+#&gt; [1] 10 30</pre></div>
+      <p>你也會看到有人用 <code>=</code> 賦值。兩者在多數情況下可互換，但 R 社群的慣例是 <code>&lt;-</code>，而且 <code>=</code> 在函數呼叫裡另有意義（指定參數，例如 <code>mean(x, na.rm = TRUE)</code>），混用容易誤讀。這份教材一律用 <code>&lt;-</code>。</p>
+      <div class="callout note"><div class="ct">▍那個 <code>[1]</code> 是什麼</div>
+        <p>R 印出結果時會在每行開頭標示「這行的第一個元素是整體的第幾個」。因為 R 眼中沒有單一數值，只有長度為 1 的向量——這是下一節的重點。</p>
+      </div>
+
+      <h2 id="s05-type">2. 四種型別</h2>
+      <p>用 <code>class()</code> 問任何東西「你是什麼」。</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>class(10)                #&gt; [1] "numeric"    數值
+class("質詢")            #&gt; [1] "character"  文字（一定要有引號）
+class(TRUE)              #&gt; [1] "logical"    邏輯值 TRUE / FALSE
+class(factor("國民黨"))  #&gt; [1] "factor"     類別（有固定的幾種可能值）</pre></div>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:15%">型別</th><th style="width:26%">這門課的例子</th><th>要注意什麼</th></tr></thead>
+        <tbody>
+          <tr><td><code>numeric</code></td><td>會期、字數、詞頻</td><td>能做算術。整數與小數在 R 裡預設同屬 numeric。</td></tr>
+          <tr><td><code>character</code></td><td>質詢全文、委員姓名</td><td><strong>一定要加引號</strong>。忘記加引號是新手最常見的錯誤之一，第 10 章會示範那個錯誤長什麼樣。</td></tr>
+          <tr><td><code>logical</code></td><td>「這筆有沒有提到能源」</td><td>只有 <code>TRUE</code>／<code>FALSE</code>／<code>NA</code>，全大寫、沒有引號。<code>sum()</code> 一個邏輯向量會得到 TRUE 的個數，很好用。</td></tr>
+          <tr><td><code>factor</code></td><td>政黨、會期（當成類別看時）</td><td>看起來像文字，其實是「有限選項」。跑統計模型時 R 會自動幫你轉成虛擬變數。新手階段可以先不主動製造 factor。</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="videobox" data-vid="FY8BISK5DpM" data-start="0">
+        <div class="vhead"><span class="play">▶</span> 影片示範 · R 語言基礎總覽（英文，14 分 12 秒） <span class="seg">點縮圖開啟</span></div>
+        <div class="vthumb" role="button" tabindex="0" aria-label="播放影片：R programming for ABSOLUTE beginners" style="background-image:url('https://i.ytimg.com/vi/FY8BISK5DpM/hqdefault.jpg')">
+          <div class="vplay">▶</div><div class="vopen">在 YouTube 開啟 ↗</div>
+        </div>
+        <div class="vcap">「R programming for ABSOLUTE beginners」— R Programming 101（92 萬觀看）。從零開始講變數、向量、資料型別與基本操作，涵蓋本章與下一章的大部分內容。這支是整份教材裡最值得完整看完的一支。版權屬原作者。</div>
+      </div>
+
+      <h2 id="s05-vec">3. 向量與向量化（R 最重要的特性）</h2>
+      <p>向量是「同一種型別的一串值」，用 <code>c()</code> 建立（c 代表 combine）。</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>字數 &lt;- c(412, 631, 288, 905)
+
+字數 * 2
+#&gt; [1]  824 1262  576 1810
+
+mean(字數)   #&gt; [1] 559
+max(字數)    #&gt; [1] 905
+length(字數) #&gt; [1] 4</pre></div>
+      <p>請仔細看 <code>字數 * 2</code>：你沒有寫任何迴圈，R 自動把每個元素都乘以 2。這叫<strong>向量化</strong>，是 R 跟 Python、Java 這些語言最不一樣的地方。習慣寫迴圈的人來到 R，第一件要改的事就是「先想想能不能整個向量一起算」。</p>
+      <p>比較運算也是向量化的，結果是一個等長的邏輯向量：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>字數 &gt; 500
+#&gt; [1] FALSE  TRUE FALSE  TRUE
+
+sum(字數 &gt; 500)   # TRUE 算 1，所以這是「有幾筆超過 500 字」
+#&gt; [1] 2</pre></div>
+      <div class="callout tip"><div class="ct">▍這個觀念之後會一直出現</div>
+        <p>第 8 章判斷「哪些質詢提到能源」、第 13 章計算詞頻，骨子裡都是同一招：對一整欄做一次運算，得到一整欄結果。</p>
+      </div>
+      <p>還有一件事要小心：向量裡<strong>只能有一種型別</strong>。如果你混進文字，R 會安靜地把所有東西都轉成文字，不會報錯：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>c(1, 2, "三")
+#&gt; [1] "1" "2" "三"     ← 數字被偷偷轉成文字了</pre></div>
+      <p>這種「安靜地做了你沒預期的事」比報錯更危險，因為它要到很後面才會爆炸。習慣用 <code>class()</code> 確認。</p>
+
+      <h2 id="s05-index">4. 取值：中括號</h2>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>字數[2]              #&gt; [1] 631      第 2 個
+字數[c(1, 3)]        #&gt; [1] 412 288  第 1 和第 3 個
+字數[字數 &gt; 400]     #&gt; [1] 412 631 905   用邏輯向量篩選</pre></div>
+      <p>最後一種寫法值得多看兩眼：中括號裡放一個邏輯向量，R 會留下 <code>TRUE</code> 的位置。這就是 <code>dplyr::filter()</code> 的底層原理，第 7 章會用更好讀的寫法做同一件事。</p>
+      <div class="callout warn"><div class="ct">▍R 從 1 開始數</div>
+        <p>如果你有 Python 經驗，請記住這點：R 的第一個元素是 <code>[1]</code> 不是 <code>[0]</code>。<code>字數[0]</code> 不會報錯，但會回傳一個空向量——又是一個安靜的陷阱。</p>
+      </div>
+
+      <h2 id="s05-na">5. NA：缺失值</h2>
+      <p><code>NA</code> 代表「這格沒有資料」。它有傳染性：任何跟 NA 做的運算，結果都是 NA。</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>有缺 &lt;- c(412, NA, 288)
+
+mean(有缺)                 #&gt; [1] NA          ← 不是錯誤，是提醒你資料有洞
+mean(有缺, na.rm = TRUE)   #&gt; [1] 350         ← 明確表示「忽略缺失值」
+is.na(有缺)                #&gt; [1] FALSE  TRUE FALSE</pre></div>
+      <p>R 的設計哲學是：不幫你決定怎麼處理缺失值。<code>na.rm = TRUE</code> 要你自己打，是為了逼你意識到「我正在丟掉一些資料」。做研究時這是好事——你應該在論文裡交代你怎麼處理缺失值。</p>
+
+      <h2 id="s05-df">6. 資料框：向量並排起來</h2>
+      <p>把幾個等長的向量並排，就是一張表：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>d0 &lt;- data.frame(委員 = c("甲", "乙"), 字數 = c(412, 631))
+d0
+#&gt;   委員 字數
+#&gt; 1   甲  412
+#&gt; 2   乙  631
+
+str(d0)
+#&gt; 'data.frame': 2 obs. of  2 variables:
+#&gt;  $ 委員: chr  "甲" "乙"
+#&gt;  $ 字數: num  412 631</pre></div>
+      <p><strong>每一欄是一個向量，而且各欄可以是不同型別</strong>——這就是資料框跟矩陣的差別。你這學期處理的每一份資料，包括那 162 筆質詢，本質上都是這樣一疊並排的向量。</p>
+      <p>用 <code>$</code> 取出某一欄，得到的就是一個向量，前面學的所有東西都能用：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>d0$字數           #&gt; [1] 412 631
+mean(d0$字數)     #&gt; [1] 521.5</pre></div>
+
+      <h2 id="s05-p">7. 動手練習</h2>
+      <div class="practice"><ol>
+        <li>建立向量 <code>會期 &lt;- c(1, 1, 2, 2, 3)</code>，算出 <code>length()</code>、<code>table()</code>，看看 <code>table()</code> 回傳什麼。</li>
+        <li>建立 <code>提到能源 &lt;- c(TRUE, FALSE, TRUE, TRUE, FALSE)</code>，用 <code>sum()</code> 算有幾筆是 TRUE，再用 <code>mean()</code> 算比例。想一下為什麼 <code>mean()</code> 會給你比例。</li>
+        <li>執行 <code>c(1, TRUE, "文字")</code>，用 <code>class()</code> 看結果型別。R 的轉型順序是 logical → numeric → character，驗證看看。</li>
+        <li>把上面兩個向量並成一個 data.frame，用 <code>$</code> 取出其中一欄。</li>
+        <li>故意製造錯誤：執行 <code>mean(c("412", "631"))</code>，記下錯誤訊息，第 10 章會回頭解剖它。</li>
+      </ol></div>
+
+      <h2 id="s05-s">8. 本章小結</h2>
+      <ul>
+        <li><code>&lt;-</code> 賦值，快捷鍵 <span class="kbd">Alt</span>+<span class="kbd">-</span>。</li>
+        <li>四種型別：numeric、character（要引號）、logical（全大寫無引號）、factor。不確定就 <code>class()</code>。</li>
+        <li>向量化是 R 的核心：對整個向量做運算，不用寫迴圈。</li>
+        <li>向量只能有一種型別；混型別時 R 會安靜轉型，不報錯。</li>
+        <li><code>NA</code> 有傳染性，聚合函數要加 <code>na.rm = TRUE</code>——這是逼你意識到資料有洞。</li>
+        <li>資料框＝一疊等長的向量，<code>$</code> 取欄。</li>
+      </ul>
+      <footer class="foot">程式碼與輸出皆在 R 4.6.1 實際執行驗證；對照 <a href="https://cran.r-project.org/doc/manuals/r-release/R-intro.html" target="_blank" rel="noopener">An Introduction to R</a> 撰寫（查證日 2026-09-17）。</footer>
+      <div class="chap-foot"><a class="nextlink" data-go="ch06"><span class="k">下一章 →</span> 06 · 讀檔與 tibble</a></div>
+    </section>
+
+    <!-- ===================== ch06 ===================== -->
+    <section class="chapter" id="ch06">
+      <div class="crumb">第二篇 · R 語言最小必要集 / 06</div>
+      <h1 class="ch">讀檔與 tibble</h1>
+      <p class="lead">本章目標：把那 162 筆立法院質詢讀進 R，學會讀檔後必做的三個檢查，並知道中文 CSV 出亂碼時該怎麼辦。</p>
+      <div class="pagetoc"><div class="tt">本頁章節</div>
+        <a href="#s06-two">read_csv 與 read.csv</a><a href="#s06-read">把資料讀進來</a><a href="#s06-check">讀完必做的三個檢查</a><a href="#s06-tbl">tibble 的印法</a><a href="#s06-explore">初步探索</a><a href="#s06-enc">中文亂碼</a><a href="#s06-p">動手練習</a><a href="#s06-s">本章小結</a>
+      </div>
+
+      <h2 id="s06-two">1. read_csv 與 read.csv：差一個點</h2>
+      <p>R 有兩個讀 CSV 的函數，名字只差一個符號，行為差很多。</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:22%"></th><th style="width:39%"><code>read.csv()</code></th><th><code>read_csv()</code></th></tr></thead>
+        <tbody>
+          <tr><td>來自</td><td>R 內建（base）</td><td><code>readr</code> 套件（tidyverse 的一部分）</td></tr>
+          <tr><td>回傳</td><td>data.frame</td><td>tibble</td></tr>
+          <tr><td>預設編碼</td><td>跟著作業系統，<strong>Windows 上常是中文亂碼的元凶</strong></td><td>一律 UTF-8</td></tr>
+          <tr><td>速度</td><td>慢</td><td>快很多（大語料有感）</td></tr>
+          <tr><td>回饋</td><td>安靜</td><td>會印出每一欄被判定成什麼型別</td></tr>
+        </tbody>
+      </table></div>
+      <p>本教材與本課一律用 <code>read_csv()</code>。你在網路上看到舊教學用 <code>read.csv()</code> 時，知道差別即可。</p>
+
+      <h2 id="s06-read">2. 把資料讀進來</h2>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>library(readr)
+library(dplyr)
+library(here)
+
+d &lt;- read_csv(here("data", "立法院質詢_第11屆.csv"))
+
+dim(d)
+#&gt; [1] 162   8      ← 162 列、8 欄</pre></div>
+      <p>如果你在 Console 直接執行 <code>read_csv()</code>，它會印出一段 column specification，告訴你每一欄被判定成什麼型別。那不是錯誤訊息，是它在跟你報告。想讓它安靜，加上 <code>show_col_types = FALSE</code>。</p>
+      <div class="callout tip"><div class="ct">▍讀檔失敗的第一反應</div>
+        <p>看到 <code>does not exist in current working directory</code>，不要急著改檔名。先執行 <code>getwd()</code> 和 <code>list.files()</code>（第 3 章），九成的情況是 R 站錯位置，而不是檔案真的不見。</p>
+      </div>
+
+      <div class="videobox" data-vid="e8B9YU_M5FM" data-start="213">
+        <div class="vhead"><span class="play">▶</span> 影片示範 · 讀 CSV 進 RStudio（英文，11 分 54 秒） <span class="seg">從 3:33 開始</span></div>
+        <div class="vthumb" role="button" tabindex="0" aria-label="播放影片：How to import data and install packages" style="background-image:url('https://i.ytimg.com/vi/e8B9YU_M5FM/hqdefault.jpg')">
+          <div class="vplay">▶</div><div class="vopen">在 YouTube 開啟 ↗</div>
+        </div>
+        <div class="vcap">「How to import data and install packages」— R Programming 101。直接跳到 3:33「Read CSV」段落。其他章節：0:40 建立專案（對應第 3 章）、6:30 取出資料、7:30 安裝套件（對應第 4 章）。版權屬原作者。</div>
+      </div>
+
+      <h2 id="s06-check">3. 讀完必做的三個檢查</h2>
+      <p>養成習慣：資料一讀進來，先做這三件事再說。花你十秒，省下之後好幾小時。</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>dim(d)        # 一、幾列幾欄？跟你預期的一樣嗎
+glimpse(d)    # 二、每欄是什麼型別？內容長什麼樣
+summary(d)    # 三、有沒有奇怪的極值或大量 NA</pre></div>
+      <p><code>glimpse()</code> 是 dplyr 提供的，比 <code>str()</code> 好讀。實際輸出（節錄）：</p>
+      <div class="codeblock"><span class="lang">R Console</span><button class="copyb">複製</button><pre>Rows: 162
+Columns: 8
+$ 質詢編號 &lt;chr&gt; "11-1-1-1", "11-1-20-63", "11-1-20-64", …
+$ 屆       &lt;dbl&gt; 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, …
+$ 會期     &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
+$ 會次     &lt;dbl&gt; 1, 20, 20, 20, 20, 20, 21, 3, 3, 3, 3, …
+$ 委員     &lt;chr&gt; "羅智強", "黃健豪", "馬文君", "萬美玲", …
+$ 刊登日期 &lt;date&gt; 2024-02-16, 2024-06-26, 2024-06-26, …
+$ 事由     &lt;chr&gt; "本院羅委員智強，就文化部發放文化成年禮金政策…
+$ 說明     &lt;chr&gt; "由「藝 FUN 券」轉型而來的「文化成年禮金」…</pre></div>
+      <p>這一眼要看出三件事：<strong>162 筆沒錯</strong>；<strong>刊登日期被正確判定為 <code>&lt;date&gt;</code> 而不是文字</strong>（readr 自動做到的，read.csv 不會）；<strong>中文沒有亂碼</strong>。三項都對，才往下走。</p>
+
+      <h2 id="s06-tbl">4. tibble 的印法</h2>
+      <p><code>read_csv()</code> 回傳的是 tibble，直接打變數名稱只會印前 10 列，並標明型別與剩餘筆數：</p>
+      <div class="codeblock"><span class="lang">R Console</span><button class="copyb">複製</button><pre>d
+#&gt; # A tibble: 162 × 8
+#&gt;   質詢編號      屆  會期  會次 委員   刊登日期
+#&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;  &lt;date&gt;
+#&gt; 1 11-1-1-1      11     1     1 羅智強 2024-02-16
+#&gt; 2 11-1-20-63    11     1    20 黃健豪 2024-06-26
+#&gt; 3 11-1-20-64    11     1    20 馬文君 2024-06-26
+#&gt; # ℹ 159 more rows</pre></div>
+      <p>這是 tibble 相對 data.frame 的一大好處：<strong>不會因為手滑而把 162 筆全文噴滿整個 Console</strong>。若真的想看全部，用 <code>print(d, n = 30)</code> 或 <code>View(d)</code>（開試算表視窗）。</p>
+
+      <h2 id="s06-explore">5. 初步探索</h2>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>names(d)
+#&gt; [1] "質詢編號" "屆" "會期" "會次" "委員" "刊登日期" "事由" "說明"
+
+n_distinct(d$委員)
+#&gt; [1] 28
+
+table(d$會期)
+#&gt;  1  2  3
+#&gt; 59 68 35
+
+summary(nchar(d$說明))
+#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+#&gt;    72.0   412.0   569.5   631.1   785.8  2573.0</pre></div>
+      <p>最後一行已經是實質發現了：質詢說明從 72 字到 2,573 字，中位數 569.5、平均 631.1。<strong>平均大於中位數</strong>，表示分布右偏——少數幾篇超長的質詢把平均值拉高了。做文本分析時這件事很重要：如果你之後比較「誰的質詢比較長」，用平均數會被極端值主導，可能要考慮中位數，或在論文裡把分布講清楚。</p>
+      <div class="callout note"><div class="ct">▍<code>nchar()</code> 算的是什麼</div>
+        <p>對中文而言，<code>nchar()</code> 算的是<strong>字元數</strong>（一個漢字算一個），不是詞數。「能源政策」是 4 個字元、2 個詞。詞數要先斷詞才算得出來，那是第 12 章的事。</p>
+      </div>
+
+      <h2 id="s06-enc">6. 中文亂碼怎麼辦</h2>
+      <p>如果讀進來的中文變成 <code>\u5b78</code>、問號或方塊，是編碼問題。處理順序：</p>
+      <p>第一，確認 RStudio 的預設編碼是 UTF-8（第 2 章的必改設定第 4 項）。第二，如果檔案本身不是 UTF-8——台灣的 Windows 環境常見 Big5——明確告訴 <code>read_csv()</code>：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>library(readr)
+d &lt;- read_csv("某個big5檔.csv", locale = locale(encoding = "BIG5"))
+
+# 不確定是什麼編碼時，讓 readr 猜：
+guess_encoding("某個檔.csv")</pre></div>
+      <p>本課附的語料是 UTF-8，不需要特別處理。但你自己抓來的資料（尤其是政府網站的舊檔案）很可能是 Big5，屆時記得這一節。</p>
+      <div class="callout win"><div class="ct">▍Windows 差異</div>
+        <p>Windows 的 R 預設語系不是 UTF-8，<code>read.csv()</code> 讀中文特別容易亂碼，這也是本課一律用 <code>read_csv()</code> 的理由之一。另外 Excel 存成 CSV 時預設會用系統編碼而非 UTF-8——若要從 Excel 匯出中文 CSV 給 R 用，請選「CSV UTF-8」那個選項。</p>
+      </div>
+
+      <h2 id="s06-p">7. 動手練習</h2>
+      <div class="practice"><ol>
+        <li>在你的專案裡讀入 <code>立法院質詢_第11屆.csv</code>，跑完 <code>dim()</code>、<code>glimpse()</code>、<code>summary()</code> 三件事。</li>
+        <li>用 <code>n_distinct(d$會次)</code> 看有幾個不同的會次；用 <code>table(d$委員)</code> 看誰的質詢最多（結果會很長，先想想怎麼只看前幾名——第 7 章給答案）。</li>
+        <li>執行 <code>range(d$刊登日期)</code>。因為日期被正確判定成 date 型別，這行才會成功；試試看如果它是文字會怎樣。</li>
+        <li>執行 <code>d$說明[1]</code> 印出第一筆質詢全文，實際讀一下你這學期要分析的東西長什麼樣。</li>
+        <li>故意打錯檔名執行一次 <code>read_csv()</code>，把錯誤訊息完整讀一遍，注意它有告訴你「現在的工作目錄是哪裡」。</li>
+      </ol></div>
+
+      <h2 id="s06-s">8. 本章小結</h2>
+      <ul>
+        <li>用 <code>read_csv()</code> 不用 <code>read.csv()</code>：UTF-8、速度快、回傳 tibble、會報告欄位型別。</li>
+        <li>讀完必做三檢查：<code>dim()</code>、<code>glimpse()</code>、<code>summary()</code>。</li>
+        <li>檢查重點：筆數對不對、日期有沒有被讀成日期、中文有沒有亂碼。</li>
+        <li>tibble 只印前 10 列，不會噴滿 Console。</li>
+        <li>中文亂碼先查 RStudio 編碼設定，再用 <code>locale(encoding = ...)</code> 指定。</li>
+        <li>本課語料的說明欄中位數 569.5 字、平均 631.1 字，分布右偏。</li>
+      </ul>
+      <footer class="foot">程式碼與輸出皆在 R 4.6.1 + readr 實際執行驗證；對照 <a href="https://readr.tidyverse.org/" target="_blank" rel="noopener">readr 官方文件</a> 撰寫（查證日 2026-09-17）。</footer>
+      <div class="chap-foot"><a class="nextlink" data-go="ch07"><span class="k">下一章 →</span> 07 · 管線與 dplyr 五動詞</a></div>
+    </section>
+
+    <!-- ===================== ch07 ===================== -->
+    <section class="chapter" id="ch07">
+      <div class="crumb">第二篇 · R 語言最小必要集 / 07</div>
+      <h1 class="ch">管線與 dplyr 五動詞</h1>
+      <p class="lead">本章目標：用五個動詞加一根管線，把「誰的質詢最長」這種問題變成一段可以從左讀到右的程式碼。</p>
+      <div class="pagetoc"><div class="tt">本頁章節</div>
+        <a href="#s07-pipe">管線是什麼</a><a href="#s07-five">五個動詞</a><a href="#s07-filter">filter 與 select</a><a href="#s07-mutate">mutate 與 arrange</a><a href="#s07-group">group_by 與 summarise</a><a href="#s07-full">串成完整管線</a><a href="#s07-p">動手練習</a><a href="#s07-s">本章小結</a>
+      </div>
+
+      <h2 id="s07-pipe">1. 管線是什麼</h2>
+      <p>假設要做三件事：算字數、只留第 1 會期、由長到短排序。不用管線的寫法是層層包住：</p>
+      <div class="codeblock"><span class="lang">R · 難讀的寫法</span><button class="copyb">複製</button><pre>arrange(filter(mutate(d, 字數 = nchar(說明)), 會期 == 1), desc(字數))</pre></div>
+      <p>這行要<strong>從裡往外</strong>讀，而且括號數量會隨步驟增加而失控。管線 <code>|&gt;</code> 把它攤平成從左到右的一串動作：</p>
+      <div class="codeblock"><span class="lang">R · 管線寫法</span><button class="copyb">複製</button><pre>d |&gt;
+  mutate(字數 = nchar(說明)) |&gt;
+  filter(會期 == 1) |&gt;
+  arrange(desc(字數))</pre></div>
+      <p><code>x |&gt; f()</code> 的意思就是 <code>f(x)</code>——把左邊的東西送進右邊函數的第一個位置。快捷鍵 <span class="kbd">Cmd/Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">M</span>（需先完成第 2 章的必改設定第 2 項）。</p>
+      <p>讀這段程式碼時，在心裡把 <code>|&gt;</code> 唸成「然後」：拿 d，<em>然後</em>算字數，<em>然後</em>只留第 1 會期，<em>然後</em>由長到短排。</p>
+      <div class="callout note"><div class="ct">▍<code>|&gt;</code> 與 <code>%&gt;%</code></div>
+        <p>你會在網路教學與論文附錄裡看到 <code>%&gt;%</code>，那是 magrittr 套件的管線，比 <code>|&gt;</code> 早出現很多年。在本課的用途上兩者等價。差別是 <code>|&gt;</code> 是 R 4.1 起<strong>內建</strong>的，不需要載入任何套件。本教材一律用 <code>|&gt;</code>；看到 <code>%&gt;%</code> 時直接當成同一個東西讀即可。</p>
+      </div>
+
+      <h2 id="s07-five">2. 五個動詞</h2>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:18%">動詞</th><th style="width:22%">做什麼</th><th>改變了什麼</th></tr></thead>
+        <tbody>
+          <tr><td><code>filter()</code></td><td>挑<strong>列</strong></td><td>列數變少，欄數不變</td></tr>
+          <tr><td><code>select()</code></td><td>挑<strong>欄</strong></td><td>欄數變少，列數不變</td></tr>
+          <tr><td><code>mutate()</code></td><td>新增或修改欄</td><td>欄數變多，列數不變</td></tr>
+          <tr><td><code>arrange()</code></td><td>排序</td><td>列的順序改變，內容不變</td></tr>
+          <tr><td><code>summarise()</code></td><td>聚合成摘要</td><td>多列變一列（搭配 <code>group_by()</code> 則變成每組一列）</td></tr>
+        </tbody>
+      </table></div>
+      <p>五個動詞有一個共同規則：<strong>第一個參數都是資料，回傳的也都是資料</strong>。正因如此它們才能用管線無限串接。</p>
+
+      <div class="videobox" data-vid="Gvhkp-Yw65U" data-start="0">
+        <div class="vhead"><span class="play">▶</span> 影片示範 · dplyr 核心動詞（英文，11 分 21 秒） <span class="seg">點縮圖開啟</span></div>
+        <div class="vthumb" role="button" tabindex="0" aria-label="播放影片：Dplyr Essentials" style="background-image:url('https://i.ytimg.com/vi/Gvhkp-Yw65U/hqdefault.jpg')">
+          <div class="vplay">▶</div><div class="vopen">在 YouTube 開啟 ↗</div>
+        </div>
+        <div class="vcap">「Dplyr Essentials (easy data manipulation in R)」— Dataslice（8 萬觀看）。完整示範 filter、select、mutate、arrange、group_by 與 summarise。這是 2021 年的影片，當年的教學普遍使用 magrittr 的 <code>%&gt;%</code>；看到時請直接對應成本章的 <code>|&gt;</code>。版權屬原作者。</div>
+      </div>
+
+      <h2 id="s07-filter">3. filter 與 select</h2>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>d |&gt;
+  filter(會期 == 1) |&gt;
+  select(委員, 事由)
+#&gt; # A tibble: 59 × 2
+#&gt;   委員   事由
+#&gt;   &lt;chr&gt;  &lt;chr&gt;
+#&gt; 1 羅智強 本院羅委員智強，就文化部發放文化成年禮金政策…
+#&gt; 2 黃健豪 本院黃委員健豪，鑑於近年來機場海關扣押大量加熱菸品…</pre></div>
+      <p>注意 <code>==</code> 是兩個等號。一個等號是賦值，兩個才是「等於嗎」。這是所有程式語言新手都會犯一次的錯，犯過就記住了。</p>
+      <p>條件可以組合，逗號代表「而且」：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>d |&gt; filter(會期 == 1, 委員 == "羅智強")     # 而且
+d |&gt; filter(會期 == 1 | 會期 == 3)           # 或（直立線）
+d |&gt; filter(會期 %in% c(1, 3))               # 同上，更好讀
+d |&gt; filter(!委員 == "羅智強")               # 驚嘆號＝否定</pre></div>
+
+      <h2 id="s07-mutate">4. mutate 與 arrange</h2>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>d |&gt;
+  mutate(字數 = nchar(說明)) |&gt;
+  arrange(desc(字數)) |&gt;
+  select(委員, 會期, 字數)
+#&gt; # A tibble: 162 × 3
+#&gt;   委員    會期  字數
+#&gt;   &lt;chr&gt;  &lt;dbl&gt; &lt;int&gt;
+#&gt; 1 陳菁徽     3  2573
+#&gt; 2 羅智強     1  2183
+#&gt; 3 羅智強     1  1893
+#&gt; 4 羅智強     2  1819
+#&gt; 5 羅智強     1  1472</pre></div>
+      <p><code>arrange()</code> 預設由小到大，<code>desc()</code> 反過來。</p>
+      <div class="callout warn"><div class="ct">▍管線不會改變原始資料</div>
+        <p>上面這段跑完，<code>d</code> 本身<strong>沒有</strong>多出「字數」這一欄——結果只是印在 Console 上。要保留就得存起來：<code>d2 &lt;- d |&gt; mutate(...)</code>。新手常以為 mutate 會「就地修改」，結果下一行找不到那一欄。</p>
+      </div>
+
+      <h2 id="s07-group">5. group_by 與 summarise</h2>
+      <p>這組是 dplyr 最有威力的地方：先分組，再對每組算摘要。</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>d |&gt;
+  mutate(字數 = nchar(說明)) |&gt;
+  group_by(會期) |&gt;
+  summarise(件數 = n(),
+            平均字數 = round(mean(字數)),
+            最長 = max(字數))
+#&gt; # A tibble: 3 × 4
+#&gt;    會期  件數 平均字數  最長
+#&gt;   &lt;dbl&gt; &lt;int&gt;    &lt;dbl&gt; &lt;int&gt;
+#&gt; 1     1    59      617  2183
+#&gt; 2     2    68      626  1819
+#&gt; 3     3    35      665  2573</pre></div>
+      <p><code>n()</code> 是「這組有幾列」，只能用在 <code>summarise()</code> 或 <code>mutate()</code> 裡面。</p>
+      <p>單純只想數個數的話，有更短的寫法 <code>count()</code>：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>count(d, 會期)                      # 等同 group_by(會期) |&gt; summarise(n = n())
+d |&gt; count(委員, sort = TRUE) |&gt; head(5)
+#&gt; # A tibble: 5 × 2
+#&gt;   委員       n
+#&gt;   &lt;chr&gt;  &lt;int&gt;
+#&gt; 1 羅智強    67
+#&gt; 2 陳菁徽    14
+#&gt; 3 萬美玲    12
+#&gt; 4 吳宗憲    10
+#&gt; 5 顏寬恒     8</pre></div>
+      <p>這個結果本身就值得停下來想一想：162 筆裡有 67 筆出自同一位委員，佔了四成。<strong>如果你之後要比較「不同委員的用詞差異」，這種極度不平衡的分布會嚴重影響結論</strong>——這正是課程第 5 週「描述與比較文本」要處理的問題。工具課看到的數字，往往就是方法課的題目。</p>
+
+      <h2 id="s07-full">6. 串成完整管線</h2>
+      <p>把學到的全部串起來，回答一個實質問題：質詢量達 5 篇以上的委員裡，誰平均寫得最長？</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>d |&gt;
+  mutate(字數 = nchar(說明)) |&gt;
+  group_by(委員) |&gt;
+  summarise(件數 = n(), 平均字數 = round(mean(字數))) |&gt;
+  filter(件數 &gt;= 5) |&gt;
+  arrange(desc(平均字數)) |&gt;
+  head(5)
+#&gt; # A tibble: 5 × 3
+#&gt;   委員    件數 平均字數
+#&gt;   &lt;chr&gt;  &lt;int&gt;    &lt;dbl&gt;
+#&gt; 1 羅智強    67      747
+#&gt; 2 陳菁徽    14      732
+#&gt; 3 吳宗憲    10      653
+#&gt; 4 鍾佳濱     6      549
+#&gt; 5 顏寬恒     8      539</pre></div>
+      <p>六行程式碼，從原始資料到一個可以寫進報告的結果。注意 <code>filter()</code> 出現在 <code>summarise()</code> 之後——這時它篩的是「每位委員一列」的摘要表，不是原始的 162 列。<strong>同一個動詞放在管線的不同位置，意義完全不同</strong>，這是讀懂別人程式碼的關鍵。</p>
+      <div class="callout tip"><div class="ct">▍除錯管線的方法</div>
+        <p>管線出錯時，從最上面開始，一次只執行到某一個 <code>|&gt;</code> 為止（選取那幾行按 <span class="kbd">Cmd/Ctrl</span>+<span class="kbd">Enter</span>），看每一步的中間結果。哪一步的列數或欄數不對，問題就在那裡。</p>
+      </div>
+
+      <h2 id="s07-p">7. 動手練習</h2>
+      <div class="practice"><ol>
+        <li>算出每位委員的質詢<strong>件數</strong>與<strong>最長</strong>一篇的字數，只留件數 3 篇以上的，依最長排序。</li>
+        <li>找出第 2 會期裡字數超過 1,000 字的質詢，印出委員與事由。</li>
+        <li><code>count(d, 委員, 會期)</code> 會得到什麼？想清楚再執行，驗證你的預期。</li>
+        <li>把第 6 節那段完整管線<strong>逐步執行</strong>：先只跑到 <code>mutate</code>，再跑到 <code>group_by</code>，再跑到 <code>summarise</code>，觀察每一步資料的形狀怎麼變。</li>
+        <li>故意把 <code>filter(件數 &gt;= 5)</code> 移到 <code>group_by()</code> 前面，看看結果為什麼不一樣、錯誤訊息說什麼。</li>
+      </ol></div>
+
+      <h2 id="s07-s">8. 本章小結</h2>
+      <ul>
+        <li><code>|&gt;</code> 把巢狀呼叫攤平成從左到右；心裡唸成「然後」。快捷鍵 <span class="kbd">Cmd/Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">M</span>。</li>
+        <li>五個動詞：filter 挑列、select 挑欄、mutate 加欄、arrange 排序、summarise 聚合。</li>
+        <li><code>group_by()</code> + <code>summarise()</code> 是分組分析的主力；只數個數用 <code>count()</code>。</li>
+        <li>管線不會改變原始資料，要存才留得住。</li>
+        <li>同一個動詞放在管線不同位置，作用對象不同。</li>
+        <li>管線出錯就逐步執行，看哪一步的形狀不對。</li>
+      </ul>
+      <footer class="foot">程式碼與輸出皆在 R 4.6.1 + dplyr 實際執行驗證；對照 <a href="https://dplyr.tidyverse.org/" target="_blank" rel="noopener">dplyr 官方文件</a> 撰寫（查證日 2026-09-17）。</footer>
+      <div class="chap-foot"><a class="nextlink" data-go="ch08"><span class="k">下一章 →</span> 08 · 字串處理 stringr</a></div>
+    </section>
+
+    <!-- ===================== ch08 ===================== -->
+    <section class="chapter" id="ch08">
+      <div class="crumb">第二篇 · R 語言最小必要集 / 08</div>
+      <h1 class="ch">字串處理 stringr</h1>
+      <p class="lead">本章目標：學會六個 stringr 函數與最小必要的正規表達式，然後動手解決這份語料真正的髒污——漢字之間的空白。</p>
+      <div class="pagetoc"><div class="tt">本頁章節</div>
+        <a href="#s08-six">六個函數</a><a href="#s08-regex">正規表達式最小集</a><a href="#s08-dirty">問題現場</a><a href="#s08-fix">動手清理</a><a href="#s08-search">關鍵詞檢索</a><a href="#s08-extract">抽取</a><a href="#s08-p">動手練習</a><a href="#s08-s">本章小結</a>
+      </div>
+
+      <h2 id="s08-six">1. 六個函數就夠用</h2>
+      <p>stringr 的函數全部以 <code>str_</code> 開頭，第一個參數都是字串向量，而且全部向量化——你對一個字串怎麼做，對 162 筆就怎麼做。</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>library(stringr)
+s &lt;- "本院羅委員智強，就文化部發放文化成年禮金政策"
+
+str_length(s)                    #&gt; [1] 22          幾個字元
+str_sub(s, 1, 6)                 #&gt; [1] "本院羅委員智"   取第 1 到 6 個字
+str_detect(s, "文化")            #&gt; [1] TRUE        有沒有出現
+str_count(s, "文化")             #&gt; [1] 2           出現幾次
+str_replace_all(s, "文化", "教育")
+#&gt; [1] "本院羅委員智強，就教育部發放教育成年禮金政策"
+str_split("能源、教育、交通", "、")
+#&gt; [[1]]
+#&gt; [1] "能源" "教育" "交通"</pre></div>
+      <div class="callout note"><div class="ct">▍<code>str_replace()</code> 與 <code>str_replace_all()</code></div>
+        <p>沒有 <code>_all</code> 的版本只換<strong>第一個</strong>。清理資料時幾乎永遠要用 <code>_all</code>，這個差別造成的錯誤很難發現，因為程式不會報錯，只是沒換乾淨。</p>
+      </div>
+
+      <h2 id="s08-regex">2. 正規表達式最小集</h2>
+      <p>正規表達式（regex）是描述「什麼樣的字串」的語法。完整學會要花很久，但文本分析日常只需要這幾個：</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:20%">寫法</th><th style="width:28%">意思</th><th>例子</th></tr></thead>
+        <tbody>
+          <tr><td><code>.</code></td><td>任意一個字元</td><td><code>"能.政策"</code> 可配「能源政策」</td></tr>
+          <tr><td><code>\\d</code></td><td>一個數字</td><td><code>"\\d+"</code> 抓「93,800」裡的數字串</td></tr>
+          <tr><td><code>\\s</code></td><td>一個空白</td><td>本章主角</td></tr>
+          <tr><td><code>+</code> / <code>*</code></td><td>前面那個出現 1 次以上 / 0 次以上</td><td><code>"\\s+"</code> 連續空白</td></tr>
+          <tr><td><code>[abc]</code></td><td>括號內任一個</td><td><code>"[，。；]"</code> 中文標點</td></tr>
+          <tr><td><code>^</code> / <code>$</code></td><td>開頭 / 結尾</td><td><code>"^本院"</code> 以「本院」開頭</td></tr>
+          <tr><td><code>\\p{Han}</code></td><td><strong>一個漢字</strong></td><td>處理中文的關鍵武器</td></tr>
+          <tr><td><code>(?&lt;=X)</code> <code>(?=X)</code></td><td>前面是 X／後面是 X（但不含 X 本身）</td><td>見下一節</td></tr>
+        </tbody>
+      </table></div>
+      <div class="callout warn"><div class="ct">▍為什麼是兩個反斜線</div>
+        <p>regex 本身要的是 <code>\d</code>，但 R 的字串裡 <code>\</code> 是逃脫字元，所以你得打 <code>\\d</code>，R 才會把一個 <code>\</code> 傳給 regex 引擎。這是 R 初學者在 regex 上卡最久的一件事，記住「regex 裡的反斜線在 R 裡要打兩次」就好。</p>
+      </div>
+
+      <div class="videobox" data-vid="_DXSHUN0Vcc" data-start="0">
+        <div class="vhead"><span class="play">▶</span> 影片示範 · 用 stringr 寫正規表達式（英文，4 分 54 秒） <span class="seg">點縮圖開啟</span></div>
+        <div class="vthumb" role="button" tabindex="0" aria-label="播放影片：Working with Regular Expressions Using StringR in R" style="background-image:url('https://i.ytimg.com/vi/_DXSHUN0Vcc/hqdefault.jpg')">
+          <div class="vplay">▶</div><div class="vopen">在 YouTube 開啟 ↗</div>
+        </div>
+        <div class="vcap">「Working with Regular Expressions Using StringR in R」— Duke Center for Computational Thinking。五分鐘帶過 regex 與 stringr 的搭配，與第 1 章那支同一個系列。版權屬原作者。</div>
+      </div>
+
+      <h2 id="s08-dirty">3. 問題現場</h2>
+      <p>把第 2 筆質詢的中段印出來看：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>str_sub(d$說明[2], 150, 210)
+#&gt; [1] "023 年查扣非法走私之加熱菸即高達 93,800 多條，早就塞爆海關 倉庫。其間，造成海關人員的負擔，不僅要負擔人力與保"</pre></div>
+      <p>看到「海關 倉庫」中間那個空白了嗎？原始資料來自立法院的 PDF 公報，PDF 為了左右對齊會在字元之間插入空白，轉成文字時就留下來了。第 1 章提過的「被 沒 收」也是同一個來源。</p>
+      <p>為什麼非清不可：<strong>斷詞工具會把空白當成詞的邊界</strong>。不清的話，「海關倉庫」會被切成「海關」和「倉庫」兩個詞——這個例子看起來還好，但「被 沒 收」會被切成三個單字，你的詞頻表就會多出一堆莫名其妙的單字詞。這會直接污染第 13 章的文件特徵矩陣。</p>
+
+      <h2 id="s08-fix">4. 動手清理</h2>
+      <p>我們要的規則是：<strong>當一個空白的前面是漢字、後面也是漢字時，刪掉它</strong>。前後都是漢字才刪，是為了保留「93,800 多條」這種數字與中文之間的合理空白。</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>乾淨 &lt;- str_replace_all(d$說明[2], "(?&lt;=\\p{Han})\\s+(?=\\p{Han})", "")
+
+str_sub(乾淨, 150, 210)
+#&gt; [1] "023 年查扣非法走私之加熱菸即高達 93,800 多條，早就塞爆海關倉庫。其間，造成海關人員的負擔，不僅要負擔人力與保管"</pre></div>
+      <p>拆解這個 regex：<code>(?&lt;=\\p{Han})</code> 是「往回看，前面得是漢字」，<code>\\s+</code> 是「一個以上的空白」（這才是要被刪掉的部分），<code>(?&lt;=...)</code> 與 <code>(?=...)</code> 這兩個往回看／往前看的條件<strong>不會被替換掉</strong>，所以漢字本身安然無恙。替換成 <code>""</code> 就是刪除。</p>
+      <p>套用到整欄，並確認影響範圍：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>d &lt;- d |&gt;
+  mutate(說明清理 = str_replace_all(說明, "(?&lt;=\\p{Han})\\s+(?=\\p{Han})", ""))
+
+round(mean(str_length(d$說明)))        #&gt; [1] 631   清理前
+round(mean(str_length(d$說明清理)))    #&gt; [1] 620   清理後
+sum(d$說明 != d$說明清理)              #&gt; [1] 162</pre></div>
+      <p>最後這個數字是本章最重要的發現：<strong>162 筆全部都被改動過</strong>，平均每筆刪掉約 11 個假空白。也就是說，如果你沒做這一步就直接斷詞，<strong>整份語料沒有一筆是乾淨的</strong>。</p>
+      <div class="callout tip"><div class="ct">▍清理過的資料要另存一欄</div>
+        <p>注意我們是 <code>mutate()</code> 出一個新欄位 <code>說明清理</code>，而不是覆蓋 <code>說明</code>。保留原始欄位讓你隨時能回頭比對、驗證清理有沒有做錯事。這也呼應第 3 章的紀律：原始資料只讀不改。</p>
+      </div>
+
+      <h2 id="s08-search">5. 關鍵詞檢索</h2>
+      <p><code>str_detect()</code> 回傳邏輯向量，正好餵給 <code>filter()</code>：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>d |&gt; filter(str_detect(說明清理, "能源")) |&gt; count(會期)
+#&gt; # A tibble: 2 × 2
+#&gt;    會期     n
+#&gt;   &lt;dbl&gt; &lt;int&gt;
+#&gt; 1     1     2
+#&gt; 2     2     1
+
+d |&gt;
+  mutate(提到能源 = str_count(說明清理, "能源")) |&gt;
+  filter(提到能源 &gt; 0) |&gt;
+  arrange(desc(提到能源)) |&gt;
+  select(委員, 會期, 提到能源)
+#&gt; # A tibble: 3 × 3
+#&gt;   委員    會期 提到能源
+#&gt;   &lt;chr&gt;  &lt;dbl&gt;    &lt;int&gt;
+#&gt; 1 陳菁徽     1        5
+#&gt; 2 鍾佳濱     1        1
+#&gt; 3 羅智強     2        1</pre></div>
+      <p>162 筆裡只有 3 筆提到「能源」。這提醒一件事：<strong>這份 162 筆的樣本是為了教學而抓的一小部分，不足以支撐任何實質的政治學結論</strong>。真正做研究時，你需要的是完整的母體或有設計的抽樣——那是課程第 8 週「檢索、載入與整理文本語料庫」的內容。</p>
+      <div class="callout warn"><div class="ct">▍關鍵詞法的先天限制</div>
+        <p><code>str_detect(說明, "能源")</code> 只能抓到字面上出現「能源」兩個字的，抓不到講「電價」「核電」「綠電」「再生能源政策」但沒寫「能源」二字的。這就是課程第 4 週字典法會討論的效度問題，也是為什麼後面要走到詞嵌入與 Transformer。工具的限制，就是方法的動機。</p>
+      </div>
+
+      <h2 id="s08-extract">6. 抽取：str_extract</h2>
+      <p><code>str_extract()</code> 把符合的部分「抓出來」而不是判斷有沒有：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>str_extract(head(d$事由, 3), "本院(.+?)委員(.+?)，")
+#&gt; [1] "本院羅委員智強，" "本院黃委員健豪，" "本院馬委員文君，"</pre></div>
+      <p><code>.+?</code> 裡的問號代表「非貪婪」——盡量少抓。沒有問號的 <code>.+</code> 會一路抓到整句最後一個「，」為止。貪婪與非貪婪是 regex 第二個容易踩的坑，記得先試小樣本再套用全欄。</p>
+
+      <h2 id="s08-p">7. 動手練習</h2>
+      <div class="practice"><ol>
+        <li>對 <code>d$說明[1]</code> 做一次清理，用 <code>str_length()</code> 比較清理前後的長度差幾個字。</li>
+        <li>找出提到「教育」的質詢有幾筆，分別屬於哪些會期。</li>
+        <li>用 <code>str_count(d$說明清理, "，")</code> 算每筆的逗號數，再和字數做比較——想想這個數字能不能當成「句子複雜度」的粗略代理指標，以及它的問題在哪。</li>
+        <li>試著寫一個 regex 抓出說明裡所有的數字（提示：<code>\\d+</code>），用 <code>str_extract_all()</code>，觀察它跟 <code>str_extract()</code> 回傳的結構差在哪。</li>
+        <li>把清理用的 regex 改成 <code>"\\s+"</code>（不加前後條件）套用一次，比較兩者結果——你會看到「93,800 多條」被黏成什麼樣子。這個對照能讓你真正理解那兩個條件在做什麼。</li>
+      </ol></div>
+
+      <h2 id="s08-s">8. 本章小結</h2>
+      <ul>
+        <li>六個函數走天下：<code>str_length</code>、<code>str_sub</code>、<code>str_detect</code>、<code>str_count</code>、<code>str_replace_all</code>、<code>str_split</code>。</li>
+        <li>regex 在 R 裡反斜線要打兩次；<code>\\p{Han}</code> 是處理中文的關鍵。</li>
+        <li>本課語料 162 筆<strong>全部</strong>含有 PDF 排版造成的假空白，不清理會直接污染斷詞結果。</li>
+        <li>清理結果存成新欄位，不覆蓋原始欄位。</li>
+        <li><code>str_detect()</code> 回傳邏輯向量，可直接餵給 <code>filter()</code>。</li>
+        <li>關鍵詞法抓不到同義表達——這是後面所有進階方法的動機。</li>
+      </ul>
+      <footer class="foot">程式碼與輸出皆在 R 4.6.1 + stringr 實際執行驗證；對照 <a href="https://stringr.tidyverse.org/" target="_blank" rel="noopener">stringr 官方文件</a> 與 <a href="https://stringr.tidyverse.org/articles/regular-expressions.html" target="_blank" rel="noopener">regex vignette</a> 撰寫（查證日 2026-09-17）。</footer>
+      <div class="chap-foot"><a class="nextlink" data-go="ch09"><span class="k">下一章 →</span> 09 · 迴圈與 purrr</a></div>
+    </section>
+
+    <!-- ===================== ch09 ===================== -->
+    <section class="chapter" id="ch09">
+      <div class="crumb">第二篇 · R 語言最小必要集 / 09</div>
+      <h1 class="ch">迴圈與 purrr</h1>
+      <p class="lead">本章目標：知道怎麼對 162 筆資料重複做同一件事，並理解為什麼 R 社群偏好 <code>map()</code> 勝過 <code>for</code>。</p>
+      <div class="pagetoc"><div class="tt">本頁章節</div>
+        <a href="#s09-for">for 迴圈</a><a href="#s09-map">map 家族</a><a href="#s09-seg">用 map 接斷詞</a><a href="#s09-why">為什麼偏好 map</a><a href="#s09-when">什麼時候還是要用 for</a><a href="#s09-p">動手練習</a><a href="#s09-s">本章小結</a>
+      </div>
+
+      <h2 id="s09-for">1. for 迴圈：先看你原本會怎麼寫</h2>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>結果 &lt;- character(0)           # 先準備一個空容器
+for (s in head(d$事由, 3)) {
+  結果 &lt;- c(結果, str_sub(s, 1, 10))
+}
+結果
+#&gt; [1] "本院羅委員智強，就文" "本院黃委員健豪，鑑於" "本院馬委員文君，鑑於"</pre></div>
+      <p>這段能跑，邏輯也清楚。但它有三個問題：你得自己準備容器、自己記得容器該是什麼型別、而且 <code>結果 &lt;- c(結果, ...)</code> 這種每圈都重建一次向量的寫法，在資料量大時會明顯變慢。</p>
+      <p>更麻煩的是，迴圈跑完之後 <code>s</code> 這個變數還留在你的環境裡，而且是最後一筆的值。這種「殘留物」是很多難以察覺的錯誤的來源。</p>
+
+      <h2 id="s09-map">2. map 家族：同一件事，一行</h2>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>library(purrr)
+
+map_chr(head(d$事由, 3), \(s) str_sub(s, 1, 10))
+#&gt; [1] "本院羅委員智強，就文" "本院黃委員健豪，鑑於" "本院馬委員文君，鑑於"</pre></div>
+      <p>讀法是：拿第一個參數裡的每一個元素，餵進後面那個函數，把結果收集起來。<code>\(s)</code> 是 R 4.1 起的簡寫，等同 <code>function(s)</code>——你可以把它唸成「給我一個東西，我叫它 s」。</p>
+      <p>函數名稱的後綴決定回傳什麼型別，這是 purrr 最重要的設計：</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:20%">函數</th><th style="width:26%">回傳</th><th>什麼時候用</th></tr></thead>
+        <tbody>
+          <tr><td><code>map_chr()</code></td><td>文字向量</td><td>每筆產生一段文字，例如斷詞結果</td></tr>
+          <tr><td><code>map_int()</code></td><td>整數向量</td><td>每筆產生一個計數，例如詞數</td></tr>
+          <tr><td><code>map_dbl()</code></td><td>數值向量</td><td>每筆產生一個小數，例如平均值</td></tr>
+          <tr><td><code>map_lgl()</code></td><td>邏輯向量</td><td>每筆產生一個判斷</td></tr>
+          <tr><td><code>map()</code></td><td>list（清單）</td><td>每筆產生的東西長度不一或結構複雜</td></tr>
+        </tbody>
+      </table></div>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>map_int(head(d$說明清理, 5), str_length)
+#&gt; [1] 803 469 532 488 753
+
+map_dbl(list(c(1, 2, 3), c(10, 20)), mean)
+#&gt; [1]  2 15</pre></div>
+
+      <div class="videobox" data-vid="nd-Y8b22YaQ" data-start="0">
+        <div class="vhead"><span class="play">▶</span> 影片示範 · purrr 的 map 家族（英文，17 分 45 秒） <span class="seg">點縮圖開啟</span></div>
+        <div class="vthumb" role="button" tabindex="0" aria-label="播放影片：How to purrr" style="background-image:url('https://i.ytimg.com/vi/nd-Y8b22YaQ/hqdefault.jpg')">
+          <div class="vplay">▶</div><div class="vopen">在 YouTube 開啟 ↗</div>
+        </div>
+        <div class="vcap">「How to purrr」— Equitable Equations（與第 3 章 Project 那支同一位作者）。完整介紹 map 家族與各種後綴變體。本章只用到 <code>map_chr</code>、<code>map_int</code>、<code>map_dbl</code> 三個，影片後段的進階內容可以之後需要時再看。版權屬原作者。</div>
+      </div>
+
+      <h2 id="s09-seg">3. 用 map 接斷詞（本章的實際用途）</h2>
+      <p>中文斷詞的 <code>segment()</code> 一次只能處理一段文字，回傳的是一串詞。要把 162 筆全部斷完，正是 map 的主場：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>library(jiebaR)
+w &lt;- worker()      # 建立斷詞器，只要做一次
+
+詞 &lt;- map_chr(head(d$說明清理, 3), \(s) paste(segment(s, w), collapse = " "))
+
+str_sub(詞, 1, 60)
+#&gt; [1] "由 藝 FUN 券 轉型 而來 的 文化 成年 禮金 今年 起 擴大 發放 文化部 每年 列 20 億 預算 發給 16"
+#&gt; [2] "一 日前 媒體 報導 日本 觀光客 來 臺 旅遊 入境 時 隨身攜帶 之 加熱 菸 產品 通通 被 海關 沒收 讓 他們"
+#&gt; [3] "一 據 國家 發展 委員會 推估 於 2028 年 台灣 生育率 將降 至 新低 出生 人口 推估 僅剩 14 萬人 基"</pre></div>
+      <p>請注意第二筆裡的「被 海關 沒收」——<strong>「沒收」被正確地當成一個詞</strong>。這就是第 8 章清理的成果：如果沒有先刪掉假空白，jieba 會看到「被 沒 收」，切成三個單字。一個上游的小清理，決定了下游整個詞頻表的品質。</p>
+      <p>數每筆有幾個詞：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>map_int(head(d$說明清理, 5), \(s) length(segment(s, w)))
+#&gt; [1] 388 228 240 222 318</pre></div>
+      <p>對照第 6 章的字元數（803、469、532、488、753），可以看出這份語料<strong>大約每 2.2 個字元構成一個詞</strong>。這個比例之後估算語料規模時會用到。</p>
+
+      <h2 id="s09-why">4. 為什麼偏好 map</h2>
+      <p>不是因為時髦，是因為三個實際好處。</p>
+      <p>第一，<strong>型別有保證</strong>。<code>map_chr()</code> 承諾回傳文字向量，如果某一筆意外產生了數字，它會當場報錯，而不是安靜地把整個向量轉型。for 迴圈沒有這個保護，錯誤會一路傳到最後才爆炸。</p>
+      <p>第二，<strong>能直接接進管線</strong>。map 是「資料進、資料出」，可以和第 7 章的五動詞串在一起，整段分析維持同一種讀法。</p>
+      <p>第三，<strong>不留殘留物</strong>。迴圈變數不會留在環境裡污染後續程式碼。</p>
+      <div class="callout tip"><div class="ct">▍先確定它對，再套用全部</div>
+        <p>教材裡所有 map 範例都用 <code>head(..., 3)</code> 或 <code>head(..., 5)</code>，這是刻意的習慣：<strong>先在三五筆上確認結果正確，再拿掉 head 跑完整份資料</strong>。斷詞或呼叫 API 這類耗時的操作，這個習慣能省下大量時間。</p>
+      </div>
+
+      <h2 id="s09-when">5. 什麼時候還是要用 for</h2>
+      <p>map 不是萬靈丹。當每一圈都依賴上一圈的結果時（例如累積計算、逐步逼近的模型），for 反而清楚。當你要做的事情沒有回傳值、只是產生副作用（例如把 100 張圖存到硬碟），purrr 有個專門的 <code>walk()</code>。</p>
+      <p>不要為了避免 for 而把程式碼寫得更難懂。<strong>能讀懂的 for 迴圈，永遠好過一個你自己都看不懂的 map</strong>。</p>
+
+      <h2 id="s09-p">6. 動手練習</h2>
+      <div class="practice"><ol>
+        <li>用 <code>map_int()</code> 算出前 10 筆質詢各有幾個「，」（提示：搭配 <code>str_count()</code>）。</li>
+        <li>把第 3 節的斷詞從 <code>head(..., 3)</code> 改成全部 162 筆，用 <code>system.time()</code> 包起來看跑多久。</li>
+        <li>用 <code>mutate()</code> 把詞數加成 d 的新欄位：<code>mutate(詞數 = map_int(說明清理, \(s) length(segment(s, w))))</code>，然後接第 7 章的 <code>group_by()</code> 算各會期平均詞數。</li>
+        <li>故意用錯後綴：把第 2 節的 <code>map_chr()</code> 改成 <code>map_int()</code> 執行，讀一下錯誤訊息。這就是「型別有保證」的實際樣子。</li>
+        <li>用 for 迴圈重寫練習 1，比較兩種寫法的行數與可讀性，自己判斷哪個好。</li>
+      </ol></div>
+
+      <h2 id="s09-s">7. 本章小結</h2>
+      <ul>
+        <li><code>map_*(資料, 函數)</code>：對每個元素做同一件事，收集結果。</li>
+        <li>後綴決定回傳型別：<code>_chr</code> 文字、<code>_int</code> 整數、<code>_dbl</code> 數值、<code>_lgl</code> 邏輯，無後綴回傳 list。</li>
+        <li><code>\(x)</code> 是 <code>function(x)</code> 的簡寫（R 4.1 起）。</li>
+        <li>map 的三個好處：型別有保證、可接管線、不留殘留變數。</li>
+        <li>先用 <code>head()</code> 試三五筆，確認無誤再跑全部。</li>
+        <li>累積型運算或純副作用時，for 與 <code>walk()</code> 仍有其位置。</li>
+      </ul>
+      <footer class="foot">程式碼與輸出皆在 R 4.6.1 + purrr + jiebaR 實際執行驗證；對照 <a href="https://purrr.tidyverse.org/" target="_blank" rel="noopener">purrr 官方文件</a> 撰寫（查證日 2026-09-17）。</footer>
+      <div class="chap-foot"><a class="nextlink" data-go="ch10"><span class="k">下一章 →</span> 10 · 讀懂錯誤訊息</a></div>
+    </section>
+
+    <!-- ===================== ch10 ===================== -->
+    <section class="chapter" id="ch10">
+      <div class="crumb">第二篇 · R 語言最小必要集 / 10</div>
+      <h1 class="ch">讀懂錯誤訊息</h1>
+      <p class="lead">本章目標：把「一片紅字」變成可以逐句讀懂的資訊，認得六種最常見的錯誤，並學會判斷問題出在你還是別人。</p>
+      <div class="pagetoc"><div class="tt">本頁章節</div>
+        <a href="#s10-three">三種紅字</a><a href="#s10-anat">錯誤訊息的解剖</a><a href="#s10-six">六種常見錯誤</a><a href="#s10-whose">判斷是誰壞了</a><a href="#s10-ask">怎麼問問題</a><a href="#s10-ai">AI 協助與課程規定</a><a href="#s10-p">動手練習</a><a href="#s10-s">本章小結</a>
+      </div>
+
+      <h2 id="s10-three">1. 三種紅字，嚴重程度不同</h2>
+      <p>R 印出來的紅字有三種，新手常一律當成「壞了」，其實只有第一種真的停下來。</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:16%">類型</th><th style="width:26%">意思</th><th>你該做什麼</th></tr></thead>
+        <tbody>
+          <tr><td><code>Error</code></td><td><strong>停了</strong>，那行沒有執行完</td><td>必須處理。後面的程式碼是在錯誤的狀態下跑的，不要忽略。</td></tr>
+          <tr><td><code>Warning</code></td><td>跑完了，但結果可能不是你要的</td><td><strong>一定要看懂</strong>。Warning 常代表資料被安靜地改掉了。</td></tr>
+          <tr><td><code>Message</code></td><td>只是在跟你說話</td><td>通常可以忽略。<code>library()</code> 的載入訊息、readr 的欄位型別報告都屬於這類。</td></tr>
+        </tbody>
+      </table></div>
+      <div class="codeblock"><span class="lang">R Console</span><button class="copyb">複製</button><pre>log("abc")
+#&gt; Error in log("abc") : non-numeric argument to mathematical function
+
+as.numeric("abc")
+#&gt; [1] NA
+#&gt; Warning message:
+#&gt; NAs introduced by coercion</pre></div>
+      <p>第二個例子正是 Warning 的危險之處：<strong>它回傳了一個 NA，而且程式繼續往下跑</strong>。如果這是在清理資料的中途，你的整欄數字可能已經悄悄變成一堆 NA，卻要到很後面算平均時才發現不對。</p>
+
+      <h2 id="s10-anat">2. 錯誤訊息的解剖</h2>
+      <p>現代 R（tidyverse 套件尤其如此）的錯誤訊息是有結構的。以打錯欄位名為例：</p>
+      <div class="codeblock"><span class="lang">R Console</span><button class="copyb">複製</button><pre>d |&gt; filter(會其 == 1)
+
+#&gt; Error in `filter()`:                 ← ① 哪個函數出的錯
+#&gt; ℹ In argument: `會其 == 1`.          ← ② 哪個參數有問題
+#&gt; Caused by error:                     ← ③ 真正的原因在下一行
+#&gt; ! object '會其' not found             ← ④ 找不到叫「會其」的東西</pre></div>
+      <p>讀的順序是<strong>由下往上</strong>：先看最後一行的真正原因（④），再往上找它發生在哪裡（②①）。這裡的原因是「會其」不存在——因為正確的欄位名是「會期」。</p>
+      <div class="callout tip"><div class="ct">▍三個讀訊息的訣竅</div>
+        <p>第一，找引號裡的名字，那通常就是打錯的東西。第二，看到 <code>not found</code> 先想「打錯字」或「忘了載入套件」。第三，訊息很長時，最有用的資訊在<strong>最後一行</strong>，中間那一大串 Backtrace 是給套件開發者看的，你多半不需要。</p>
+      </div>
+
+      <h2 id="s10-six">3. 六種常見錯誤</h2>
+      <p>下面六個涵蓋你這學期八成的狀況，全部是實際執行產生的真實訊息。</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:40%">訊息</th><th style="width:26%">真正的原因</th><th>怎麼修</th></tr></thead>
+        <tbody>
+          <tr><td><code>object '質詢資料' not found</code></td><td>變數不存在：打錯字，或那一行你根本沒執行</td><td>看 Environment 面板有沒有這個物件；往上把該跑的行跑一次</td></tr>
+          <tr><td><code>could not find function "str_detekt"</code></td><td>函數不存在：打錯字，<strong>或忘了 <code>library()</code></strong></td><td>檢查拼字；確認套件已載入</td></tr>
+          <tr><td><code>'沒有這個檔.csv' does not exist in current working directory: '/Users/yourname/...'</code></td><td>檔案路徑不對，通常是 R 站錯位置</td><td><code>getwd()</code>、<code>list.files()</code>；用 Project 與 <code>here()</code></td></tr>
+          <tr><td><code>invalid 'type' (character) of argument</code></td><td>對文字做算術，例如 <code>sum("一百")</code></td><td><code>class()</code> 確認型別；該轉數字就轉</td></tr>
+          <tr><td><code>subscript out of bounds</code></td><td>索引超出範圍，例如只有 162 筆卻要第 999 筆</td><td><code>length()</code> 或 <code>nrow()</code> 確認實際大小</td></tr>
+          <tr><td><code>In argument: `會其 == 1`. Caused by error: object '會其' not found</code></td><td>dplyr 動詞裡的欄位名打錯</td><td><code>names(d)</code> 確認正確欄名</td></tr>
+        </tbody>
+      </table></div>
+      <div class="callout warn"><div class="ct">▍中文欄位名的實務建議</div>
+        <p>本課語料的欄位名是中文（會期、委員、說明），R 完全支援，教材也一路這樣用。但中文欄位名容易打錯（會期／會其），而且在某些套件或匯出成其他格式時可能出狀況。做正式研究時，可以考慮把欄位改成英文，中文另外存一份對照表。這是取捨，不是規定。</p>
+      </div>
+
+      <h2 id="s10-whose">4. 判斷是誰壞了</h2>
+      <p>這是本章最重要、也最難的一節。當程式不動時，可能性有四種，解法完全不同：</p>
+      <div class="diagram">
+<pre><b>程式不動了</b>
+│
+├─ 訊息說某個<b>名字</b>找不到 ─────────► <i>你打錯字，或沒載入套件／沒執行某行</i>
+│
+├─ 訊息說<b>型別</b>或<b>維度</b>不對 ──────► <i>你的資料不是你以為的樣子 → class(), dim(), glimpse()</i>
+│
+├─ 安裝時 <b>compilation failed</b> ─────► <i>套件本身的問題（第 4 章的 jiebaR 案例）</i>
+│
+└─ 程式碼沒改過，<b>昨天可以今天不行</b> ► <i>外部世界變了：套件更新、API 改版、網路或權限</i></pre>
+        <div class="dcap">四種可能性的分流。前兩種是你的問題，後兩種不是——分清楚才不會浪費時間往錯的方向修。</div>
+      </div>
+      <p>第四種最容易讓人懷疑人生，而本課的語料就有一個現成案例。授課教師維護的 <code>legisTaiwan</code> 套件，原本是抓立法院資料最方便的方式，但在 2026-09-17 實測時：</p>
+      <div class="codeblock"><span class="lang">R Console</span><button class="copyb">複製</button><pre>library(legisTaiwan)
+get_ly_interpellations(term = 11, limit = 20)
+#&gt; Fetching interpellation data...
+#&gt; Error: API request failed with status code: 404</pre></div>
+      <p>你的程式碼沒有錯，套件也安裝成功了。404 的意思是「伺服器上沒有這個位址」。這時候要做的<strong>不是</strong>反覆重裝套件，而是繞過套件、直接問 API 本人：</p>
+      <div class="codeblock"><span class="lang">terminal</span><button class="copyb">複製</button><pre>curl -s -o /dev/null -w "%{http_code}\n" "https://ly.govapi.tw/v2/interpellations?limit=2"
+# 200</pre></div>
+      <p>API 回 200，表示<strong>資料來源是好的，壞的是套件裡寫死的那個網址</strong>——套件呼叫的端點與現行 API 版本已經不一致。判斷出這一點之後，解法就清楚了：直接用 <code>httr2</code> 呼叫 API（本課語料的取材腳本 <code>fetch-corpus.R</code> 就是這樣寫的），並到套件的 GitHub 開一個 issue 告知作者。</p>
+      <div class="callout note"><div class="ct">▍這個判斷力才是重點</div>
+        <p>「先確認底層服務活著，再回頭懷疑中間那層」是通用的除錯思路，不限於 R。這門課後面會大量依賴外部套件與 API——Hugging Face 的模型、各種資料來源——每一個都可能在學期中途改版。能自己做這個判斷，你就不會卡住。</p>
+      </div>
+
+      <h2 id="s10-ask">5. 怎麼問問題</h2>
+      <p>自己判斷不出來時，要問得讓別人能回答。R 社群的共識做法是提供一個 <strong>reprex</strong>（reproducible example，可重現的最小範例）：用<strong>內建或自造的小資料</strong>重現問題，不需要對方有你的檔案。</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>install.packages("reprex")   # 只需一次
+
+# 把有問題的程式碼複製到剪貼簿後執行：
+reprex::reprex()
+# 它會執行你的程式碼、連同輸出排版好，再放回剪貼簿，可直接貼到 GitHub issue</pre></div>
+      <p>附上環境資訊也幾乎是必要的——第一個被問的問題通常就是版本：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>sessionInfo()
+#&gt; R version 4.6.1 (2026-06-24)
+#&gt; Running under: macOS 27.0
+#&gt; other attached packages: jiebaR, purrr, stringr, dplyr, readr …
+
+packageVersion("quanteda")   # 單獨查某個套件的版本</pre></div>
+      <p>本課的求助管道，2026-09-17 版課綱寫得很細，順序不要弄錯：</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:30%">什麼狀況</th><th>去哪裡</th></tr></thead>
+        <tbody>
+          <tr><td>一般技術問題</td><td><strong>先張貼於 NTU COOL 討論區</strong></td></tr>
+          <tr><td>課程程式碼的問題（不涉敏感資訊）</td><td>也可以用課程儲存庫的 <strong>GitHub Issues</strong></td></tr>
+          <tr><td>課後 Lab 卡住</td><td>預約授課教師或助教的 <strong>office hours</strong>，<strong>帶著相關程式碼或輸出結果</strong>與問題的簡短說明</td></tr>
+          <tr><td>套件本身有問題</td><td>課綱寫明授課教師會<strong>協助你向套件作者開 Issue</strong>——所以判斷出「是套件壞了」是有價值的，第 4 節那個 legisTaiwan 案例就是</td></tr>
+          <tr><td>個人事務、個別成績</td><td>直接聯繫授課教師或助教</td></tr>
+        </tbody>
+      </table></div>
+      <p>注意「帶著程式碼或輸出結果」這個要求——這正是前面 reprex 在做的事。把問題準備好再去問，是你能為自己省最多時間的習慣。</p>
+
+      <h2 id="s10-ai">6. AI 協助與課程規定</h2>
+      <p>用 AI 解讀錯誤訊息是合理且高效的——課綱明文允許 AI 輔助概念化、文獻初篩、寫作編輯。但有兩件事必須說清楚。</p>
+      <p>第一，<strong>驗證責任在你</strong>。課綱寫得很直接：不得把未驗證的 AI 引用、資料、程式碼、分析或文字當成自己的作品。AI 給的程式碼要自己跑過、看懂、確認結果合理，才能用。</p>
+      <p>第二，<strong>必須聲明</strong>。每一份作業、海報、期末論文<strong>以及加分申請</strong>都要揭露使用的工具與版本、你請它做什麼、產出怎麼被使用、你怎麼檢查或驗證——課綱明說<strong>不需要附上確切的提示詞</strong>。<strong>沒有附完整 AI 聲明的繳交，在補齊之前不予受理</strong>。課綱另外提供了一個輔助工具：<a href="https://disclose-ai.app" target="_blank" rel="noopener">AI Disclosure Generator</a>。即使完全沒用 AI，也要照錄原文指定的那句聲明：</p>
+      <div class="codeblock"><span class="lang">聲明範例</span><button class="copyb">複製</button><pre>No generative AI tools were used in the preparation of this assignment.</pre></div>
+      <div class="callout warn"><div class="ct">▍兩條容易被忽略的紅線</div>
+        <p>第一，除非合法、必要且已有適當保護，<strong>不得把個資、敏感資料、未發表研究材料或保密審查資料輸入開放式生成式 AI 系統</strong>。你的期末論文資料如果涉及這些，貼進線上 AI 服務前要先想清楚。</p>
+        <p>第二，課綱明列四種會<strong>依臺大程序以學術不端處理</strong>的行為：不實陳述 AI 使用情形、未查證 AI 生成的內容、透過 AI 捏造來源或資料、利用 AI 規避作業的學習目標。這不是「扣分」等級的事。</p>
+      </div>
+
+      <div class="videobox pending">
+        <div class="vhead"><span class="play">▶</span> 影片示範 · 讀懂 R 的錯誤訊息 <span class="seg">待補</span></div>
+        <div class="ph">這個主題目前找不到品質足夠的示範影片——搜尋到的幾支不是觀看數極低就是內容偏離（查證日 2026-09-17）。與其硬塞，這裡先留白。替代閱讀建議：<a href="https://adv-r.hadley.nz/debugging.html" target="_blank" rel="noopener">Advanced R 的 Debugging 章節</a>（英文，免費線上版）。</div>
+      </div>
+
+      <h2 id="s10-p">7. 動手練習</h2>
+      <div class="practice"><ol>
+        <li>刻意製造本章表格裡的六種錯誤各一次，每次把訊息完整讀一遍，練習指出「引號裡的名字」是什麼。</li>
+        <li>執行 <code>as.numeric(c("1", "2", "三"))</code>，觀察它<strong>回傳了什麼</strong>以及警告說什麼。想一想：如果這是你資料清理流程的中間一步，你會在哪裡發現出事了？</li>
+        <li>執行 <code>sessionInfo()</code>，把輸出存成文字檔放進專案，當作這學期的環境快照。</li>
+        <li>安裝 reprex，拿練習 2 的程式碼實際產生一個 reprex，看看它排版成什麼樣子。</li>
+        <li>找一個你看不懂的錯誤訊息，先<strong>自己</strong>用本章的四種分流判斷一次，再去問 AI 或同學，比對你的判斷對不對。</li>
+      </ol></div>
+
+      <h2 id="s10-s">8. 本章小結</h2>
+      <ul>
+        <li>Error 停了要處理，Warning 跑完但可能被安靜改掉資料，Message 多半可忽略。</li>
+        <li>錯誤訊息由下往上讀，重點在最後一行；引號裡的名字通常就是打錯的東西。</li>
+        <li>六種常見錯誤：物件不存在、函數不存在、檔案路徑不對、型別不對、索引超界、欄位名打錯。</li>
+        <li>四種分流：打錯字／資料不如預期／套件本身壞了／外部世界變了。</li>
+        <li>套件壞掉時先確認底層服務是否正常（legisTaiwan 回 404 但 API 回 200）。</li>
+        <li>求助用 reprex 加 <code>sessionInfo()</code>；本課技術問題先走 NTU COOL 討論區，程式碼問題可用 GitHub Issues。</li>
+        <li>AI 可以用，但驗證責任在你；<strong>每份繳交（含加分申請）都要附 AI 聲明，沒有就不予受理</strong>，不實陳述則以學術不端處理。</li>
+      </ul>
+      <footer class="foot">錯誤訊息皆為 R 4.6.1 實際執行擷取；課程規定對照 <strong>2026-09-17 版課綱</strong>的生成式 AI 與學術支援章節；legisTaiwan 與 API 狀態為實測結果（查證日 2026-09-18）。</footer>
+      <div class="chap-foot"><a class="nextlink" data-go="ch11"><span class="k">下一章 →</span> 11 · 從 CSV 到 corpus</a></div>
+    </section>
+
+    <!-- ===================== ch11 ===================== -->
+    <section class="chapter" id="ch11">
+      <div class="crumb">第三篇 · 文本分析第一次實戰 / 11</div>
+      <h1 class="ch">從 CSV 到 corpus</h1>
+      <p class="lead">本章目標：認識 quanteda 的三層結構，把那張 162 列的表格變成一個帶有中繼資料的語料庫物件。</p>
+      <div class="pagetoc"><div class="tt">本頁章節</div>
+        <a href="#s11-three">三層結構</a><a href="#s11-build">建立 corpus</a><a href="#s11-docvars">docvars</a><a href="#s11-summary">summary</a><a href="#s11-why">為什麼不直接用表格</a><a href="#s11-p">動手練習</a><a href="#s11-s">本章小結</a>
+      </div>
+
+      <h2 id="s11-three">1. quanteda 的三層結構</h2>
+      <p>這門課第 4 週之後的每一次操作，幾乎都是在這三層之間移動。先把這張圖記起來，後面就不會迷路。</p>
+
+      <div class="diagram">
+<pre><b>data.frame / tibble</b>   <i>一列一篇，還是普通表格</i>
+        │  corpus()
+        ▼
+<b>corpus</b>                  <i>語料庫：文本 ＋ 每篇的中繼資料（docvars）</i>
+        │  tokens()
+        ▼
+<b>tokens</b>                  <i>斷詞後：每篇變成一串詞，<b>順序還在</b></i>
+        │  dfm()
+        ▼
+<b>dfm</b>                     <i>文件特徵矩陣：列＝文件、欄＝詞、值＝次數</i>
+                          <i>順序沒了 —— 這就是「詞袋」</i></pre>
+        <div class="dcap">三層各有各的用途，而且是單向的：一旦進了 dfm，詞的順序就不可能還原。什麼時候該停在 tokens、什麼時候可以進 dfm，是方法設計的決定，不是技術問題。</div>
+      </div>
+
+      <h2 id="s11-build">2. 建立 corpus</h2>
+      <p>接續第二篇的資料（記得先做第 8 章的空白清理）：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>library(quanteda)
+library(quanteda.textstats)
+
+co &lt;- corpus(d,
+             text_field = "說明清理",     # 哪一欄是正文
+             docid_field = "質詢編號")    # 哪一欄當文件編號
+
+ndoc(co)
+#&gt; [1] 162</pre></div>
+      <p><code>text_field</code> 指定哪一欄是要分析的文本，<strong>其餘所有欄位會自動變成 docvars</strong>（文件層級變數）。<code>docid_field</code> 指定文件編號，之後在結果裡看到 <code>11-1-1-1</code> 就知道是哪一筆，比 <code>text1</code>、<code>text2</code> 好追。</p>
+
+      <h2 id="s11-docvars">3. docvars：語料庫的中繼資料</h2>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>names(docvars(co))
+#&gt; [1] "屆" "會期" "會次" "委員" "刊登日期" "事由" "說明"</pre></div>
+      <p>docvars 是 quanteda 最重要的設計。它讓「文本」與「這篇文本是誰在什麼時候說的」綁在一起，之後你要做的每一種分組比較——不同會期的用詞差異、不同委員的風格、時間趨勢——都靠它。</p>
+      <div class="callout tip"><div class="ct">▍先想清楚要哪些 docvars</div>
+        <p>做研究時，corpus 建立的那一刻就決定了你之後能問什麼問題。如果建 corpus 時沒帶入政黨、選區、委員會這些欄位，後面想比較就得整個重來。<strong>收集資料時多留幾個中繼欄位，成本很低，回頭補很貴。</strong></p>
+      </div>
+
+      <h2 id="s11-summary">4. summary 看全貌</h2>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>summary(co, n = 4)[, 1:4]
+#&gt;         Text Types Tokens Sentences
+#&gt; 1   11-1-1-1   277    490        15
+#&gt; 2 11-1-20-63   184    279         7
+#&gt; 3 11-1-20-64   194    296         9
+#&gt; 4 11-1-20-65   165    278         6</pre></div>
+      <p>三個欄位要分清楚：<strong>Tokens</strong> 是總詞數（這篇講了幾個詞），<strong>Types</strong> 是不重複詞數（用了幾種詞），<strong>Sentences</strong> 是句數。Types ÷ Tokens 叫型符比（type-token ratio），常被拿來當詞彙豐富度的粗略指標——第一篇 277/490 ≈ 0.57。</p>
+      <div class="callout warn"><div class="ct">▍加上 <code>[, 1:4]</code> 是有原因的</div>
+        <p><code>summary(co)</code> 會把所有 docvars 一起印出來，而我們的 docvars 裡有「事由」和「說明」兩個長文本欄位——直接執行會在 Console 噴出數千字，完全看不了。這是實測踩到的坑，<strong>取欄位是必要的</strong>。</p>
+      </div>
+
+      <h2 id="s11-why">5. 為什麼不直接用表格就好</h2>
+      <p>你可能會想：資料本來就在 tibble 裡，用第 7 章的 dplyr 不就夠了嗎？</p>
+      <p>對於「算字數、依委員分組」這類操作，確實夠。但 corpus 之後的兩層才是重點——<strong>tokens 與 dfm 是專門為文本設計的資料結構</strong>，有 tibble 給不了的東西：dfm 是稀疏矩陣，162 篇 × 六千多個詞如果存成一般表格會浪費大量記憶體；而課程後面要用的主題模型（stm）、尺度分析（Wordfish）、分類器，它們的輸入介面就是 dfm。</p>
+      <p>簡單說：<strong>dplyr 負責整理與篩選，quanteda 負責文本本身</strong>。兩者在同一段管線裡並用是常態。</p>
+
+      <div class="videobox pending">
+        <div class="vhead"><span class="play">▶</span> 影片示範 · quanteda 入門 <span class="seg">待補</span></div>
+        <div class="ph">quanteda 的影片教學極少，搜尋結果品質都不足以放進教材（查證日 2026-09-18）。官方文件反而是更好的資源：<a href="https://tutorials.quanteda.io/" target="_blank" rel="noopener">tutorials.quanteda.io</a> 有完整的互動教學，從 corpus 一路到主題模型，也是課程後續週次會用到的參考。</div>
+      </div>
+
+      <h2 id="s11-p">6. 動手練習</h2>
+      <div class="practice"><ol>
+        <li>建立 corpus，確認 <code>ndoc()</code> 是 162、<code>names(docvars(co))</code> 有七個欄位。</li>
+        <li>執行 <code>summary(co, n = 10)[, 1:4]</code>，找出前十篇裡 Types/Tokens 比例最高的是哪一篇。</li>
+        <li>用 <code>corpus_subset(co, 會期 == 3)</code> 取出第 3 會期的子語料庫，看看 <code>ndoc()</code> 剩幾篇（對照第 7 章 <code>count()</code> 的結果，應該一致）。</li>
+        <li>故意不加 <code>[, 1:4]</code> 執行一次 <code>summary(co, n = 2)</code>，感受一下為什麼要取欄位。準備好按 <span class="kbd">Ctrl</span>+<span class="kbd">L</span> 清畫面。</li>
+        <li>把 <code>docid_field</code> 拿掉重建一次 corpus，觀察文件編號變成什麼。</li>
+      </ol></div>
+
+      <h2 id="s11-s">7. 本章小結</h2>
+      <ul>
+        <li>三層結構：corpus（文本＋中繼資料）→ tokens（斷詞、保留順序）→ dfm（詞袋、順序消失）。</li>
+        <li><code>corpus(d, text_field = , docid_field = )</code>；其餘欄位自動成為 docvars。</li>
+        <li>docvars 決定你之後能做哪些分組比較，建 corpus 前先想清楚。</li>
+        <li><code>summary(co)</code> 的 Types／Tokens／Sentences 三個欄位意義不同；有長文本 docvars 時務必取欄位。</li>
+        <li>dplyr 管整理、quanteda 管文本，兩者並用。</li>
+      </ul>
+      <footer class="foot">程式碼與輸出皆在 R 4.6.1 + quanteda 4.5.0 實際執行驗證；對照 <a href="https://quanteda.io/" target="_blank" rel="noopener">quanteda 官方文件</a> 撰寫（查證日 2026-09-18）。</footer>
+      <div class="chap-foot"><a class="nextlink" data-go="ch12"><span class="k">下一章 →</span> 12 · 斷詞：英文與中文</a></div>
+    </section>
+
+    <!-- ===================== ch12 ===================== -->
+    <section class="chapter" id="ch12">
+      <div class="crumb">第三篇 · 文本分析第一次實戰 / 12</div>
+      <h1 class="ch">斷詞：英文與中文</h1>
+      <p class="lead">本章目標：學會 <code>tokens()</code> 的常用選項，並用實測結果搞清楚中文斷詞到底該不該用 jieba。</p>
+      <div class="pagetoc"><div class="tt">本頁章節</div>
+        <a href="#s12-en">英文斷詞</a><a href="#s12-opt">清理選項</a><a href="#s12-zh">中文的真相</a><a href="#s12-cmp">ICU 與 jieba 實測對照</a><a href="#s12-dict">自訂詞典</a><a href="#s12-all">全語料斷詞</a><a href="#s12-p">動手練習</a><a href="#s12-s">本章小結</a>
+      </div>
+
+      <h2 id="s12-en">1. 英文斷詞：空白幫你做完了</h2>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>tokens("Text as data: a method for social science!")
+#&gt; Tokens consisting of 1 document.
+#&gt; text1 :
+#&gt;  [1] "Text"    "as"      "data"    ":"       "a"       "method"  "for"
+#&gt;  [8] "social"  "science" "!"</pre></div>
+      <p>英文用空白分隔，斷詞幾乎是免費的。注意標點被切成獨立的 token——這是預設行為，通常要清掉。</p>
+
+      <h2 id="s12-opt">2. 清理選項</h2>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>tokens("Text as data: a method for social science!", remove_punct = TRUE)
+#&gt; text1 :
+#&gt; [1] "Text"    "as"      "data"    "a"       "method"  "for"     "social"
+#&gt; [8] "science"</pre></div>
+      <p>常用的幾個：<code>remove_punct</code>（標點）、<code>remove_numbers</code>（數字）、<code>remove_symbols</code>（符號）、<code>remove_url</code>（網址）。</p>
+      <div class="callout warn"><div class="ct">▍每一個 remove 都是研究決定</div>
+        <p>移除數字聽起來無害，但如果你研究的是預算案，「20 億」「93,800 條」正是重點。<strong>沒有一組通用的正確設定</strong>——每個選項都該問一次「這對我的研究問題會不會拿掉重要資訊」。這類決定在論文的方法章節要交代清楚，也是第 4 週課程把「斷詞、DFM、字典法」放在同一週講的原因——前處理的每個決定都會一路影響到情緒分數。</p>
+      </div>
+
+      <h2 id="s12-zh">3. 中文的真相</h2>
+      <p>中文字與字之間沒有空白，所以「中文一定要先用 jieba 斷詞」是常見的說法。<strong>但這句話不完全正確</strong>，實際測一下就知道：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>tokens("能源政策與經濟發展的平衡")
+#&gt; text1 :
+#&gt; [1] "能源" "政策" "與"   "經濟" "發展" "的"   "平衡"</pre></div>
+      <p>quanteda 斷得相當漂亮——因為它底層用的是 <strong>ICU 的詞界偵測</strong>，本來就內建中日韓的詞典式斷詞能力，不是單純照空白切。</p>
+      <p>那 jieba 還有沒有價值？有，但差別在細節，不在有無。</p>
+
+      <h2 id="s12-cmp">4. ICU 與 jieba 實測對照</h2>
+      <p>拿四個句子實際比對（2026-09-18 實測，quanteda 4.5.0 與 jiebaR 0.11）：</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:24%">原句</th><th style="width:38%">quanteda 內建（ICU）</th><th>jiebaR</th></tr></thead>
+        <tbody>
+          <tr><td>能源政策與經濟發展的平衡</td><td>能源/政策/與/經濟/發展/的/平衡</td><td>能源/政策/與/經濟/發展/的/平衡　<span style="color:var(--ok)">相同</span></td></tr>
+          <tr><td>加熱菸產品通通被海關沒收</td><td>加熱/菸/產品/通通/被/海關/沒收</td><td>加熱/菸/產品/通通/被/海關/沒收　<span style="color:var(--ok)">相同</span></td></tr>
+          <tr><td>行政院環境保護署與國家發展委員會</td><td>行政院/<strong>環境/保護</strong>/署/與/國家/發展/委員會</td><td>行政院/<strong>環境保護</strong>/署/與/國家/發展/委員會</td></tr>
+          <tr><td>本院羅委員智強就文化成年禮金政策提出質詢</td><td>本院/羅/委員/<strong>智/強</strong>/就/文化/成年/禮金/政策/提出/質詢</td><td>本院/羅/委員/<strong>智強</strong>/就/文化/成年/禮金/政策/提出/質詢</td></tr>
+        </tbody>
+      </table></div>
+      <p>結論很清楚：<strong>四句裡兩句完全相同，差異出在複合詞（環境保護）與人名（智強）</strong>。jieba 在這兩類上略勝，因為它帶著一份中文詞典。</p>
+      <p>但真正決定性的優勢不是預設表現，而是下一節——jieba 可以<strong>加詞</strong>。</p>
+      <div class="callout note"><div class="ct">▍所以這門課為什麼教 jieba</div>
+        <p>不是因為 quanteda 不能斷中文，而是因為政治文本充滿專有名詞：政策名、機關名、委員姓名。這些詞不在任何通用詞典裡，必須自己補。能補詞的工具才有用——這是選擇 jieba 的真正理由，不是「中文非它不可」。</p>
+      </div>
+
+      <h2 id="s12-dict">5. 自訂詞典：本章最有用的一招</h2>
+      <p>「文化成年禮金」是一個政策名稱，應該是一個詞，但預設會被拆開：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>library(jiebaR)
+w &lt;- worker()
+
+segment("文化成年禮金政策", w)
+#&gt; [1] "文化" "成年" "禮金" "政策"        ← 政策名被拆成三塊
+
+new_user_word(w, c("文化成年禮金", "加熱菸", "國健署"))
+#&gt; [1] TRUE
+
+segment("文化成年禮金政策", w)
+#&gt; [1] "文化成年禮金" "政策"            ← 正確了
+
+segment("加熱菸產品通通被海關沒收", w)
+#&gt; [1] "加熱菸" "產品" "通通" "被" "海關" "沒收"</pre></div>
+      <p>注意第二個例子：加了詞之後，「加熱/菸」合併成「加熱菸」——這是菸害防制法裡的法定名詞，拆開就失去意義了。</p>
+      <div class="callout tip"><div class="ct">▍自訂詞典是可重現性的一部分</div>
+        <p>你加了哪些詞，會直接改變詞頻表與後續所有模型的結果。<strong>把自訂詞清單寫進腳本、納入版本控制、在論文附錄交代</strong>，不要臨時在 Console 加一加就跑分析。這正是課綱要求「標註規程」列入附錄的理由。</p>
+      </div>
+      <p>詞多的時候，可以把詞寫成一個純文字檔（一行一詞），建立 worker 時直接載入：<code>worker(user = "my_dict.txt")</code>。</p>
+
+      <h2 id="s12-all">6. 全語料斷詞</h2>
+      <p>把第 9 章的 <code>map_chr()</code> 接上來，跑完 162 筆：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>seg &lt;- map_chr(d$說明清理, \(s) paste(segment(s, w), collapse = " "))
+
+co2 &lt;- corpus(seg, docvars = d |&gt; select(委員, 會期, 會次))
+tk  &lt;- tokens(co2, remove_punct = TRUE, remove_numbers = TRUE)
+
+head(ntoken(tk), 5)
+#&gt; [1] 409 238 245 232 313
+
+sum(ntoken(tk))                          # 總詞數
+#&gt; [1] 49975
+length(unique(unlist(as.list(tk))))      # 不重複詞型
+#&gt; [1] 6471</pre></div>
+      <p>做法是：jieba 斷好之後<strong>用空白把詞接回一個字串</strong>，再交給 quanteda——這樣 quanteda 只要照空白切就好，等於把中文變成「英文那樣的形式」。這是 R 社群處理中文最常見的做法。</p>
+      <p>五萬詞、六千多個詞型。這個規模在文本分析裡算小，但已經足夠讓你在自己的筆電上跑完整個流程而不用等待，很適合學習。</p>
+
+      <h2 id="s12-p">7. 動手練習</h2>
+      <div class="practice"><ol>
+        <li>拿三個你自己想到的政治或政策名詞，先看預設怎麼斷，再用 <code>new_user_word()</code> 加入後重斷，比較差異。</li>
+        <li>把 <code>remove_numbers = TRUE</code> 拿掉重跑一次，比較 <code>sum(ntoken(tk))</code> 差多少。想一想：如果研究題目是預算或統計數據，這個選項該怎麼設？</li>
+        <li>用 ICU（直接 <code>tokens(d$說明清理[1])</code>）與 jieba 各斷第一篇，比較 <code>ntoken()</code> 差幾個詞。</li>
+        <li>建立一個 <code>my_dict.txt</code>，放五個委員姓名，用 <code>worker(user = "my_dict.txt")</code> 載入測試。</li>
+        <li>用 <code>kwic(tk, "政策", window = 5)</code> 看「政策」這個詞出現時前後五個詞是什麼——這叫關鍵詞脈絡（keyword in context），是檢查斷詞品質最快的方法。</li>
+      </ol></div>
+
+      <h2 id="s12-s">8. 本章小結</h2>
+      <ul>
+        <li><code>tokens()</code> 的 remove 選項每一個都是研究決定，要在方法章節交代。</li>
+        <li>quanteda 內建的 ICU 斷詞<strong>已經能處理中文</strong>，實測四句有兩句與 jieba 完全相同。</li>
+        <li>差異在複合詞與人名；jieba 的真正優勢是<strong>可以加詞</strong>。</li>
+        <li><code>new_user_word()</code> 加入政策名與專有名詞，清單要納入版本控制與論文附錄。</li>
+        <li>標準做法：jieba 斷詞 → 空白接回字串 → 交給 quanteda。</li>
+        <li>本課語料斷完共 49,975 詞、6,471 個詞型。</li>
+      </ul>
+      <footer class="foot">對照實驗於 R 4.6.1 + quanteda 4.5.0 + jiebaR 0.11 實際執行；對照 <a href="https://quanteda.io/reference/tokens.html" target="_blank" rel="noopener">quanteda tokens 文件</a> 與 <a href="https://qinwenfeng.com/jiebaR/" target="_blank" rel="noopener">jiebaR 文件</a> 撰寫（查證日 2026-09-18）。</footer>
+      <div class="chap-foot"><a class="nextlink" data-go="ch13"><span class="k">下一章 →</span> 13 · dfm 與停用詞</a></div>
+    </section>
+
+    <!-- ===================== ch13 ===================== -->
+    <section class="chapter" id="ch13">
+      <div class="crumb">第三篇 · 文本分析第一次實戰 / 13</div>
+      <h1 class="ch">dfm 與停用詞</h1>
+      <p class="lead">本章目標：建立文件特徵矩陣，理解它為什麼那麼空，並親手處理中文停用詞這個沒有標準答案的問題。</p>
+      <div class="pagetoc"><div class="tt">本頁章節</div>
+        <a href="#s13-build">建立 dfm</a><a href="#s13-sparse">稀疏度</a><a href="#s13-raw">沒去停用詞的樣子</a><a href="#s13-stop">中文停用詞的麻煩</a><a href="#s13-trim">去除與修剪</a><a href="#s13-tfidf">tf-idf</a><a href="#s13-p">動手練習</a><a href="#s13-s">本章小結</a>
+      </div>
+
+      <h2 id="s13-build">1. 建立 dfm</h2>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>dm0 &lt;- dfm(tk)
+dim(dm0)
+#&gt; [1]  162 6469</pre></div>
+      <p>162 列（文件）× 6,469 欄（詞型），每一格是「這個詞在這篇出現幾次」。這就是<strong>詞袋模型</strong>（bag of words）——第 4 週課程的核心概念。</p>
+      <p>「袋」這個比喻很傳神：詞被倒進袋子裡，誰先誰後完全消失。「政府不應該補助」和「不應該政府補助」在 dfm 裡一模一樣。這個簡化是所有後續方法（字典法、主題模型、尺度分析）的共同前提，也是它們共同的限制。</p>
+
+      <h2 id="s13-sparse">2. 稀疏度：為什麼矩陣幾乎是空的</h2>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>sparsity(dm0)
+#&gt; [1] 0.971</pre></div>
+      <p><strong>97.1% 的格子是零</strong>。想一下就知道很合理：一篇六百字的質詢頂多用到三四百個詞，而詞彙表有六千多個詞，剩下的當然都是零。</p>
+      <p>這是文本資料的普遍性質，也是為什麼 dfm 用稀疏矩陣儲存——只記非零的格子。如果存成一般矩陣，162 × 6,469 個數字裡有九成七是無意義的零。真實研究動輒數萬篇文件、數十萬詞型，不用稀疏矩陣根本存不下。</p>
+
+      <h2 id="s13-raw">3. 沒去停用詞的樣子</h2>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>topfeatures(dm0, 12)
+#&gt;   的   之   與   年   為   及   在   以   有   應 政府 政策
+#&gt; 1393  556  443  420  386  369  285  271  241  231  217  202</pre></div>
+      <p>前十名幾乎全是虛詞。「的」出現 1,393 次，是第十一名「政府」的六倍以上。這個表格什麼也沒告訴你——<strong>它只是重新確認了中文的語法</strong>。</p>
+      <p>這就是停用詞（stop words）要解決的問題：把高頻但沒有區辨力的詞拿掉。</p>
+
+      <h2 id="s13-stop">4. 中文停用詞的麻煩</h2>
+      <p>英文有公認的停用詞表，<code>stopwords("en")</code> 直接用就好。中文沒有這麼幸運，而且對台灣的研究者還多一層問題。</p>
+      <p><code>stopwords</code> 套件確實有中文清單，但實測後會發現：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>library(stopwords)
+sw &lt;- stopwords("zh", source = "misc")
+length(sw)
+#&gt; [1] 647
+head(sw, 12)
+#&gt; [1] "按" "按照" "俺" "们" "阿" "别" "别人" "别处" "是" "别的" "别管" "说"</pre></div>
+      <p><strong>這是簡體中文的清單</strong>（们、别、说）。套用到繁體語料上會發生什麼？實測結果比想像中微妙：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>hit &lt;- intersect(featnames(dm0), sw)
+length(hit)
+#&gt; [1] 222                                 ← 還是命中了 222 個詞
+
+dim(dfm_remove(dm0, sw))
+#&gt; [1]  162 6247                           ← 從 6469 降到 6247
+
+# 但前八高頻詞裡，哪些沒被移除？
+#&gt; 前八高頻詞：的/之/與/年/為/及/在/以
+#&gt; 被移除的：  的/之/年/及/在/以
+#&gt; 漏掉的：    與、為</pre></div>
+      <p>簡體清單之所以還能命中 222 個詞，是因為<strong>很多虛詞在兩種字體下寫法相同</strong>（的、之、在、以）。但它漏掉的「與」「為」——簡體寫作「与」「为」——剛好都是高頻詞。</p>
+      <p>所以結論是：<strong>可以拿簡體清單當起點，但不能直接用</strong>。實務做法是先看 <code>topfeatures()</code>，把明顯的虛詞手動補上，並且把這份清單當成研究材料的一部分寫進附錄。</p>
+      <div class="callout warn"><div class="ct">▍停用詞是研究決定，不是技術細節</div>
+        <p>本教材的清單裡有「政府」嗎？沒有。但如果你的研究問題是「委員多常訴諸政府責任」，「政府」就是核心詞；如果你研究的是政策議題分布，「政府」可能是雜訊。<strong>同一個詞在不同研究裡地位完全不同</strong>，沒有一份清單能通用。刪掉的每個詞都要說得出理由。</p>
+      </div>
+
+      <h2 id="s13-trim">5. 去除與修剪</h2>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>stop_zh &lt;- c("的","是","與","及","在","為","對","於","並","以","有","也","等","將","其","之",
+             "而","了","要","從","或","我國","本院","委員","質詢","行政院","特向","提出",
+             "鑑於","就","應","不","及其","請","可","該","此","已","但","一","二","三","中",
+             "上","後","更","至","者","因","年","月","日","無","由","被","所","都","如","個")
+
+dm &lt;- dfm_remove(dm0, stop_zh, valuetype = "fixed") |&gt;
+      dfm_trim(min_termfreq = 5)
+
+dim(dm)
+#&gt; [1]  162 1964
+sparsity(dm)
+#&gt; [1] 0.9376</pre></div>
+      <p>兩個動作做了不同的事。<code>dfm_remove()</code> 依清單刪除；<code>dfm_trim(min_termfreq = 5)</code> 刪掉<strong>全語料出現不到 5 次</strong>的詞。後者砍掉的量其實更大——6,469 個詞型裡，絕大多數只出現一兩次（這是語言的齊夫定律）。</p>
+      <p>詞型從 6,469 降到 1,964，稀疏度從 0.971 降到 0.938，矩陣變得比較密實，後續模型也跑得動。</p>
+      <p>成果：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>topfeatures(dm, 15)
+#&gt; 政府 政策   人 相關 問題 學生   能 針對 根據   化 社會 民眾 詐騙 導致   部
+#&gt;  217  202  140  137  135  115  111  110  105  104  104  102   99   95   93</pre></div>
+      <p>比剛才有意義了，但還是有「人」「相關」「能」「化」這種近乎虛詞的東西混在裡面。<strong>這就是實際做研究的樣子</strong>——清理是反覆的，不是一次到位。</p>
+
+      <h2 id="s13-tfidf">6. tf-idf：另一種看法</h2>
+      <p>與其一直手動刪詞，有個更聰明的角度：<strong>與其問「哪個詞出現最多次」，不如問「哪個詞在少數幾篇裡特別集中」</strong>。那才是有區辨力的詞。</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>topfeatures(dfm_tfidf(dm), 8)
+#&gt;      詐騙      學生      政策      護理      住宅      疫苗      人員        學
+#&gt; 111.90304 102.03901  81.47368  76.40735  74.60203  73.94293  72.36807  70.54695</pre></div>
+      <p>對照一下原始詞頻的前幾名（政府、政策、人、相關、問題），tf-idf 給出的是<strong>詐騙、學生、護理、住宅、疫苗</strong>——這些一看就知道是實際的政策議題。「政府」掉出榜首，因為它到處都有，反而不能區分任何一篇。</p>
+      <p>tf-idf 的邏輯是：詞頻（term frequency）乘上逆文件頻率（inverse document frequency）。一個詞在某篇出現很多次、但在其他篇很少出現，分數就高。</p>
+      <div class="callout tip"><div class="ct">▍這個對照本身就是一個小發現</div>
+        <p>兩張表的差異，正好示範了「同一份資料、不同權重方式，看到的東西完全不同」。這是課程第 5 週「描述與比較文本」的核心議題。你在報告裡呈現哪一張表，就等於選擇了一種對「重要」的定義——而那個選擇要有理由。</p>
+      </div>
+
+      <div class="videobox pending">
+        <div class="vhead"><span class="play">▶</span> 影片示範 · dfm 與停用詞 <span class="seg">待補</span></div>
+        <div class="ph">與第 11 章同樣的狀況：quanteda 的影片教學太少，找到的幾支多半用 tm 或 tidytext 套件，與本課的工具不同，硬放反而混淆（查證日 2026-09-18）。建議改讀 <a href="https://tutorials.quanteda.io/basic-operations/dfm/" target="_blank" rel="noopener">quanteda 官方 dfm 教學</a>。</div>
+      </div>
+
+      <h2 id="s13-p">7. 動手練習</h2>
+      <div class="practice"><ol>
+        <li>調整 <code>dfm_trim()</code> 的門檻：試 <code>min_termfreq = 2</code>、<code>10</code>、<code>20</code>，記錄每次的詞型數與稀疏度，畫成一張小表。</li>
+        <li>把「政府」「政策」也加進停用詞清單重跑，看 <code>topfeatures()</code> 變成什麼。你覺得這樣做合理嗎？在什麼研究問題下合理？</li>
+        <li>用 <code>dfm_subset(dm, 會期 == 1)</code> 取出第 1 會期，比較它與全體的 <code>topfeatures()</code>。</li>
+        <li>試 <code>dfm_weight(dm, scheme = "prop")</code>（轉成比例），看 <code>topfeatures()</code> 的數字變成什麼意思。</li>
+        <li>找出只出現一次的詞有幾個：<code>sum(colSums(dm0) == 1)</code>，算算佔全部詞型的比例。這個數字會讓你對語言的長尾有感。</li>
+      </ol></div>
+
+      <h2 id="s13-s">8. 本章小結</h2>
+      <ul>
+        <li>dfm＝文件特徵矩陣，列是文件、欄是詞、值是次數；詞序消失，這就是詞袋模型。</li>
+        <li>本課語料原始 dfm 為 162 × 6,469，稀疏度 0.971（97.1% 是零）。</li>
+        <li>不去停用詞時，前十名幾乎全是虛詞，「的」出現 1,393 次。</li>
+        <li><code>stopwords("zh")</code> 是簡體清單，命中 222 個詞但漏掉「與」「為」等高頻繁體虛詞——可當起點，不能直接用。</li>
+        <li><code>dfm_remove()</code> 依清單刪、<code>dfm_trim()</code> 依頻率刪；處理後為 162 × 1,964。</li>
+        <li>tf-idf 換一個角度看重要性：詐騙、學生、護理、住宅、疫苗浮現，「政府」退場。</li>
+        <li>停用詞清單與修剪門檻都是研究決定，要寫進方法與附錄。</li>
+      </ul>
+      <footer class="foot">程式碼與輸出皆在 R 4.6.1 + quanteda 4.5.0 + stopwords 套件實際執行驗證；簡繁停用詞比對為實測結果（查證日 2026-09-18）。</footer>
+      <div class="chap-foot"><a class="nextlink" data-go="ch14"><span class="k">下一章 →</span> 14 · 描述統計與第一張圖</a></div>
+    </section>
+
+    <!-- ===================== ch14 ===================== -->
+    <section class="chapter" id="ch14">
+      <div class="crumb">第三篇 · 文本分析第一次實戰 / 14</div>
+      <h1 class="ch">描述統計與第一張圖</h1>
+      <p class="lead">本章目標：把 dfm 變成可以放進報告的表與圖，並做出這份語料的第一個實質發現。</p>
+      <div class="pagetoc"><div class="tt">本頁章節</div>
+        <a href="#s14-freq">textstat_frequency</a><a href="#s14-plot">畫第一張圖</a><a href="#s14-font">中文字型問題</a><a href="#s14-keyness">分組比較</a><a href="#s14-save">存檔與可重現</a><a href="#s14-next">接到課程哪裡</a><a href="#s14-p">動手練習</a><a href="#s14-s">本章小結</a>
+      </div>
+
+      <h2 id="s14-freq">1. textstat_frequency：從矩陣到表格</h2>
+      <p><code>topfeatures()</code> 回傳的是一個具名向量，不方便畫圖。<code>textstat_frequency()</code> 直接給你一張整齊的表：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>library(quanteda.textstats)
+f &lt;- textstat_frequency(dm, n = 10)
+f
+#&gt;    feature frequency rank docfreq group
+#&gt; 1     政府       217    1      91   all
+#&gt; 2     政策       202    2      64   all
+#&gt; 3       人       140    3      53   all
+#&gt; 4     相關       137    4      83   all
+#&gt; 5     問題       135    5      69   all
+#&gt; 6     學生       115    6      21   all
+#&gt; 7       能       111    7      49   all
+#&gt; 8     針對       110    8      71   all
+#&gt; 9     根據       105    9      67   all
+#&gt; 10      化       104   10      47   all</pre></div>
+      <p>多出來的 <code>docfreq</code> 欄很有用：它是「有幾篇文件出現過這個詞」。對照 <code>frequency</code> 一起看能看出詞的性質——「政府」出現 217 次、分布在 91 篇（幾乎每兩篇就有一篇），是<strong>散布型</strong>；「學生」出現 115 次卻只在 21 篇，平均每篇講五次以上，是<strong>集中型</strong>，代表有少數幾篇專門在談教育議題。</p>
+      <p>這個 frequency 與 docfreq 的落差，就是上一章 tf-idf 在捕捉的東西。</p>
+
+      <h2 id="s14-plot">2. 畫第一張圖</h2>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>library(ggplot2)
+
+p &lt;- ggplot(f, aes(x = reorder(feature, frequency), y = frequency)) +
+  geom_col(fill = "#3794ff") +
+  coord_flip() +
+  labs(title = "立法院第11屆書面質詢：前十高頻詞",
+       subtitle = "162 筆，jieba 斷詞後去停用詞",
+       x = NULL, y = "出現次數") +
+  theme_minimal(base_family = "PingFang TC", base_size = 13)
+
+p</pre></div>
+      <p>三個值得注意的地方。<code>reorder(feature, frequency)</code> 讓長條<strong>依數值排序</strong>而不是依字母——沒有這個，圖會亂到無法讀。<code>coord_flip()</code> 把長條轉成橫向，中文詞標籤才不會擠在一起。<code>x = NULL</code> 拿掉沒有資訊量的軸標題。</p>
+      <p>實際產出：</p>
+      <div class="diagram" style="background:#ffffff;">
+        <img src="data:image/png;base64,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eDyhPy05FQAAAH7XGFU7deoUSjdlTgAAAADgGkT0zLQAAADQMqIqAAAANIqoCgAAAI0iqgIAAECjiKoAAADQKKIqAAAANIqoCgAAAI0iqgIAAECjiKoAAADQqGu8WlWkWdfbmpKSonYVKsvOzjabzQaDQe1C1GS3251Op8lkMpvNateiJrfbbbfbk5OT1S5EZVarVQhhsViMRqPatQBAxcRRVQAAAGgUURUAAAAaRVQFAACARjFWNSSdV0T6QFUhhBCRPjBRCCGEWYiIHqX6JwPbgxBCCHX2DLuGq7JaAFABR1UBAACgUURVAAAAaBRRFQAAABpFVAUAAIBGEVUBAACgUURVAAAAaBRRFQAAABpFVAUAAIBGEVUBAACgUURVAAAAaFSYour3339fUFAQ2HL69OnMzMzwrB0AAAA3onBE1d9///3TTz81GAxCCJfLpTRu27Zt586dYVg7AAAAblDlHlVdLtdbb701evRog8Fw6NChl156yev1Kg+dPXv2xIkThw4d2rt37/fff5+Tk1PexQAAAOAGElWuzy7L8pQpU9q1a3f77bcLIRo1alS1atV//etfPXv2FEL87//+76lTp5KSkhITExMTE5s2bVquxQAAAODGUr5Rddq0aQcOHGjWrNnKlSsvXbp06tSpEydO/Pjjj23atBFC9OrVS8msAAAAwJXKN6reeeedDRo0sFgsN99889133202m+Pj49etW3f48OFyXS8AAAAqgPKNqu3btz9//rz/bmFhYWFhYfv27c1m8+eff56Xl3cNzynLsizLZVdjyasL27oAIBQ+n0/tEv6Lsp/UWlVh5v+yiPD3QeHz+SL8fVC2B1mWI/x9UF5+MW+CJEmSJBX/JFK5RjFZlh999NHatWtHR0crLefOnevTp0+XLl0OHDgwbtw4vV7v7/zggw8+++yzJT6n2+2+tox7PTqvSAnzGgHgatb1tqpdAgCUAYvFYjQai+9TvkdVFW+99VZiYqJy+4svvlBuNG7cePny5f7ZAIQQJdYKAACAiBKOqLp27doGDRqkpqZWqlTJ37h48WKLxdK9e/fSPltUVJQ/+IaB2+2+fPly2FYHACUK5z4wFAUFBZIkxcTEqF2ImpQvC0mSEhIS1K5FZbm5uWazOfBX0whUUFDgcrmMRmNsbKzatajJ4/EUFBRYLJardQhlOwlHVK1evXp2dvaOHTuaNGkS2G6z2fLy8goLCwsKCi5fvpyampqUlFTis0mSFBUVjrIVET7KBIAGhXMfGAqdThfmPbMG+b8sIvx9EEJIkqTX6yP8fVDGX+p0ugh/H2RZvv6dQzjewRYtWlgslo4dO4qAAQBCiFWrVq1evTo5OVmZWrVv376hRFUAAABEiPKNqm63Wwhx7NixixcvHj9+/OjRo8eOHRs8eLDyaP/+/ZlXFQAAAFdTvhdWzc3NNRqNZrM5KiqqXbt2EydO7NWrl//RwAEKbrd77ty5zAwFAAAAv/KNqj///HOrVq3S0tI6dOhQv359s9lsMBiK7JmTk7Nt27YS59YCAABA5CjHAQA+n2/58uUjR45U7mZmZubl5e3fv79169ZCiMTExHXr1vknq9q1a9df//rX8isGAAAAN5xyjKo6ne7JJ59s3Lixctdut2/atKlevXpKJO3cuXP16tWVeaAkSXr88cebNm1afsUAAADghlPuF1b1365fv379+vX9d/V6fYsWLcp17QAAALihle9YVQAAAOCaEVUBAACgUURVAAAAaBRRFQAAABpFVAUAAIBGEVUBAACgUURVAAAAaBRRFQAAABpFVAUAAIBGle/VqiqMdb2tKSkpalehsuzsbLPZbDAY1C5ETXa73el0mkwms9msdi1qcrvddrs9OTlZ7UJUZrVahRAWi8VoNKpdCwBUTBxVBQAAgEYRVQEAAKBRRFUAAABoFGNVQ9J5RaQPVBVCCBHpAxOFEEKYhYjoUap/MrA9CCGECN+eYdfwsK0KADSEo6oAAADQKKIqAAAANIqoCgAAAI0iqgIAAECjiKoAAADQKKIqAAAANIqoCgAAAI0iqgIAAECjiKoAAADQqFJH1QMHDly6dCmoUZblf/3rX06ns8hFrFbrzp07hRDff/99bm7ulR22bduWkZFR2koAAABQsZUuqp48eXLKlCkjRowISquyLH/22WeFhYVBjf/4xz+8Xu+FCxe2b98uhNiwYUNubm5BQcHIkSMDe6anp585c+ZaXwIAAAAqplJE1fz8/Ndee23ixImTJk0aOXKk3W4vvr8kSbVq1dqxY0dQ+65du5o1a1bqSgEAABBhQo2qXq/3tdde69u3b7169erUqTN8+PCXX375ar/4+3Xp0mXt2rWBLR6P58svv3z44YevsV4AAABEjKhQOnm93vHjxzud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" alt="立法院第11屆書面質詢前十高頻詞長條圖：政府 217、政策 202、人 140、相關 137、問題 135、學生 115、能 111、針對 110、根據 105、化 104" style="display:block;width:100%;height:auto;border-radius:6px;">
+      </div>
+      <div class="dcap" style="font-size:12.5px;color:var(--text-faint);margin:-8px 0 18px;">上圖由本章程式碼實際執行產生（ggsave，7×4.4 吋，130 dpi）。圖面為白底，是 ggplot 預設；要配合深色簡報時需另行設定 theme。</div>
+
+      <h2 id="s14-font">3. 中文字型：會踩的坑</h2>
+      <p>如果你沒寫 <code>base_family</code>，圖上的中文很可能變成空白方塊或豆腐字。ggplot 用的是系統字型，而預設字型不一定含中文。</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:24%">系統</th><th style="width:34%">建議設定</th><th>備註</th></tr></thead>
+        <tbody>
+          <tr><td>macOS</td><td><code>base_family = "PingFang TC"</code></td><td>系統內建，本章即用此設定</td></tr>
+          <tr><td>Windows</td><td><code>base_family = "Microsoft JhengHei"</code></td><td>微軟正黑體，系統內建</td></tr>
+          <tr><td>都可用</td><td><code>base_family = "Noto Sans CJK TC"</code></td><td>需另行安裝；跨平台一致性最好</td></tr>
+        </tbody>
+      </table></div>
+      <div class="callout tip"><div class="ct">▍存成 PDF 時另有陷阱</div>
+        <p>用 <code>ggsave("圖.pdf")</code> 存中文圖時，預設的 PDF 裝置對中文支援不佳，常見缺字。改用 <code>ggsave("圖.png", dpi = 300)</code> 存高解析度 PNG，或加 <code>device = cairo_pdf</code>。期末海報與論文要出 PDF，這件事請提早試，不要留到截稿前。</p>
+      </div>
+
+      <h2 id="s14-keyness">4. 分組比較：這份語料的第一個發現</h2>
+      <p>單純的詞頻表只能描述，做不了比較。<code>textstat_keyness()</code> 可以回答「A 組相對於 B 組，哪些詞特別突出」：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>dmg &lt;- dfm_subset(dm, 會期 %in% c(1, 3))
+k   &lt;- textstat_keyness(dmg, target = docvars(dmg, "會期") == 3)
+head(k, 6)
+#&gt;   feature     chi2            p n_target n_reference
+#&gt; 1    高齡 41.17236 1.393800e-10       30           1
+#&gt; 2      ai 38.57868 5.259019e-10       26           0
+#&gt; 3    政策 35.96519 2.008739e-09       74          34
+#&gt; 4    生育 35.24817 2.902543e-09       26           1
+#&gt; 5    疫苗 33.75175 6.261275e-09       29           3
+#&gt; 6      偏 28.18183 1.104363e-07       19           0</pre></div>
+      <p>讀法：<code>n_target</code> 是在第 3 會期出現幾次、<code>n_reference</code> 是在第 1 會期出現幾次，<code>chi2</code> 是卡方統計量。</p>
+      <p>「高齡」30 比 1、「AI」26 比 0、「生育」26 比 1——<strong>第 3 會期的質詢明顯轉向高齡化、AI 與少子化議題，而第 1 會期幾乎沒有人談</strong>。這是一個真實的、從資料裡長出來的觀察。</p>
+      <div class="callout warn"><div class="ct">▍先別急著寫進論文</div>
+        <p>這個發現有三個致命限制。第一，樣本只有 162 筆，是為教學抓的一小部分，不是母體。第二，第 1 會期 59 筆、第 3 會期 35 筆，數量不對等。第三，前面提過，四成的質詢來自同一位委員——所謂的「會期差異」，可能只是「不同委員在不同時間比較活躍」。</p>
+        <p>換句話說，<strong>你看到的可能是抽樣假象，不是議題變遷</strong>。要驗證它，需要完整資料、控制委員層級的變異，並考慮多重比較的問題。這正是課程第 5 週與第 9 週要教的內容——工具讓你很快看到「一個模式」，方法訓練讓你判斷「那是不是真的」。</p>
+      </div>
+
+      <h2 id="s14-save">5. 存檔與可重現</h2>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>ggsave(here("output", "top10.png"), p, width = 7, height = 4.4, dpi = 300)
+write_csv(f, here("output", "top10_freq.csv"))</pre></div>
+      <p>呼應第 3 章的紀律：圖和表都存進 <code>output/</code>，而且都是<strong>由程式碼生成的</strong>。不要在 RStudio 的 Plots 面板按 Export 手動存——那樣資料一改，你得記得重按一次，而你一定會忘記。</p>
+
+      <h2 id="s14-next">6. 這一篇接到課程哪裡</h2>
+      <p>你剛剛走完的流程——讀檔、清理、斷詞、建 dfm、算詞頻、分組比較、畫圖——<strong>幾乎就是課程第 4 週 Lab 的內容</strong>（「使用 quanteda，沿著同一個範例從語料庫一路做到 token 與 DFM」）。上課時你會是已經走過一遍的人。</p>
+      <div class="callout note"><div class="ct">▍課後 Lab 不計分，但別因此跳過</div>
+        <p>2026-09-17 版課綱把課後 Lab 明確定位為<strong>自主練習，不是獨立的計分項目</strong>。這反而提高了它的重要性：沒有分數逼你，但期中研究設計（20%）與期末論文（25%）要你真的跑得動分析。<strong>Lab 是唯一的練習場</strong>，跳過的代價會在第 13 週截止日那天出現。</p>
+      </div>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:22%">你已經做過的</th><th>課程接下來會加什麼</th></tr></thead>
+        <tbody>
+          <tr><td>jieba、自訂詞典、前處理選擇</td><td><strong>W2</strong> 以 R 與 Python 進行文本前處理：協作工作流程</td></tr>
+          <tr><td>corpus → tokens → dfm、停用詞</td><td><strong>W4</strong> 斷詞、文件特徵矩陣、字典法與情緒分析（同一週把前處理與字典法連在一起講）</td></tr>
+          <tr><td>dfm 當作模型輸入</td><td><strong>W7</strong> 監督式／非監督式／半監督式尺度分析、<strong>W8</strong> 主題模型及其變體</td></tr>
+          <tr><td>textstat_frequency、keyness</td><td><strong>W9</strong> 文本的描述與比較：可讀性、文本相似度與詞嵌入</td></tr>
+          <tr><td>詞袋的限制</td><td><strong>W10</strong> NLP 工作流程與 Transformer、<strong>W12</strong> 大型語言模型與多代理人系統：讓詞序與語境重新回來</td></tr>
+          <tr><td>中文語料的特殊處理</td><td><strong>W13</strong> 新型態的文本資料：多語言與多模態來源</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="videobox" data-vid="Er-tXfGkL08" data-start="0">
+        <div class="vhead"><span class="play">▶</span> 影片示範 · 用 ggplot 畫長條圖（英文，17 分 26 秒） <span class="seg">點縮圖開啟</span></div>
+        <div class="vthumb" role="button" tabindex="0" aria-label="播放影片：Using ggplot to create bar charts" style="background-image:url('https://i.ytimg.com/vi/Er-tXfGkL08/hqdefault.jpg')">
+          <div class="vplay">▶</div><div class="vopen">在 YouTube 開啟 ↗</div>
+        </div>
+        <div class="vcap">「Using ggplot to create bar charts for 2 categorical variables」— R Programming 101（10 萬觀看）。本章只用到最基本的 <code>geom_col()</code>，影片講得更完整，包括分組長條與堆疊長條，第 5 週比較不同群體時會用到。版權屬原作者。</div>
+      </div>
+
+      <h2 id="s14-p">7. 動手練習</h2>
+      <div class="practice"><ol>
+        <li>把長條圖的 <code>n = 10</code> 改成 20，觀察圖變得好讀還是更亂，想想報告裡該放幾個。</li>
+        <li>移除 <code>reorder()</code> 重畫一次，親眼看看沒有排序的長條圖有多難讀。</li>
+        <li>用 <code>textstat_frequency(dm, n = 10, groups = 會期)</code> 算出各會期各自的前十名，比較三個會期。</li>
+        <li>把 keyness 的比較對象改成「羅智強 vs 其他所有委員」，看看結果。然後想一想：這個比較的解釋難度，比會期比較高還是低？</li>
+        <li>用 <code>quanteda.textplots::textplot_wordcloud(dm, max_words = 60)</code> 畫一張文字雲。畫完之後，比較它和長條圖哪個更能讓人讀出資訊——這題沒有標準答案，但值得你有自己的立場。</li>
+      </ol></div>
+
+      <h2 id="s14-s">8. 本章小結</h2>
+      <ul>
+        <li><code>textstat_frequency()</code> 給出整齊的表，<code>docfreq</code> 欄能區分散布型與集中型的詞。</li>
+        <li>畫長條圖三要素：<code>reorder()</code> 排序、<code>coord_flip()</code> 橫放、拿掉無資訊的軸標題。</li>
+        <li>中文字型要明確指定 <code>base_family</code>；出 PDF 另有缺字問題，提早測試。</li>
+        <li><code>textstat_keyness()</code> 做分組比較；本課語料顯示第 3 會期的高齡、AI、生育明顯突出。</li>
+        <li>但該發現受限於樣本、組別不對等與委員分布極度不均，<strong>可能是抽樣假象</strong>。</li>
+        <li>圖表一律由程式碼生成並存進 <code>output/</code>，不要手動 Export。</li>
+        <li>這一篇等於第 4 週 Lab 的完整預演。</li>
+      </ul>
+      <footer class="foot">程式碼、輸出與圖表皆在 R 4.6.1 + quanteda 4.5.0 + ggplot2 實際執行產生；課程週次對照 <strong>2026-09-17 版課綱</strong>第 7.2 節（查證日 2026-09-18）。</footer>
+      <div class="chap-foot" style="color:var(--text-faint);font-size:13.5px;">第三篇到此結束。第四篇「交付與協作」尚未撰寫。</div>
+    </section>
+
+    <div class="pagemeta">
+      課程版本 v0.6（導論＋第一至三篇，對齊 2026-09-17 課綱）· 更新日 2026-09-17 · 查證日 2026-09-17<br>
+      課程資料整理 © Jerry。課綱依 2026-09-17 版整理，內容版權屬國立臺灣大學與授課教師；外部連結之文件與影片版權分屬各原創作者。
+    </div>
+  </main>
+</div>
+<div id="scrim"></div>
+
+<script>
+  var groups=[
+    {title:"導論",items:[["00","課程定位與學習地圖","ch00",1]]},
+    {title:"第一篇 · 建立地基",items:[
+      ["01","工具的分工","ch01",1],
+      ["02","RStudio 介面與必改設定","ch02",1],
+      ["03","Project 工作流","ch03",1],
+      ["04","套件管理","ch04",1]
+    ]},
+    {title:"第二篇 · R 語言最小必要集",items:[
+      ["05","物件、向量與資料框","ch05",1],
+      ["06","讀檔與 tibble","ch06",1],
+      ["07","管線與 dplyr 五動詞","ch07",1],
+      ["08","字串處理 stringr","ch08",1],
+      ["09","迴圈與 purrr","ch09",1],
+      ["10","讀懂錯誤訊息","ch10",1]
+    ]},
+    {title:"第三篇 · 文本分析實戰",items:[
+      ["11","從 CSV 到 corpus","ch11",1],
+      ["12","斷詞：英文與中文","ch12",1],
+      ["13","dfm 與停用詞","ch13",1],
+      ["14","描述統計與第一張圖","ch14",1]
+    ]},
+    {title:"第四篇 · 交付與協作",items:[
+      ["15","Quarto 筆記本與 Overleaf 繳交","",0],
+      ["16","GitHub Desktop 與課程儲存庫","",0],
+      ["17","Positron","",0],
+      ["18","reticulate 接 Python","",0],
+      ["19","從 Lab 到期末論文的工作流","",0]
+    ]},
+    {title:"附錄",items:[
+      ["A","快捷鍵速查","",0],
+      ["B","Windows 操作對照","",0],
+      ["C","課前自我檢查清單","",0],
+      ["D","環境安裝紀錄","",0]
+    ]}
+  ];
+  var order=['ch00','ch01','ch02','ch03','ch04','ch05','ch06','ch07','ch08','ch09','ch10','ch11','ch12','ch13','ch14'];
+
+  var navbody=document.getElementById('navbody');
+  groups.forEach(function(g){
+    var box=document.createElement('div');box.className='nav-group';
+    var t=document.createElement('div');t.className='gtitle';t.textContent=g.title;box.appendChild(t);
+    g.items.forEach(function(it){
+      var num=it[0],title=it[1],id=it[2],ready=it[3];
+      var a=document.createElement('a');a.className='item'+(ready?'':' soon');
+      a.innerHTML='<span class="num">'+num+'</span><span>'+title+'</span>';
+      if(ready){a.setAttribute('data-target',id);}
+      box.appendChild(a);
+    });
+    navbody.appendChild(box);
+  });
+
+  function show(id,push){
+    var el=document.getElementById(id); if(!el)return;
+    document.querySelectorAll('section.chapter').forEach(function(s){s.classList.remove('show');});
+    el.classList.add('show');
+    document.querySelectorAll('nav.side a.item').forEach(function(a){a.classList.toggle('active',a.getAttribute('data-target')===id);});
+    if(push){try{history.replaceState(null,'','#'+id);}catch(_){location.hash=id;}}
+    window.scrollTo(0,0); closeSide(); updateBar();
+  }
+  document.querySelectorAll('nav.side a.item[data-target]').forEach(function(a){
+    a.addEventListener('click',function(e){e.preventDefault();show(a.getAttribute('data-target'),true);});
+  });
+  document.querySelectorAll('[data-go]').forEach(function(b){
+    b.addEventListener('click',function(e){e.preventDefault();show(b.getAttribute('data-go'),true);});
+  });
+  document.querySelectorAll('.pagetoc a[href^="#"]').forEach(function(a){
+    a.addEventListener('click',function(e){var id=a.getAttribute('href').slice(1);var el=document.getElementById(id);
+      if(el){e.preventDefault();el.scrollIntoView({behavior:'smooth',block:'start'});}});
+  });
+  document.addEventListener('keydown',function(e){
+    var cur=document.querySelector('section.chapter.show'); if(!cur)return;
+    var i=order.indexOf(cur.id); if(i<0)return;
+    if(e.key==='ArrowRight'&&i<order.length-1)show(order[i+1],true);
+    if(e.key==='ArrowLeft'&&i>0)show(order[i-1],true);
+  });
+
+  function updateBar(){var b=document.getElementById('bar');if(!b)return;
+    var cur=document.querySelector('section.chapter.show');var i=cur?order.indexOf(cur.id):0;
+    b.style.width=((i+1)/order.length*100)+'%';}
+
+  var root=document.documentElement;
+  function setTheme(t){root.setAttribute('data-theme',t);
+    var btn=document.getElementById('themeBtn');
+    if(btn)btn.textContent=(t==='dark'?'☀️ 淺色':'🌙 深色');}
+  var tb=document.getElementById('themeBtn');
+  if(tb)tb.addEventListener('click',function(){setTheme(root.getAttribute('data-theme')==='dark'?'light':'dark');});
+  setTheme(root.getAttribute('data-theme')||'dark');
+
+  document.querySelectorAll('.codeblock .copyb').forEach(function(btn){
+    btn.addEventListener('click',function(){var pre=btn.parentElement.querySelector('pre');
+      navigator.clipboard.writeText(pre.innerText).then(function(){var o=btn.textContent;btn.textContent='已複製';btn.classList.add('done');
+        setTimeout(function(){btn.textContent=o;btn.classList.remove('done');},1400);}).catch(function(){});});
+  });
+
+  function openVideo(box){
+    var vid=box.getAttribute('data-vid'),s=box.getAttribute('data-start')||0; if(!vid||vid==='VIDEO_ID')return;
+    var url='https://youtu.be/'+vid+'?t='+s;
+    var w=Math.min(960,(window.screen&&screen.availWidth?screen.availWidth-80:960));var h=Math.round(w*9/16)+8;
+    var sw=window.outerWidth||screen.width,sh=window.outerHeight||screen.height;
+    var sx=(window.screenX!==undefined?window.screenX:0),sy=(window.screenY!==undefined?window.screenY:0);
+    var left=Math.round(sx+(sw-w)/2),top=Math.round(sy+(sh-h)/2);
+    var feat='popup=yes,width='+w+',height='+h+',left='+left+',top='+top+',menubar=no,toolbar=no,location=no,status=no,scrollbars=no,resizable=yes';
+    var win=window.open(url,'v_'+vid+'_'+s,feat); if(win)win.focus();else window.open(url,'_blank','noopener');
+  }
+  document.querySelectorAll('.videobox[data-vid] .vthumb').forEach(function(t){
+    var box=t.closest('.videobox');
+    t.addEventListener('click',function(){openVideo(box);});
+    t.addEventListener('keydown',function(ev){if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();openVideo(box);}});
+  });
+
+  var side=document.getElementById('side'),scrim=document.getElementById('scrim'),menuBtn=document.getElementById('menuBtn');
+  function openSide(){side.classList.add('open');scrim.classList.add('open');}
+  function closeSide(){side.classList.remove('open');scrim.classList.remove('open');}
+  if(menuBtn)menuBtn.addEventListener('click',function(){side.classList.contains('open')?closeSide():openSide();});
+  if(scrim)scrim.addEventListener('click',closeSide);
+
+  var start=(location.hash||'').slice(1);
+  show(order.indexOf(start)>=0?start:order[0],false);
+</script>
+</body>
+</html>
