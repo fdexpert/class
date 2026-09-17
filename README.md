@@ -7,7 +7,9 @@
 - 首頁：https://fdexpert.github.io/class/
 - 雙語互動課程手冊：https://fdexpert.github.io/class/text-as-data-course.html
 - RStudio 入門課前教材：https://fdexpert.github.io/class/rstudio-intro.html
-- 原 Vercel 網站（僅課程手冊）：https://text-as-data-course.vercel.app/
+- Vercel 鏡像（僅課程手冊，手動上傳、不自動更新）：https://text-as-data-course.vercel.app/
+
+**GitHub Pages 是本專案的唯一正式站**，上面四項內容都會隨 `main` 分支自動更新。Vercel 是早期以單檔部署的鏡像，未連接此儲存庫，只有課程手冊、沒有 RStudio 教材與練習語料；內容以 GitHub Pages 為準。
 
 本機閱讀：以瀏覽器直接開啟對應的 `.html` 檔即可，不需安裝相依套件或進行建置。
 
@@ -37,6 +39,8 @@
 ## 部署與更新
 
 GitHub Pages 使用 `main` 分支根目錄，`.nojekyll` 表示直接發布靜態檔案。更新對應 HTML 並提交到 `main` 後會自動發布。HTML 均已內嵌資料、樣式與程式，不依賴 CDN。
+
+Vercel 站未連接本儲存庫，推送不會同步過去；若要更新該鏡像，需自行重新上傳課程手冊的單一 HTML 檔。
 
 ## 來源及限制
 
