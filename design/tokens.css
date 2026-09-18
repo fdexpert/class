@@ -1,0 +1,173 @@
+/* ============================================================
+   紙與墨 — class 設計系統代幣 v1
+   由 design/tokens.json 產生，勿手改任何色碼。
+   單檔頁面（教材、手冊）內嵌此檔副本；站台頁以 <link> 引用。
+   ============================================================ */
+
+:root{
+  /* ── 色彩：日間（米紙）─────────────────────────── */
+  --bg:#f7f5ee;            /* 紙 */
+  --surface:#fffefa;       /* 浮起的紙 */
+  --surface-2:#f1efe5;     /* 凹陷的紙：程式碼、引文 */
+  --text:#253d36;          /* 墨 */
+  --heading:#183e35;       /* 濃墨 */
+  --muted:#617269;         /* 淡墨 */
+  --line:#d5ddd2;          /* 裝飾分隔線 */
+  --line-strong:#8d998f;   /* 互動元件邊界（達 3:1）*/
+  --accent:#14584a;        /* 連結與操作：深墨綠 */
+  --accent-weak:#e4ebe4;   /* 強調底 */
+  --gold:#b19b62;          /* 金：僅裝飾，不承載資訊 */
+  --gold-ink:#7d6430;      /* 金：可承載資訊的深色版 */
+  --warn:#81562c;
+  --ok:#2f6b45;
+  --code-bg:#f1efe5;
+  --selection:#e8e2cd;
+
+  /* ── 字體 ──────────────────────────────────── */
+  --font-serif:"Songti TC","Noto Serif TC",Georgia,"Times New Roman",serif;
+  --font-sans:"PingFang TC","Noto Sans TC","Microsoft JhengHei",-apple-system,
+              BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --font-mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+
+  /* ── 字級（標題襯線、內文無襯線）──────────────── */
+  --fs-hero:clamp(28px,3.2vw,44px);
+  --fs-h1:clamp(25px,2.6vw,34px);
+  --fs-h2:22px;
+  --fs-h3:18px;
+  --fs-body:16px;
+  --fs-sm:14px;
+  --fs-xs:12.5px;
+  --lh-body:1.8;           /* 紙的行高：寬鬆 */
+  --lh-tight:1.35;
+
+  /* ── 版面 ──────────────────────────────────── */
+  --measure-read:min(46vw,640px);  /* 長文閱讀寬 */
+  --measure-ui:820px;              /* 站台頁內容寬 */
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px;
+  --sp-5:24px; --sp-6:32px; --sp-7:48px; --sp-8:64px;
+
+  /* ── 形狀與動態（紙＝近乎方正、無陰影）────────── */
+  --r-sm:3px; --r-md:5px; --r-lg:8px;
+  --motion:120ms ease;
+
+  color-scheme:light;
+}
+
+/* ── 色彩：夜間（檯燈下的紙）────────────────────── */
+:root[data-theme="dark"]{
+  --bg:#171d1a;
+  --surface:#1d2421;
+  --surface-2:#232b28;
+  --text:#e8e4d8;
+  --heading:#f4f1e6;
+  --muted:#9faba2;
+  --line:#2f3a35;
+  --line-strong:#5d6b64;
+  --accent:#7fc3a8;
+  --accent-weak:#1f2b27;
+  --gold:#b19b62;
+  --gold-ink:#c9ad72;
+  --warn:#d9a66a;
+  --ok:#79c08d;
+  --code-bg:#131816;
+  --selection:#2e3a31;
+
+  color-scheme:dark;
+}
+
+/* 未手動選擇時跟隨作業系統 */
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#171d1a; --surface:#1d2421; --surface-2:#232b28;
+    --text:#e8e4d8; --heading:#f4f1e6; --muted:#9faba2;
+    --line:#2f3a35; --line-strong:#5d6b64;
+    --accent:#7fc3a8; --accent-weak:#1f2b27;
+    --gold:#b19b62; --gold-ink:#c9ad72;
+    --warn:#d9a66a; --ok:#79c08d;
+    --code-bg:#131816; --selection:#2e3a31;
+    color-scheme:dark;
+  }
+}
+
+/* ============================================================
+   基礎樣式
+   ============================================================ */
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font:var(--fs-body)/var(--lh-body) var(--font-sans);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+::selection{background:var(--selection);}
+
+h1,h2,h3{font-family:var(--font-serif);font-weight:600;color:var(--heading);
+  line-height:var(--lh-tight);letter-spacing:.01em;margin:0;}
+h1{font-size:var(--fs-h1);} h2{font-size:var(--fs-h2);} h3{font-size:var(--fs-h3);}
+
+a{color:var(--accent);text-underline-offset:3px;text-decoration-thickness:1px;}
+a:hover{text-decoration-thickness:2px;}
+
+code,kbd,samp{font-family:var(--font-mono);font-size:.88em;
+  background:var(--code-bg);border:1px solid var(--line);
+  border-radius:var(--r-sm);padding:1px 5px;overflow-wrap:anywhere;}
+pre{background:var(--code-bg);border:1px solid var(--line);border-radius:var(--r-md);
+  padding:var(--sp-4);overflow-x:auto;font-family:var(--font-mono);
+  font-size:13.5px;line-height:1.7;}
+pre code{background:none;border:0;padding:0;font-size:inherit;}
+
+table{border-collapse:collapse;width:100%;font-size:var(--fs-sm);}
+th,td{border:1px solid var(--line);padding:var(--sp-2) var(--sp-3);
+  text-align:left;vertical-align:top;}
+th{background:var(--surface-2);color:var(--heading);font-weight:600;}
+
+hr{border:0;border-top:1px solid var(--line);margin:var(--sp-6) 0;}
+
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--r-sm);}
+
+/* ============================================================
+   共用元件
+   ============================================================ */
+
+/* 返回上一層 */
+.c-back{display:inline-block;font-size:var(--fs-xs);color:var(--muted);
+  text-decoration:none;margin-bottom:var(--sp-3);}
+.c-back:hover{color:var(--accent);}
+
+/* 主題切換鈕 */
+.c-theme{border:1px solid var(--line-strong);background:transparent;color:var(--text);
+  border-radius:var(--r-md);padding:5px 12px;cursor:pointer;
+  font:600 var(--fs-xs)/1 var(--font-sans);transition:border-color var(--motion),color var(--motion);}
+.c-theme:hover{border-color:var(--accent);color:var(--accent);}
+
+/* 卡片 */
+.c-card{background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-lg);padding:var(--sp-5) var(--sp-5);}
+
+/* 標籤 */
+.c-tag{display:inline-block;font:var(--fs-xs)/1.6 var(--font-mono);
+  border:1px solid var(--line-strong);border-radius:var(--r-sm);
+  padding:1px 8px;color:var(--muted);white-space:nowrap;}
+.c-tag--on{color:var(--ok);border-color:var(--ok);}
+.c-tag--gold{color:var(--gold-ink);border-color:var(--gold-ink);}
+
+/* 提示框 */
+.c-note{border:1px solid var(--line);border-left:3px solid var(--accent);
+  border-radius:var(--r-md);background:var(--surface);
+  padding:var(--sp-3) var(--sp-4);margin:var(--sp-4) 0;}
+.c-note--warn{border-left-color:var(--warn);}
+.c-note--gold{border-left-color:var(--gold);}
+.c-note__t{font-weight:700;font-size:var(--fs-sm);color:var(--heading);margin-bottom:2px;}
+.c-note p{margin:4px 0;font-size:var(--fs-sm);color:var(--muted);}
+
+/* 金色細飾線：唯一允許單獨使用 --gold 的地方 */
+.c-rule-gold{border:0;border-top:1px solid var(--gold);opacity:.55;margin:var(--sp-5) 0;}
+
+/* 頁尾 */
+.c-foot{margin-top:var(--sp-7);padding-top:var(--sp-4);
+  border-top:1px solid var(--line);font-size:var(--fs-xs);color:var(--muted);}
+
+@media print{
+  :root{--bg:#fff;--surface:#fff;--text:#000;--heading:#000;}
+  .c-theme,.c-back{display:none;}
+}

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>頁面標題</title>
+<meta name="description" content="一句話說明這一頁是什麼。">
+
+<!-- 防閃爍：必須放在樣式之前，且保持這 5 行不動 -->
+<script>(function(){try{var t=localStorage.getItem('class-theme');
+if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+
+<!-- 站台頁用外連；單檔教材改為把 tokens.css 內容內嵌於 <style> -->
+<link rel="stylesheet" href="../design/tokens.css">
+
+<style>
+  /* 這一頁專屬的版面。只准使用 tokens.css 的變數，不得出現任何 #色碼。 */
+  .wrap{max-width:var(--measure-ui);margin:0 auto;padding:var(--sp-7) var(--sp-5) var(--sp-8);}
+  .head{display:flex;align-items:flex-start;gap:var(--sp-3);}
+  .head h1{font-size:var(--fs-hero);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="c-back" href="../">← 上一層</a>
+
+  <div class="head">
+    <h1>頁面標題</h1>
+    <button class="c-theme" data-theme-toggle style="margin-left:auto"></button>
+  </div>
+
+  <!-- 內容 -->
+
+  <footer class="c-foot">
+    課程資料整理 © Jerry · 更新日 YYYY-MM-DD
+  </footer>
+</div>
+<script src="../design/theme.js"></script>
+</body>
+</html>

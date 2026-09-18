@@ -16,6 +16,21 @@
 
 內容詳見該資料夾。依 2026-09-17 版課綱整理。
 
+## 設計系統：紙與墨
+
+全站共用一套設計語言，定義在 `design/`：
+
+- `design/DESIGN.md` — 設計規範（色彩、字體、版面、元件、主題行為）
+- `design/AI-BRIEF.md` — **一頁版指令，要用任何 AI 工具做新頁面時整頁貼給它**
+- `design/tokens.css` — 唯一真實來源；站台頁 `<link>` 引用，單檔教材內嵌副本
+- `design/tokens.json` — 同一組值的機器可讀版
+- `design/theme.js` — 主題切換（三態 system／light／dark，跨頁保持）
+- `design/page-template.html` — 新頁面起手式
+
+改完任何頁面請執行 `node tools/check-design.mjs`，它會檢查硬寫色碼、主題腳本、返回連結與內嵌 tokens 是否漂移。
+
+**目前狀態**：首頁與課程頁已套用；RStudio 教材與雙語手冊尚未轉換，檢查腳本會把它們列為失敗，那就是待辦清單。
+
 ## 目錄結構
 
 ```
@@ -23,6 +38,8 @@ class/
 ├── index.html          課程清單（站台首頁）
 ├── .nojekyll
 ├── README.md
+├── design/             全站設計系統
+├── tools/              檢查腳本
 ├── text-as-data/       一門課一個資料夾
 │   ├── index.html         該課程首頁
 │   ├── text-as-data-course.html
@@ -37,8 +54,10 @@ class/
 
 1. 建立課程資料夾，名稱用小寫英文與連字號（例如 `research-methods`）。
 2. 放入該課程的 `index.html` 與內容檔；課程資料夾內部一律使用相對路徑。
-3. 編輯根目錄 `index.html`，複製一張課程卡片（標示為 `===== 課程卡片 =====` 的區塊），改掉標題、連結、學期與說明，並更新頁面上方的課程數。
-4. 在本 README 的「收錄的課程」新增一節。
+3. 頁面設計一律遵守 `design/AI-BRIEF.md`；用 AI 工具做的話，把那一頁整頁貼給它。
+4. 編輯根目錄 `index.html`，複製課程卡片（`<section class="c-card course">` 區塊），改掉標題、連結、學期與說明。
+5. 在本 README 的「收錄的課程」新增一節。
+6. 執行 `node tools/check-design.mjs` 確認全綠。
 
 課程資料夾彼此獨立，刪掉任何一個都不影響其他課。
 

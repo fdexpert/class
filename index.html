@@ -1,121 +1,92 @@
 <!DOCTYPE html>
-<html lang="zh-Hant" data-theme="dark">
+<html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>課程資料</title>
 <meta name="description" content="課程手冊、教材與練習資料。">
+<script>(function(){try{var t=localStorage.getItem('class-theme');
+if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<link rel="stylesheet" href="design/tokens.css">
 <style>
-  :root{--bg:#0f1115;--surface:#171c26;--surface-2:#1d2330;
-    --text:#e6e9ef;--text-dim:#aab2c0;--text-faint:#7c8696;
-    --border:#28303f;--border-soft:#23283a;--accent:#3794ff;--ok:#3fb950;}
-  html[data-theme="light"]{--bg:#f5f6f8;--surface:#ffffff;--surface-2:#f3f5f8;
-    --text:#1b2430;--text-dim:#4a5566;--text-faint:#7c8696;
-    --border:#dce0e8;--border-soft:#e9ecf1;--accent:#0a66c2;--ok:#1a7f37;}
-  *{box-sizing:border-box;}
-  body{margin:0;background:var(--bg);color:var(--text);line-height:1.7;font-size:16px;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Microsoft JhengHei",sans-serif;
-    -webkit-font-smoothing:antialiased;}
-  .wrap{max-width:780px;margin:0 auto;padding:72px 22px 96px;}
+  .wrap{max-width:var(--measure-ui);margin:0 auto;padding:var(--sp-8) var(--sp-5) var(--sp-8);}
+  .masthead{display:flex;align-items:flex-start;gap:var(--sp-4);}
+  .masthead h1{font-size:var(--fs-hero);}
+  .tagline{color:var(--muted);font-size:var(--fs-body);margin:var(--sp-2) 0 0;}
+  .lede{margin-bottom:var(--sp-6);}
 
-  header{display:flex;align-items:flex-start;gap:14px;margin-bottom:8px;}
-  .mark{width:11px;height:11px;border-radius:50%;background:var(--accent);margin-top:14px;flex:0 0 auto;}
-  h1{font-size:32px;margin:0;line-height:1.2;letter-spacing:-.015em;}
-  .themebtn{margin-left:auto;flex:0 0 auto;border:1px solid var(--border);border-radius:8px;
-    padding:6px 13px;cursor:pointer;font-size:13px;font-weight:600;
-    background:var(--text);color:var(--bg);transition:opacity .15s;}
-  .themebtn:hover{opacity:.85;}
-  .tagline{color:var(--text-dim);font-size:16px;margin:0 0 52px 25px;}
+  .course{margin-top:var(--sp-5);}
+  .course .ct{font-size:var(--fs-h2);margin-bottom:2px;}
+  .course .ct a{color:var(--heading);text-decoration:none;}
+  .course .ct a:hover{color:var(--accent);}
+  .course .cen{font-family:var(--font-serif);font-style:italic;
+    font-size:var(--fs-sm);color:var(--muted);margin:0 0 var(--sp-3);}
+  .tags{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin-bottom:var(--sp-4);}
+  .cdesc{font-size:var(--fs-sm);color:var(--muted);margin:0 0 var(--sp-4);}
 
-  article{background:var(--surface);border:1px solid var(--border);border-radius:14px;
-    padding:26px 28px;margin-bottom:20px;}
-  .ctitle{font-size:22px;margin:0 0 3px;line-height:1.35;letter-spacing:-.01em;}
-  .ctitle a{color:var(--text);text-decoration:none;}
-  .ctitle a:hover{color:var(--accent);}
-  .cen{font-size:13px;color:var(--text-faint);font-style:italic;margin:0 0 12px;}
-  .cmeta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:16px;}
-  .tag{font-size:11.5px;font-family:ui-monospace,monospace;letter-spacing:.02em;
-    border:1px solid var(--border);border-radius:20px;padding:2px 10px;color:var(--text-faint);}
-  .tag.on{color:var(--ok);border-color:var(--ok);}
-  .cdesc{font-size:14.5px;color:var(--text-dim);margin:0 0 20px;}
-
-  .res{display:grid;gap:9px;}
-  .res a{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--text);
-    background:var(--surface-2);border:1px solid var(--border-soft);border-radius:10px;
-    padding:13px 16px;transition:border-color .15s,transform .15s;}
-  .res a:hover{border-color:var(--accent);transform:translateX(2px);}
-  .res .txt{min-width:0;}
-  .res .n{font-size:14.5px;font-weight:600;display:block;}
-  .res .d{font-size:12.5px;color:var(--text-faint);display:block;margin-top:1px;}
-  .res .go{margin-left:auto;color:var(--accent);font-size:17px;flex:0 0 auto;}
-
-  footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--border);
-    font-size:12.5px;color:var(--text-faint);line-height:1.75;}
+  .res{display:grid;gap:var(--sp-2);}
+  .res a{display:flex;align-items:baseline;gap:var(--sp-3);text-decoration:none;
+    color:var(--text);background:var(--surface-2);border:1px solid var(--line);
+    border-radius:var(--r-md);padding:var(--sp-3) var(--sp-4);
+    transition:border-color var(--motion);}
+  .res a:hover{border-color:var(--accent);}
+  .res .n{font-weight:600;font-size:var(--fs-sm);}
+  .res .d{font-size:var(--fs-xs);color:var(--muted);}
+  .res .go{margin-left:auto;color:var(--accent);flex:0 0 auto;}
 
   @media(max-width:560px){
-    .wrap{padding:44px 17px 72px;}
-    h1{font-size:25px;} .mark{margin-top:10px;}
-    .tagline{margin-left:0;font-size:15px;margin-bottom:36px;}
-    article{padding:20px 18px;border-radius:12px;}
-    .ctitle{font-size:19px;}
-    .res a{padding:12px 14px;}
+    .wrap{padding:var(--sp-6) var(--sp-4) var(--sp-7);}
+    .res a{flex-wrap:wrap;} .res .d{width:100%;}
+    .res .go{margin-left:0;}
   }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <span class="mark"></span>
-    <h1>課程資料</h1>
-    <button class="themebtn" id="themeBtn">☀️ 淺色</button>
-  </header>
-  <p class="tagline">課程手冊、教材與練習資料。</p>
+  <div class="lede">
+    <div class="masthead">
+      <h1>課程資料</h1>
+      <button class="c-theme" data-theme-toggle style="margin-left:auto"></button>
+    </div>
+    <p class="tagline">課程手冊、教材與練習資料。</p>
+  </div>
 
-  <article>
-    <h2 class="ctitle"><a href="text-as-data/">文本即數據：社會科學研究的計算方法</a></h2>
+  <hr class="c-rule-gold">
+
+  <section class="c-card course">
+    <h2 class="ct"><a href="text-as-data/">文本即數據：社會科學研究的計算方法</a></h2>
     <p class="cen">Text as Data: Computational Methods for Social Science Research</p>
-    <div class="cmeta">
-      <span class="tag on">修課中</span>
-      <span class="tag">臺灣大學 國家發展研究所</span>
-      <span class="tag">115-1</span>
-      <span class="tag">NTLDEV7191</span>
+    <div class="tags">
+      <span class="c-tag c-tag--on">修課中</span>
+      <span class="c-tag">臺灣大學 國家發展研究所</span>
+      <span class="c-tag">115-1</span>
+      <span class="c-tag">NTLDEV7191</span>
     </div>
     <p class="cdesc">以政治學與社會科學的實質研究問題為核心的定量文本分析與 NLP 課程，從字典法、分類器、尺度與主題模型，進入詞嵌入、Transformer 與大型語言模型。</p>
     <div class="res">
       <a href="text-as-data/text-as-data-course.html">
-        <span class="txt">
-          <span class="n">雙語互動課程手冊</span>
-          <span class="d">16 週課程索引與閱讀 · 中英文即時切換 · 名詞提示與全文搜尋</span>
-        </span>
+        <span class="n">雙語互動課程手冊</span>
+        <span class="d">16 週課程索引與閱讀 · 中英文即時切換 · 名詞提示與全文搜尋</span>
         <span class="go">→</span>
       </a>
       <a href="text-as-data/rstudio-intro.html">
-        <span class="txt">
-          <span class="n">RStudio 入門課前教材</span>
-          <span class="d">寫給零 R 基礎修課學生 · 以立法院質詢語料貫穿 · 撰寫中</span>
-        </span>
+        <span class="n">RStudio 入門課前教材</span>
+        <span class="d">寫給零 R 基礎修課學生 · 以立法院質詢語料貫穿 · 撰寫中</span>
         <span class="go">→</span>
       </a>
       <a href="text-as-data/">
-        <span class="txt">
-          <span class="n">課程頁與練習資料</span>
-          <span class="d">立法院第 11 屆書面質詢 162 筆、取材與分析腳本</span>
-        </span>
+        <span class="n">課程頁與練習資料</span>
+        <span class="d">立法院第 11 屆書面質詢 162 筆、取材與分析腳本</span>
         <span class="go">→</span>
       </a>
     </div>
-  </article>
+  </section>
 
-  <footer>
+  <footer class="c-foot">
     各課程之課綱、教材與所引用文獻的權利歸各自權利人所有；本站未另行授予其內容的再授權。<br>
     課程資料整理 © Jerry · 更新日 2026-09-18
   </footer>
 </div>
-<script>
-  var root=document.documentElement,btn=document.getElementById('themeBtn');
-  function setTheme(t){root.setAttribute('data-theme',t);btn.textContent=(t==='dark'?'☀️ 淺色':'🌙 深色');}
-  btn.addEventListener('click',function(){setTheme(root.getAttribute('data-theme')==='dark'?'light':'dark');});
-  setTheme('dark');
-</script>
+<script src="design/theme.js"></script>
 </body>
 </html>

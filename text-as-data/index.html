@@ -1,82 +1,90 @@
 <!DOCTYPE html>
-<html lang="zh-Hant" data-theme="dark">
+<html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>文本即數據 · 課程資料</title>
+<meta name="description" content="文本即數據：社會科學研究的計算方法 — 課程手冊、課前教材與練習語料。">
+<script>(function(){try{var t=localStorage.getItem('class-theme');
+if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<link rel="stylesheet" href="../design/tokens.css">
 <style>
-  :root{--bg:#0f1115;--surface:#171c26;--text:#e6e9ef;--text-dim:#aab2c0;--text-faint:#7c8696;
-    --border:#28303f;--accent:#3794ff;}
-  html[data-theme="light"]{--bg:#f5f6f8;--surface:#ffffff;--text:#1b2430;--text-dim:#4a5566;
-    --text-faint:#7c8696;--border:#dce0e8;--accent:#0a66c2;}
-  *{box-sizing:border-box;}
-  body{margin:0;background:var(--bg);color:var(--text);line-height:1.7;font-size:16px;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Microsoft JhengHei",sans-serif;
-    -webkit-font-smoothing:antialiased;}
-  .wrap{max-width:760px;margin:0 auto;padding:54px 20px 80px;}
-  .top{display:flex;align-items:flex-start;gap:12px;margin-bottom:6px;}
-  h1{font-size:28px;margin:0;line-height:1.3;}
-  .themebtn{margin-left:auto;flex:0 0 auto;border:1px solid var(--border);border-radius:8px;
-    padding:5px 12px;cursor:pointer;font-size:13px;font-weight:600;background:var(--text);color:var(--bg);}
-  .sub{color:var(--text-dim);margin:4px 0 30px;font-size:15.5px;}
-  a.card{display:block;text-decoration:none;color:inherit;background:var(--surface);
-    border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;
-    padding:16px 18px;margin:12px 0;}
-  a.card:hover{border-color:var(--accent);}
-  a.card .t{font-size:17px;font-weight:700;color:var(--accent);}
-  a.card .d{font-size:14px;color:var(--text-dim);margin-top:5px;}
-  a.card .m{font-size:12px;color:var(--text-faint);margin-top:8px;font-family:ui-monospace,monospace;}
-  h2{font-size:16px;margin:34px 0 8px;}
-  p,li{font-size:14.5px;color:var(--text-dim);}
-  code{background:var(--bg);border:1px solid var(--border);padding:1px 5px;border-radius:4px;font-size:13px;}
-  footer{margin-top:40px;padding-top:14px;border-top:1px solid var(--border);
-    font-size:12px;color:var(--text-faint);}
+  .wrap{max-width:var(--measure-ui);margin:0 auto;padding:var(--sp-6) var(--sp-5) var(--sp-8);}
+  .masthead{display:flex;align-items:flex-start;gap:var(--sp-4);}
+  .masthead h1{font-size:var(--fs-h1);}
+  .cen{font-family:var(--font-serif);font-style:italic;font-size:var(--fs-sm);
+    color:var(--muted);margin:var(--sp-1) 0 var(--sp-3);}
+  .tags{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin-bottom:var(--sp-5);}
+
+  .res{display:grid;gap:var(--sp-3);margin-bottom:var(--sp-6);}
+  .res a{display:block;text-decoration:none;color:var(--text);background:var(--surface);
+    border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:var(--r-md);padding:var(--sp-4) var(--sp-4);
+    transition:border-color var(--motion);}
+  .res a:hover{border-color:var(--accent);}
+  .res .n{font-family:var(--font-serif);font-size:var(--fs-h3);color:var(--heading);
+    font-weight:600;display:block;margin-bottom:var(--sp-1);}
+  .res .d{font-size:var(--fs-sm);color:var(--muted);display:block;}
+  .res .m{font-size:var(--fs-xs);color:var(--muted);font-family:var(--font-mono);
+    display:block;margin-top:var(--sp-2);}
+
+  h2{margin:var(--sp-6) 0 var(--sp-3);}
+  p{font-size:var(--fs-sm);color:var(--muted);margin:var(--sp-2) 0;}
+  ul{font-size:var(--fs-sm);color:var(--muted);padding-left:1.3em;}
+  li{margin:var(--sp-1) 0;}
+  @media(max-width:560px){ .wrap{padding:var(--sp-5) var(--sp-4) var(--sp-7);} }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <p style="margin:0 0 12px;font-size:13px;"><a href="../" style="color:var(--text-faint);text-decoration:none;">← 課程清單</a></p>
-  <div class="top">
+  <a class="c-back" href="../">← 課程清單</a>
+
+  <div class="masthead">
     <h1>文本即數據：社會科學研究的計算方法</h1>
-    <button class="themebtn" id="themeBtn">☀️ 淺色</button>
+    <button class="c-theme" data-theme-toggle style="margin-left:auto"></button>
   </div>
-  <p class="sub">國立臺灣大學國家發展研究所 · 115-1（2026 年秋季）· 課程自學資料</p>
+  <p class="cen">Text as Data: Computational Methods for Social Science Research</p>
+  <div class="tags">
+    <span class="c-tag c-tag--on">修課中</span>
+    <span class="c-tag">臺灣大學 國家發展研究所</span>
+    <span class="c-tag">115-1（2026 秋季）</span>
+    <span class="c-tag">2 學分</span>
+    <span class="c-tag">NTLDEV7191</span>
+  </div>
 
-  <a class="card" href="text-as-data-course.html">
-    <div class="t">雙語互動課程手冊 →</div>
-    <div class="d">16 週課程索引、30 項核心閱讀與 93 項補充閱讀、121 筆書目、193 個名詞條目。中英文即時切換，保留週次與閱讀勾選；附專有名詞提示、全文搜尋與文獻閱讀窗。</div>
-    <div class="m">依 2026-09-17 版課綱整理</div>
-  </a>
+  <div class="res">
+    <a href="text-as-data-course.html">
+      <span class="n">雙語互動課程手冊</span>
+      <span class="d">16 週課程索引與閱讀、作業與報告要求。中英文即時切換並保留週次與閱讀勾選；專有名詞提示、全文搜尋、文獻分隔閱讀窗；閱讀進度保留於瀏覽器，可匯出並列印課綱。</span>
+      <span class="m">依 2026-09-17 版課綱整理</span>
+    </a>
+    <a href="rstudio-intro.html">
+      <span class="n">RStudio 入門課前教材</span>
+      <span class="d">寫給零 R 基礎修課學生的課前準備教材。工具分工、RStudio 介面與必改設定、Project 工作流、套件管理、R 語言最小必要集，以及文本分析實戰。全程以立法院書面質詢真實語料貫穿，所有程式碼輸出均經實機執行驗證。</span>
+      <span class="m">v0.6 · 14／19 章 · 撰寫中</span>
+    </a>
+  </div>
 
-  <a class="card" href="rstudio-intro.html">
-    <div class="t">RStudio 入門 · 課前教材 →</div>
-    <div class="d">寫給零 R 基礎修課學生的課前準備教材。四件工具的分工、RStudio 介面與必改設定、Project 工作流、套件管理，R 語言最小必要集（向量、讀檔、dplyr、stringr、purrr、讀懂錯誤訊息），以及文本分析實戰（corpus、中英文斷詞、dfm 與停用詞、詞頻圖與分組比較）。全程以立法院書面質詢真實語料作為貫穿範例，所有程式碼輸出均經實機執行驗證。</div>
-    <div class="m">v0.6 · 導論＋第一至三篇共 14 章，已對齊 2026-09-17 版課綱（全課四篇十九章，其餘撰寫中）</div>
-  </a>
+  <hr class="c-rule-gold">
 
   <h2>練習語料</h2>
-  <p>立法院第 11 屆書面質詢 162 筆（第 1–3 會期、28 位委員，含事由與完整說明），取自立法院開放資料 API。取材與示範腳本一併附上。</p>
+  <p>立法院第 11 屆書面質詢 162 筆（第 1–3 會期、28 位委員，含事由與完整說明，平均 617 字），取自立法院開放資料 API v2。取材與示範腳本一併附上。</p>
   <ul>
-    <li><a href="data/%E7%AB%8B%E6%B3%95%E9%99%A2%E8%B3%AA%E8%A9%A2_%E7%AC%AC11%E5%B1%86.csv">立法院質詢_第11屆.csv</a></li>
+    <li><a href="data/%E7%AB%8B%E6%B3%95%E9%99%A2%E8%B3%AA%E8%A9%A2_%E7%AC%AC11%E5%B1%86.csv">立法院質詢_第11屆.csv</a> — 語料本體</li>
     <li><a href="data/fetch-corpus.R">fetch-corpus.R</a> — 取材腳本</li>
-    <li><a href="data/pipeline-demo.R">pipeline-demo.R</a> — 清理、斷詞、dfm 完整示範</li>
-    <li><a href="data/quanteda-pipeline.R">quanteda-pipeline.R</a> — 第三篇全部程式碼（corpus → tokens → dfm → keyness → 圖）</li>
+    <li><a href="data/pipeline-demo.R">pipeline-demo.R</a> — 清理、斷詞、dfm 示範</li>
+    <li><a href="data/quanteda-pipeline.R">quanteda-pipeline.R</a> — 教材第三篇的全部程式碼</li>
   </ul>
 
   <h2>說明與限制</h2>
-  <p>課程資料依 2026-09-17 版英文課綱整理，中文為編者翻譯、非官方譯本，以英文原文為準；名詞解釋與教材內容為編者補充，不代表授課教師的額外要求。原課綱中週次與截止日的矛盾已於手冊內保留提示，實際要求以授課教師公告為準。</p>
+  <p>課程資料依 2026-09-17 版原始英文課綱整理；中文為編者翻譯，非官方譯本，若有出入以英文原文為準。名詞解釋與教材內容為編者補充，不代表授課教師的額外要求。原課綱中待公告的截止日已保留提示，實際要求以授課教師公告為準。</p>
   <p>部分出版社禁止 iframe 嵌入，閱讀窗一律提供「另開原站」。立法院資料為政府開放資料，著作權依原始授權條款。</p>
 
-  <footer>
-    課程資料整理 © Jerry。原課綱及所引用文獻之權利歸各自權利人所有；本專案未另行授予其內容的再授權。<br>
-    更新日 2026-09-17
+  <footer class="c-foot">
+    課程資料整理 © Jerry。原課綱及所引用文獻的權利歸各自權利人所有；本專案未另行授予其內容的再授權。<br>
+    更新日 2026-09-18
   </footer>
 </div>
-<script>
-  var root=document.documentElement,btn=document.getElementById('themeBtn');
-  function setTheme(t){root.setAttribute('data-theme',t);btn.textContent=(t==='dark'?'☀️ 淺色':'🌙 深色');}
-  btn.addEventListener('click',function(){setTheme(root.getAttribute('data-theme')==='dark'?'light':'dark');});
-  setTheme('dark');
-</script>
+<script src="../design/theme.js"></script>
 </body>
 </html>
