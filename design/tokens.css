@@ -1,5 +1,5 @@
 /* ============================================================
-   紙與墨 — class 設計系統代幣 v1
+   紙與墨 — class 設計系統代幣 v1.2
    由 design/tokens.json 產生，勿手改任何色碼。
    單檔頁面（教材、手冊）內嵌此檔副本；站台頁以 <link> 引用。
    ============================================================ */
@@ -19,9 +19,11 @@
   --gold:#b19b62;          /* 金：僅裝飾，不承載資訊 */
   --gold-ink:#7d6430;      /* 金：可承載資訊的深色版 */
   --warn:#81562c;
+  --danger:#8c3a2e;
   --ok:#2f6b45;
   --code-bg:#f1efe5;
   --selection:#e8e2cd;
+  --shadow-panel:0 8px 32px #183e3530;  /* 僅限浮動面板 */
 
   /* ── 字體 ──────────────────────────────────── */
   --font-serif:"Songti TC","Noto Serif TC",Georgia,"Times New Roman",serif;
@@ -68,9 +70,11 @@
   --gold:#b19b62;
   --gold-ink:#c9ad72;
   --warn:#d9a66a;
+  --danger:#e0907f;
   --ok:#79c08d;
   --code-bg:#131816;
   --selection:#2e3a31;
+  --shadow-panel:0 8px 32px #00000066;
 
   color-scheme:dark;
 }
@@ -83,8 +87,9 @@
     --line:#2f3a35; --line-strong:#5d6b64;
     --accent:#7fc3a8; --accent-weak:#1f2b27;
     --gold:#b19b62; --gold-ink:#c9ad72;
-    --warn:#d9a66a; --ok:#79c08d;
+    --warn:#d9a66a; --danger:#e0907f; --ok:#79c08d;
     --code-bg:#131816; --selection:#2e3a31;
+    --shadow-panel:0 8px 32px #00000066;
     color-scheme:dark;
   }
 }
@@ -157,6 +162,7 @@ hr{border:0;border-top:1px solid var(--line);margin:var(--sp-6) 0;}
   padding:var(--sp-3) var(--sp-4);margin:var(--sp-4) 0;}
 .c-note--warn{border-left-color:var(--warn);}
 .c-note--gold{border-left-color:var(--gold);}
+.c-note--danger{border-left-color:var(--danger);}
 .c-note__t{font-weight:700;font-size:var(--fs-sm);color:var(--heading);margin-bottom:2px;}
 .c-note p{margin:4px 0;font-size:var(--fs-sm);color:var(--muted);}
 

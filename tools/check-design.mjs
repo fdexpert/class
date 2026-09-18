@@ -61,15 +61,23 @@ for (const p of pages) {
 
   // 5) 頁面 CSS 裡的硬色碼（排除 tokens 內嵌區與 SVG data URI）
   const styles = [...s.matchAll(/<style>([\s\S]*?)<\/style>/g)].map(m => m[1]).join('\n');
-  const own = embedded ? styles.split('/* ====').slice(-1)[0] : styles;
+  // 內嵌 tokens 的頁面：先把代幣全文逐行剔除，只留這一頁自己寫的 CSS
+  let own = styles;
+  if (embedded) {
+    const tokenLines = new Set(tokensCss.split('\n').map(l => l.trim()).filter(l => l.length > 3));
+    own = styles.split('\n').filter(l => !tokenLines.has(l.trim())).join('\n');
+  }
   const hexes = [...own.matchAll(/#[0-9a-fA-F]{3,8}\b/g)].map(m => m[0])
-    .filter(h => !/^#(ch|s\d)/.test(h));
+    .filter(h => !/^#(ch|s\d)/.test(h))
+    .filter(h => !['#000','#fff','#ffffff','#000000','#c00'].includes(h.toLowerCase())); // 壓在第三方影片縮圖上的色，不隨主題變
   hexes.length === 0 ? ok('無硬寫色碼')
     : warn(`頁面 CSS 出現 ${hexes.length} 個硬寫色碼：${[...new Set(hexes)].slice(0,6).join(' ')}`);
 
   // 6) 使用到但不存在的變數
   const used = [...s.matchAll(/var\(--([a-z0-9-]+)/gi)].map(m => m[1]);
-  const unknown = [...new Set(used)].filter(v => !tokenNames.includes(v));
+  const declaredHere = [...s.matchAll(/--([a-z0-9-]+)\s*:/gi)].map(m => m[1]);
+  const known = new Set([...tokenNames, ...declaredHere]);
+  const unknown = [...new Set(used)].filter(v => !known.has(v));
   unknown.length === 0 ? ok('變數全部有定義')
     : warn(`用到未定義的變數：${unknown.slice(0,8).join(', ')}`);
 }
