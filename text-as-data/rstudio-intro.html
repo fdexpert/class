@@ -315,7 +315,7 @@ if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)
         </tbody>
       </table></div>
       <div class="callout tip"><div class="ct">▍目前進度</div>
-        <p>你現在看到的是 <strong>v0.6，包含導論與第一至三篇（共 14 章）</strong>。第四篇與附錄在側欄顯示為灰色，尚未撰寫。</p>
+        <p>你現在看到的是 <strong>v1.0，全 19 章與三個附錄皆已完成</strong>。</p>
         <p><strong>本版已依 2026-09-17 更新版課綱全面校對</strong>：評分項目、繳交管道（改為 Overleaf）、課後 Lab 定位、求助管道與週次對應皆已更新。若你讀過 9 月 17 日以前的版本，這些地方都變了。</p>
       </div>
 
@@ -2145,11 +2145,716 @@ write_csv(f, here("output", "top10_freq.csv"))</pre></div>
         <li>這一篇等於第 4 週 Lab 的完整預演。</li>
       </ul>
       <footer class="foot">程式碼、輸出與圖表皆在 R 4.6.1 + quanteda 4.5.0 + ggplot2 實際執行產生；課程週次對照 <strong>2026-09-17 版課綱</strong>第 7.2 節（查證日 2026-09-18）。</footer>
-      <div class="chap-foot" style="color:var(--muted);font-size:13.5px;">第三篇到此結束。第四篇「交付與協作」尚未撰寫。</div>
+      <div class="chap-foot"><a class="nextlink" data-go="ch15"><span class="k">下一章 →</span> 15 · Quarto 筆記本與 Overleaf 繳交</a></div>
     </section>
 
+    <!-- ===================== ch15 ===================== -->
+    <section class="chapter" id="ch15">
+      <div class="crumb">第四篇 · 交付與協作 / 15</div>
+      <h1 class="ch">Quarto 筆記本與 Overleaf 繳交</h1>
+      <p class="lead">本章目標：用 Quarto 做你自己的分析筆記本，並學會把裡面的數字與表格<strong>自動交棒</strong>給 Overleaf 上的 LaTeX 文件。</p>
+      <div class="pagetoc"><div class="tt">本頁章節</div>
+        <a href="#s15-split">分工</a><a href="#s15-qmd">.qmd 的三個部分</a><a href="#s15-chunk">chunk 選項</a><a href="#s15-hand1">交棒一：表格</a><a href="#s15-hand2">交棒二：數字</a><a href="#s15-ol">Overleaf 實務</a><a href="#s15-cjk">中文 PDF</a><a href="#s15-p">動手練習</a><a href="#s15-s">本章小結</a>
+      </div>
+
+      <h2 id="s15-split">1. 分工：一個給自己，一個給老師</h2>
+      <p>第 1 章講過，2026-09-17 版課綱把這件事訂得很死：<strong>書面作業與海報必須使用課程提供的 LaTeX 範本，透過各自獨立的 Overleaf 專案繳交，並開放授課教師 Editor 權限</strong>；Quarto 可以用來做分析筆記本，但不能當計分文件的格式。</p>
+      <p>與其把這當成限制，不如把它當成一種分工。兩邊各做各擅長的事：</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:18%"></th><th style="width:41%">Quarto 筆記本（你自己的）</th><th>Overleaf 文件（交出去的）</th></tr></thead>
+        <tbody>
+          <tr><td>放什麼</td><td>程式碼、跑出來的表與圖、當下的判斷與待辦</td><td>論述、方法、定稿的表與圖</td></tr>
+          <tr><td>誰會看</td><td>只有你（以及未來的你）</td><td>授課教師、助教</td></tr>
+          <tr><td>改動頻率</td><td>每天</td><td>接近截止日才密集</td></tr>
+          <tr><td>怕什麼</td><td>怕忘記當初為什麼這樣做</td><td>怕數字跟程式碼對不起來</td></tr>
+        </tbody>
+      </table></div>
+      <p>最後一列就是本章的核心問題：<strong>怎麼確保論文裡的每個數字，都真的來自你跑過的程式碼</strong>。</p>
+
+      <h2 id="s15-qmd">2. .qmd 的三個部分</h2>
+      <p>一份 Quarto 文件只有三種東西：最上面的 YAML 設定、一般的文字、以及夾在 <code>```{r}</code> 之間的程式碼區塊。</p>
+      <div class="codeblock"><span class="lang">lab.qmd</span><button class="copyb">複製</button><pre>---
+title: "Lab 分析筆記本"
+format: html
+execute:
+  echo: true
+  warning: false
+---
+
+## 讀入與清理
+
+```{r}
+library(readr); library(dplyr); library(stringr)
+d &lt;- read_csv("data/立法院質詢_第11屆.csv", show_col_types = FALSE)
+nrow(d)
+```</pre></div>
+      <p>YAML 的 <code>execute</code> 區塊設定全文件的預設行為：<code>echo: true</code> 是把程式碼一起顯示（筆記本要看得到程式碼），<code>warning: false</code> 是不要把警告印進文件。</p>
+      <p>在 RStudio 裡按左上角的 <strong>Render</strong>（或 <span class="kbd">Cmd/Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">K</span>），它會從頭到尾執行一次，然後產生 HTML。</p>
+      <div class="callout tip"><div class="ct">▍Render 是一次乾淨的執行</div>
+        <p>Render 會開一個<strong>全新的 R 工作階段</strong>，從第一行跑到最後一行。所以如果你的筆記本依賴某個只存在於你當前記憶體裡的物件，Render 就會失敗——這正是第 2 章關掉 workspace 自動儲存的理由。<strong>Render 成功等於你的分析真的可重現</strong>，這個檢查每天都值得做一次。</p>
+      </div>
+
+      <h2 id="s15-chunk">3. chunk 選項</h2>
+      <p>每個程式碼區塊可以用 <code>#|</code> 開頭的註解單獨設定：</p>
+      <div class="codeblock"><span class="lang">R chunk</span><button class="copyb">複製</button><pre>```{r}
+#| label: tbl-session
+#| tbl-cap: "各會期質詢概況"
+#| echo: false
+
+tab &lt;- d |&gt; group_by(會期) |&gt;
+  summarise(件數 = n(), 平均字數 = round(mean(字數)), 最長 = max(字數))
+knitr::kable(tab)
+```</pre></div>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:22%">選項</th><th>作用</th></tr></thead>
+        <tbody>
+          <tr><td><code>label</code></td><td>給這塊取名，出錯時錯誤訊息會指名它；名稱不可重複</td></tr>
+          <tr><td><code>echo</code></td><td>要不要顯示程式碼本身</td></tr>
+          <tr><td><code>eval</code></td><td>要不要執行（設 <code>false</code> 可暫時跳過很慢的區塊）</td></tr>
+          <tr><td><code>fig-cap</code> / <code>tbl-cap</code></td><td>圖說與表說</td></tr>
+          <tr><td><code>cache</code></td><td>快取結果，斷詞這類耗時步驟很有用</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="videobox" data-vid="oYV1a9sWhgM" data-start="0">
+        <div class="vhead"><span class="play">▶</span> 影片示範 · Quarto 速成（英文，4 分 58 秒） <span class="seg">點縮圖開啟</span></div>
+        <div class="vthumb" role="button" tabindex="0" aria-label="播放影片：Quarto crash course" style="background-image:url('https://i.ytimg.com/vi/oYV1a9sWhgM/hqdefault.jpg')">
+          <div class="vplay">▶</div><div class="vopen">在 YouTube 開啟 ↗</div>
+        </div>
+        <div class="vcap">「Quarto crash course - what you can do with quarto」— R Programming 101（1.9 萬觀看）。五分鐘看完 Quarto 能做什麼。注意影片示範的是用 Quarto 直接產出文件，本課只把它當分析筆記本用。版權屬原作者。</div>
+      </div>
+
+      <h2 id="s15-hand1">4. 交棒一：把表格輸出成 .tex</h2>
+      <p>不要在 Overleaf 裡手打表格。<code>kable()</code> 可以直接吐出 LaTeX 語法：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>tex &lt;- knitr::kable(tab, format = "latex", booktabs = TRUE,
+                    caption = "各會期質詢概況")
+writeLines(tex, "output/tbl-session.tex")</pre></div>
+      <p>實際產出（本章程式碼在 R 4.6.1 執行的結果）：</p>
+      <div class="codeblock"><span class="lang">output/tbl-session.tex</span><button class="copyb">複製</button><pre>\begin{table}
+
+\caption{\label{tab:export-latex}各會期質詢概況}
+\centering
+\begin{tabular}[t]{rrrr}
+\toprule
+會期 &amp; 件數 &amp; 平均字數 &amp; 最長\\
+\midrule
+1 &amp; 59 &amp; 608 &amp; 2149\\
+2 &amp; 68 &amp; 614 &amp; 1787\\
+3 &amp; 35 &amp; 653 &amp; 2529\\
+\bottomrule
+\end{tabular}
+\end{table}</pre></div>
+      <p>把這個檔上傳到 Overleaf，在正文需要的位置寫一行 <code>\input{tbl-session.tex}</code> 就好。資料更新時重跑筆記本、重新上傳同一個檔，論文裡的表就跟著更新，<strong>你完全不用重打</strong>。</p>
+      <div class="callout note"><div class="ct">▍booktabs 的排版慣例</div>
+        <p><code>booktabs = TRUE</code> 產生的是 <code>\toprule</code>／<code>\midrule</code>／<code>\bottomrule</code>——學術期刊的標準表格樣式，沒有直線、只有橫線。Overleaf 那端的前言要有 <code>\usepackage{booktabs}</code>，課程 LaTeX 範本通常已經載好了。</p>
+      </div>
+
+      <h2 id="s15-hand2">5. 交棒二：把關鍵數字輸出成巨集</h2>
+      <p>這一招比表格更重要，也更少人知道。論文正文裡那些散落的數字——「本研究分析 162 筆質詢」「平均長度 620 字」——如果用手打，只要你重抓一次資料就會全部失真。</p>
+      <p>做法是讓 R 產生一個定義巨集的 <code>.tex</code> 檔：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>macros &lt;- c(
+  sprintf("\\newcommand{\\NDocs}{%d}", nrow(d)),
+  sprintf("\\newcommand{\\MeanWords}{%d}", round(mean(d$字數))),
+  sprintf("\\newcommand{\\NLegislators}{%d}", dplyr::n_distinct(d$委員))
+)
+writeLines(macros, "output/numbers.tex")</pre></div>
+      <p>實際產出：</p>
+      <div class="codeblock"><span class="lang">output/numbers.tex</span><button class="copyb">複製</button><pre>\newcommand{\NDocs}{162}
+\newcommand{\MeanWords}{620}
+\newcommand{\NLegislators}{28}</pre></div>
+      <p>Overleaf 那端在前言 <code>\input{numbers.tex}</code>，正文就這樣寫：</p>
+      <div class="codeblock"><span class="lang">LaTeX</span><button class="copyb">複製</button><pre>本研究分析 \NDocs 筆書面質詢，出自 \NLegislators 位委員，
+平均長度 \MeanWords 字。</pre></div>
+      <div class="callout warn"><div class="ct">▍這招解決的是一個真實的學術災難</div>
+        <p>「論文裡的數字跟程式碼跑出來的不一樣」是審稿與口試最難堪的問題之一，而它幾乎都不是造假，只是<strong>某次重跑之後忘了回頭改正文</strong>。把數字變成巨集，你在結構上就不可能忘記——因為你根本沒有手打過它。</p>
+      </div>
+
+      <h2 id="s15-ol">6. Overleaf 實務</h2>
+      <p>課綱對繳交方式寫得很細，三個細節不要弄錯：</p>
+      <p>第一，<strong>每一項作業用各自獨立的 Overleaf 專案</strong>，不要全部塞在同一個專案裡。摘要、期中研究設計、海報、期末論文是四個專案。</p>
+      <p>第二，<strong>權限必須開到 Editor（可編輯）</strong>。在 Overleaf 專案裡點右上角 Share，輸入授課教師的信箱，權限選 <em>Can edit</em>。只給 <em>Can view</em> 不算繳交——課綱把這點特別寫出來，代表過去有人踩過。</p>
+      <p>第三，<strong>用課程提供的 LaTeX 範本</strong>，不要自己找一個漂亮的模板套。範本決定了格式一致性，也是助教批改的前提。</p>
+      <div class="videobox" data-vid="xcTN4F3l9Ds" data-start="0">
+        <div class="vhead"><span class="play">▶</span> 影片示範 · 六分鐘學會 Overleaf（英文，6 分 45 秒） <span class="seg">點縮圖開啟</span></div>
+        <div class="vthumb" role="button" tabindex="0" aria-label="播放影片：Learn Overleaf in 6 Minutes" style="background-image:url('https://i.ytimg.com/vi/xcTN4F3l9Ds/hqdefault.jpg')">
+          <div class="vplay">▶</div><div class="vopen">在 YouTube 開啟 ↗</div>
+        </div>
+        <div class="vcap">「Learn Overleaf in 6 Minutes - a Tutorial for Beginners」— Dr. Marc Zimmer（13 萬觀看）。介面、編譯、上傳檔案、分享權限都涵蓋。看完就足以應付本課的繳交流程。版權屬原作者。</div>
+      </div>
+
+      <h2 id="s15-cjk">7. 中文 PDF 的字型問題</h2>
+      <p>如果你的論文有中文（引用質詢原文幾乎一定會有），LaTeX 預設的引擎排不出中文。在 Overleaf 專案的設定裡把 Compiler 改成 <strong>XeLaTeX</strong>，並在前言加上：</p>
+      <div class="codeblock"><span class="lang">LaTeX 前言</span><button class="copyb">複製</button><pre>\usepackage{xeCJK}
+\setCJKmainfont{Noto Serif CJK TC}   % Overleaf 上可用的中文字型</pre></div>
+      <p>本機用 Quarto 出中文 PDF 也是同一個道理，第 14 章談過。<strong>請在學期初就先試一次</strong>，不要留到截稿前才發現中文變成空白方塊。</p>
+
+      <h2 id="s15-p">8. 動手練習</h2>
+      <div class="practice"><ol>
+        <li>在你的專案 <code>report/</code> 資料夾建立 <code>lab.qmd</code>，讀入質詢語料並算出各會期摘要，Render 成 HTML。</li>
+        <li>加上一個 chunk，把那張表用 <code>kable(format = "latex", booktabs = TRUE)</code> 寫到 <code>output/tbl-session.tex</code>，打開檔案確認內容。</li>
+        <li>做一個 <code>numbers.tex</code>，至少放三個巨集（筆數、平均字數、委員數）。</li>
+        <li>去 <a href="https://www.overleaf.com" target="_blank" rel="noopener">overleaf.com</a> 註冊帳號（建議用學校信箱），建立一個測試專案，上傳上面兩個 <code>.tex</code> 檔，用 <code>\input{}</code> 把它們放進文件並編譯成功。</li>
+        <li>在那個測試專案裡把 Compiler 改成 XeLaTeX，加入 <code>xeCJK</code>，打一段中文並編譯，確認中文出得來。</li>
+        <li>壓力測試：把 <code>d</code> 改成只取前 50 筆，重跑筆記本、重新上傳，確認 Overleaf 裡的數字自己變了。</li>
+      </ol></div>
+
+      <h2 id="s15-s">9. 本章小結</h2>
+      <ul>
+        <li>Quarto 做分析筆記本，Overleaf 上的 LaTeX 交件——課綱明定 Quarto 不可當計分文件格式。</li>
+        <li>Render 會開全新工作階段從頭跑，<strong>Render 成功等於分析可重現</strong>。</li>
+        <li>表格用 <code>kable(format = "latex", booktabs = TRUE)</code> 輸出成 <code>.tex</code>，在 Overleaf 用 <code>\input{}</code> 引用。</li>
+        <li>關鍵數字輸出成 <code>\newcommand</code> 巨集，正文寫 <code>\NDocs</code> 而不是手打 162。</li>
+        <li>四項作業各自獨立的 Overleaf 專案，權限開到 <strong>Editor</strong>，用課程範本。</li>
+        <li>中文 PDF 要 XeLaTeX + xeCJK，學期初就先試。</li>
+      </ul>
+      <footer class="foot">Quarto 與 LaTeX 交棒流程於 R 4.6.1 + Quarto 1.10.18 實際執行驗證，本章所有輸出皆為實際產物；繳交規定對照 2026-09-17 版課綱（查證日 2026-09-18）。</footer>
+      <div class="chap-foot"><a class="nextlink" data-go="ch16"><span class="k">下一章 →</span> 16 · GitHub Desktop 與課程儲存庫</a></div>
+    </section>
+
+    <!-- ===================== ch16 ===================== -->
+    <section class="chapter" id="ch16">
+      <div class="crumb">第四篇 · 交付與協作 / 16</div>
+      <h1 class="ch">GitHub Desktop 與課程儲存庫</h1>
+      <p class="lead">本章目標：用圖形介面完成這門課需要的所有 Git 操作——取得教材、保存自己的分析、最後交出可重現儲存庫。</p>
+      <div class="pagetoc"><div class="tt">本頁章節</div>
+        <a href="#s16-role">GitHub 在本課的角色</a><a href="#s16-setup">安裝與登入</a><a href="#s16-clone">複製課程儲存庫</a><a href="#s16-own">自己的專案</a><a href="#s16-ignore">.gitignore</a><a href="#s16-final">期末可重現儲存庫</a><a href="#s16-p">動手練習</a><a href="#s16-s">本章小結</a>
+      </div>
+
+      <h2 id="s16-role">1. GitHub 在本課的角色</h2>
+      <p>再強調一次第 1 章的重點，因為它跟很多人的預期不同：<strong>這門課不用 GitHub 繳交作業</strong>。它有兩個角色：</p>
+      <p><strong>取得</strong>：課綱寫明「GitHub 是課程教材與程式碼的主要來源」，教材另外鏡像到 NTU COOL。第 2 週的 Lab 就要你設定 GitHub Desktop 並複製課程儲存庫。</p>
+      <p><strong>交付程式碼</strong>：期末論文要附一個 GitHub 或 CodeOcean 的可重現程式碼儲存庫。這是 GitHub 唯一參與計分的地方，而且交的是<strong>程式碼</strong>，不是論文本身。</p>
+      <p>課綱也明說不需要 Git 經驗，所以整章都用圖形介面，不背任何指令。</p>
+
+      <h2 id="s16-setup">2. 安裝與登入</h2>
+      <p>從 <a href="https://desktop.github.com" target="_blank" rel="noopener">desktop.github.com</a> 下載安裝，開啟後用你的 GitHub 帳號登入。第一次啟動會問你的姓名與信箱——這會寫進每一次 commit 的紀錄，<strong>用你希望別人看到的名字</strong>。</p>
+      <div class="callout win"><div class="ct">▍Windows 差異</div>
+        <p>GitHub Desktop 在兩個系統上的介面幾乎一樣。差別在 macOS 用 <span class="kbd">Cmd</span> 系列快捷鍵、Windows 用 <span class="kbd">Ctrl</span>；另外 Windows 的預設 clone 位置是 <code>C:\Users\你的名字\Documents\GitHub</code>。</p>
+      </div>
+
+      <h2 id="s16-clone">3. 複製課程儲存庫</h2>
+      <p>選單 <strong>File → Clone Repository</strong>，切到 URL 分頁，貼上授課教師給的課程儲存庫網址，選一個本機位置（建議跟你的 <code>text-as-data-lab</code> 專案放在同一層，但不要放在裡面）。</p>
+      <p>之後每次上課前，開啟 GitHub Desktop、確認選到課程儲存庫，按 <strong>Fetch origin</strong>，如果有更新它會變成 <strong>Pull origin</strong>，按下去就同步到最新教材。</p>
+      <div class="callout warn"><div class="ct">▍不要在課程儲存庫裡改東西</div>
+        <p>那是老師的儲存庫，你只有讀取權。如果你在裡面改了檔案，下次 Pull 可能會衝突。<strong>要練習就複製一份到自己的專案資料夾再改</strong>。這是新手最常見的 Git 痛苦來源。</p>
+      </div>
+
+      <div class="videobox" data-vid="2SgI1kAczfk" data-start="0">
+        <div class="vhead"><span class="play">▶</span> 影片示範 · 不用終端機學會 GitHub（英文，23 分 42 秒） <span class="seg">點縮圖開啟</span></div>
+        <div class="vthumb" role="button" tabindex="0" aria-label="播放影片：Learn GitHub without needing the terminal" style="background-image:url('https://i.ytimg.com/vi/2SgI1kAczfk/hqdefault.jpg')">
+          <div class="vplay">▶</div><div class="vopen">在 YouTube 開啟 ↗</div>
+        </div>
+        <div class="vcap">「Learn GitHub without needing the terminal」— Coder Coder（13 萬觀看，兩個月前發布，介面是最新的）。全程圖形介面，涵蓋 clone、commit、push 與分支。本課只需要前半段；分支的部分個人作業用不到，但期末若與人協作會用上。版權屬原作者。</div>
+      </div>
+
+      <h2 id="s16-own">4. 自己的專案也放進 Git</h2>
+      <p>在 GitHub Desktop 選 <strong>File → Add Local Repository</strong>，選你的 <code>text-as-data-lab</code> 資料夾，它會提示這裡還不是 Git 儲存庫、問你要不要建立——按下去。</p>
+      <p>之後的節奏很簡單：改完東西回到 GitHub Desktop，左邊會列出所有變動的檔案，下方填一行說明（commit message），按 <strong>Commit to main</strong>，再按 <strong>Push origin</strong> 上傳。</p>
+      <p>commit message 寫什麼？寫<strong>為什麼</strong>，不要寫做了什麼——「更新檔案」沒有資訊量，「改用 tf-idf 取代原始詞頻，因為政府、政策這類詞沒有區辨力」三個月後的你會感謝自己。</p>
+      <div class="callout tip"><div class="ct">▍多久 commit 一次</div>
+        <p>一個可用的判準：<strong>每當你完成一件可以用一句話描述的事</strong>。跑通斷詞、換了停用詞清單、畫出第一張圖——各自一次 commit。不要一週只 commit 一次，那樣出錯時沒辦法退回中間狀態。</p>
+      </div>
+
+      <h2 id="s16-ignore">5. .gitignore：資料不要上傳</h2>
+      <p>Git 管的是程式碼與文字的歷史，不是雲端硬碟。把幾百 MB 的語料推上 GitHub 會讓儲存庫變得又慢又大，而且很可能違反資料授權。</p>
+      <p>在專案根目錄建立一個叫 <code>.gitignore</code> 的純文字檔（用 <code>usethis::use_git_ignore()</code> 也行）：</p>
+      <div class="codeblock"><span class="lang">.gitignore</span><button class="copyb">複製</button><pre># R 工作階段殘留
+.Rhistory
+.RData
+.Rproj.user/
+
+# 原始資料：太大、或有授權限制
+data/*.csv
+data/*.rds
+
+# 產出：都能由程式碼重新生成
+output/
+
+# 系統雜物
+.DS_Store
+Thumbs.db</pre></div>
+      <div class="callout warn"><div class="ct">▍那助教怎麼重現你的分析</div>
+        <p>好問題，而這正是第 3 章那個「data 只讀不改」紀律的價值。做法是：<strong>資料不上傳，但取得資料的程式碼要上傳</strong>。本課語料的 <code>fetch-corpus.R</code> 就是這樣一支腳本——任何人執行它就能重新抓到同一份資料。如果資料無法公開取得，就在 README 說明來源與取得方式。</p>
+      </div>
+
+      <h2 id="s16-final">6. 期末可重現儲存庫該長什麼樣</h2>
+      <p>課綱要求期末論文附一個 GitHub 或 CodeOcean 的可重現儲存庫。它的驗收標準只有一個：<strong>別人把它抓下來，照著 README 做，能得到跟你論文裡一樣的數字</strong>。</p>
+      <div class="diagram">
+<pre><b>text-as-data-final/</b>
+├── <b>README.md</b>              <i>← 最重要的檔案。怎麼取得資料、依序跑哪些腳本</i>
+├── <b>text-as-data-final.Rproj</b>
+├── <b>R/</b>
+│   ├── 01-fetch.R            <i>取得資料（不上傳資料本身）</i>
+│   ├── 02-clean.R
+│   ├── 03-analysis.R
+│   └── 04-figures.R
+├── <b>output/</b>                <i>可留空，或只放最終圖表</i>
+├── <b>report/</b>
+│   └── lab.qmd               <i>分析筆記本</i>
+├── <b>.gitignore</b>
+└── <b>renv.lock</b>              <i>套件版本鎖定（第 4 章）</i></pre>
+        <div class="dcap">期末可重現儲存庫的骨架。這時候第 4 章提過的 <code>renv</code> 就派上用場了——<code>renv.lock</code> 記錄你用的每個套件版本，別人執行 <code>renv::restore()</code> 就能重建一樣的環境。</div>
+      </div>
+      <p>README 至少要回答四個問題：這份研究在做什麼、資料從哪裡來怎麼取得、腳本要照什麼順序跑、需要哪些套件。</p>
+
+      <h2 id="s16-p">7. 動手練習</h2>
+      <div class="practice"><ol>
+        <li>安裝 GitHub Desktop 並登入，確認姓名與信箱設定正確。</li>
+        <li>把你的 <code>text-as-data-lab</code> 加入為本機儲存庫，建立 <code>.gitignore</code>（內容照上面），做第一次 commit。</li>
+        <li>在 GitHub 上建立一個<strong>私有</strong>儲存庫，把本機專案 Push 上去，到網頁確認 <code>data/</code> 裡的 CSV <strong>沒有</strong>被上傳。</li>
+        <li>故意改一個檔案，觀察 GitHub Desktop 左邊如何顯示逐行差異（diff）。這是 Git 最有用的日常功能。</li>
+        <li>寫一份 README.md，回答上面那四個問題。現在寫比期末寫容易得多。</li>
+      </ol></div>
+
+      <h2 id="s16-s">8. 本章小結</h2>
+      <ul>
+        <li>本課 GitHub 用來<strong>取得</strong>教材，以及期末交<strong>可重現程式碼儲存庫</strong>；作業本身走 Overleaf。</li>
+        <li>Clone 課程儲存庫後，上課前 Fetch／Pull 取得更新；不要在裡面改東西。</li>
+        <li>commit message 寫「為什麼」；每完成一件能用一句話描述的事就 commit。</li>
+        <li><code>.gitignore</code> 擋掉資料、產出與系統雜物；<strong>不上傳資料，但上傳取得資料的程式碼</strong>。</li>
+        <li>可重現儲存庫的驗收標準：別人照 README 做能得到相同數字。</li>
+      </ul>
+      <footer class="foot">對照 <a href="https://docs.github.com/desktop" target="_blank" rel="noopener">GitHub Desktop 官方文件</a>與 2026-09-17 版課綱的繳交與可重現性要求撰寫（查證日 2026-09-18）。</footer>
+      <div class="chap-foot"><a class="nextlink" data-go="ch17"><span class="k">下一章 →</span> 17 · Positron</a></div>
+    </section>
+
+    <!-- ===================== ch17 ===================== -->
+    <section class="chapter" id="ch17">
+      <div class="crumb">第四篇 · 交付與協作 / 17</div>
+      <h1 class="ch">Positron：另一個選擇</h1>
+      <p class="lead">本章目標：知道 Positron 是什麼、跟 RStudio 差在哪，以及這門課的哪幾週它會比較好用。</p>
+      <div class="pagetoc"><div class="tt">本頁章節</div>
+        <a href="#s17-what">它是什麼</a><a href="#s17-diff">與 RStudio 的差別</a><a href="#s17-when">什麼時候值得換</a><a href="#s17-try">試用建議</a><a href="#s17-p">動手練習</a><a href="#s17-s">本章小結</a>
+      </div>
+
+      <h2 id="s17-what">1. 它是什麼</h2>
+      <p>Positron 是 Posit（RStudio 的母公司）推出的新一代資料科學 IDE，建立在 VS Code 的基礎上，但<strong>R 與 Python 地位相同</strong>。課綱的先備知識寫「需能自在使用 IDE，RStudio 或 Positron」，兩個都接受。</p>
+      <p>為什麼 Posit 要再做一個？因為 RStudio 的設計是以 R 為中心，Python 是附加的；而現在的文本分析工作流常常一半在 R、一半在 Python（Transformer 模型、Hugging Face 生態系都在 Python 那邊）。Positron 從頭就把兩種語言當一等公民。</p>
+
+      <h2 id="s17-diff">2. 與 RStudio 的差別</h2>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:20%"></th><th style="width:40%">RStudio</th><th>Positron</th></tr></thead>
+        <tbody>
+          <tr><td>基礎</td><td>Posit 自製</td><td>VS Code（Code OSS）</td></tr>
+          <tr><td>語言</td><td>R 為主，Python 可用</td><td>R 與 Python 並重，另支援 Rust、C++ 等</td></tr>
+          <tr><td>擴充</td><td>有限</td><td>可裝 VS Code 擴充套件（Open VSX）</td></tr>
+          <tr><td>直譯器切換</td><td>需重啟或改設定</td><td>右上角下拉直接換 R／Python 版本</td></tr>
+          <tr><td>資料檢視</td><td>View() 開試算表</td><td>Data Explorer：可排序、篩選、看分布</td></tr>
+          <tr><td>學習曲線</td><td>本教材全程以它為準</td><td>VS Code 用過的人上手快；否則要重新熟悉</td></tr>
+          <tr><td>成熟度</td><td>十餘年，教學資源多</td><td>較新，中文教學少</td></tr>
+        </tbody>
+      </table></div>
+      <p>好消息是<strong>你不用二選一</strong>。套件裝在 R 裡而不是 IDE 裡（第 1 章），同一個專案兩邊都能開，<code>.Rproj</code> 檔 Positron 也認得。想試就試，不喜歡就換回去，沒有任何成本。</p>
+
+      <div class="videobox" data-vid="4Ir_HX4riHw" data-start="0">
+        <div class="vhead"><span class="play">▶</span> 影片示範 · Positron 快速導覽（英文，6 分 20 秒） <span class="seg">Posit 官方</span></div>
+        <div class="vthumb" role="button" tabindex="0" aria-label="播放影片：A quick tour of Positron" style="background-image:url('https://i.ytimg.com/vi/4Ir_HX4riHw/hqdefault.jpg')">
+          <div class="vplay">▶</div><div class="vopen">在 YouTube 開啟 ↗</div>
+        </div>
+        <div class="vcap">「A quick tour of Positron」— Posit PBC 官方頻道（2.2 萬觀看）。六分鐘走過主要介面與 Data Explorer。官方影片的好處是不會過時太快。版權屬原作者。</div>
+      </div>
+
+      <h2 id="s17-when">3. 什麼時候值得換</h2>
+      <p>誠實的建議：<strong>第一到九週留在 RStudio</strong>。這份教材、課堂示範、網路上九成的中文教學都以 RStudio 為準，初學階段多一個變數只會添亂。</p>
+      <p>但從<strong>第 10 週</strong>（NLP 工作流程與 Transformer）開始，情況會變。那幾週你會頻繁在 R 與 Python 之間切換，Positron 的直譯器切換與 Data Explorer 會明顯省事。第 12 週的大型語言模型與多代理人系統、課綱提到的 BERTopic 也都在 Python 那邊。</p>
+      <div class="callout tip"><div class="ct">▍一個折衷做法</div>
+        <p>不必整個搬過去。<strong>R 的部分留在 RStudio，需要大量 Python 的那幾週用 Positron 開同一個專案。</strong>兩個 IDE 讀的是同一個資料夾、同一份程式碼、同一組套件，隨時可以切換。</p>
+      </div>
+
+      <h2 id="s17-try">4. 試用建議</h2>
+      <p>從 <a href="https://positron.posit.co" target="_blank" rel="noopener">positron.posit.co</a> 下載安裝。第一次開啟時它會偵測系統上的 R 與 Python；用右上角的直譯器選單確認它抓到的是你要的版本。</p>
+      <p>Posit 官方文件有一份<strong>給 RStudio 使用者的遷移指南</strong>，列出常用快捷鍵的對應，值得在試用時開著：<a href="https://positron.posit.co/rstudio-migration.html" target="_blank" rel="noopener">positron.posit.co/rstudio-migration.html</a>。</p>
+
+      <h2 id="s17-p">5. 動手練習</h2>
+      <div class="practice"><ol>
+        <li>安裝 Positron，用它開啟你的 <code>text-as-data-lab.Rproj</code>，確認專案結構與套件都正常。</li>
+        <li>跑一次第 13 章的 dfm 流程，比較跑起來跟 RStudio 有什麼不同。</li>
+        <li>用 Data Explorer 打開質詢資料，試試排序與篩選，跟 RStudio 的 <code>View()</code> 比較。</li>
+        <li>在右上角直譯器選單切換 R 與 Python，感受一下兩者並重是什麼意思。</li>
+        <li>決定：這學期前半你要用哪一個。<strong>選定就別一直換</strong>——熟悉度比功能重要。</li>
+      </ol></div>
+
+      <h2 id="s17-s">6. 本章小結</h2>
+      <ul>
+        <li>Positron 是 Posit 基於 VS Code 的新 IDE，R 與 Python 並重；課綱兩者都接受。</li>
+        <li>套件裝在 R 裡，換 IDE 不用重裝，同一專案兩邊都能開。</li>
+        <li>建議第 1–9 週用 RStudio，第 10 週之後 Python 變多時再考慮 Positron。</li>
+        <li>可以只在需要 Python 的週次切過去，不必整個搬家。</li>
+        <li>選定就別一直換，熟悉度比功能重要。</li>
+      </ul>
+      <footer class="foot">對照 <a href="https://positron.posit.co/" target="_blank" rel="noopener">Positron 官方文件</a>與本機實測（Positron 1.130.0）撰寫；課程週次依 2026-09-17 版課綱（查證日 2026-09-18）。</footer>
+      <div class="chap-foot"><a class="nextlink" data-go="ch18"><span class="k">下一章 →</span> 18 · reticulate 接 Python</a></div>
+    </section>
+
+    <!-- ===================== ch18 ===================== -->
+    <section class="chapter" id="ch18">
+      <div class="crumb">第四篇 · 交付與協作 / 18</div>
+      <h1 class="ch">reticulate 接 Python</h1>
+      <p class="lead">本章目標：在 R 裡呼叫 Python，為第 10 到 12 週的 Transformer 與大型語言模型鋪路。</p>
+      <div class="pagetoc"><div class="tt">本頁章節</div>
+        <a href="#s18-why">為什麼需要</a><a href="#s18-which">你現在用的是哪個 Python</a><a href="#s18-venv">建立專案專用環境</a><a href="#s18-pass">R 與 Python 互傳物件</a><a href="#s18-import">把模組當 R 物件用</a><a href="#s18-qmd">在 Quarto 裡混用</a><a href="#s18-trap">三個陷阱</a><a href="#s18-p">動手練習</a><a href="#s18-s">本章小結</a>
+      </div>
+
+      <h2 id="s18-why">1. 為什麼需要</h2>
+      <p>課綱寫得很清楚：「本課程主要以 R 授課；Python 僅在 Transformer 模型、NLP 工具套件與主題模型（BERTopic）等部分選擇性介紹。不需要進階的技術訓練。」</p>
+      <p>原因是生態系的現實：Hugging Face、transformers、torch、BERTopic 這些工具都長在 Python 那邊，R 只有部分包裝。<code>reticulate</code> 讓你不必離開 R 的工作流，就能借用 Python 的東西。</p>
+      <p>本章的目標不是把你變成 Python 使用者，而是讓你在第 10 到 12 週<strong>看得懂老師的示範、跑得動範例</strong>。</p>
+
+      <h2 id="s18-which">2. 你現在用的是哪個 Python</h2>
+      <p>一台電腦上常常有好幾個 Python，這是所有混亂的源頭。第一步永遠是問清楚：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>library(reticulate)
+py_config()</pre></div>
+      <p>它會告訴你目前綁定的是哪一個直譯器、版本多少、模組去哪裡找。實測輸出（節錄）：</p>
+      <div class="codeblock"><span class="lang">R Console</span><button class="copyb">複製</button><pre>python:  /Users/yourname/.virtualenvs/r-textasdata/bin/python
+version: 3.12.13</pre></div>
+      <div class="callout warn"><div class="ct">▍系統 Python 不要動</div>
+        <p>macOS 與 Linux 內建的 Python 是作業系統自己要用的。往裡面亂裝套件可能弄壞系統工具。<strong>永遠為專案建立獨立環境</strong>，下一節就做這件事。</p>
+      </div>
+
+      <h2 id="s18-venv">3. 建立專案專用環境</h2>
+      <p>下面三行在本機實際執行過，可以直接用：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>library(reticulate)
+
+virtualenv_create("r-textasdata")                    # 只要做一次
+virtualenv_install("r-textasdata", "jieba")          # 裝套件
+use_virtualenv("r-textasdata", required = TRUE)      # 每次工作階段開頭
+
+py_config()$python
+#&gt; [1] "/Users/yourname/.virtualenvs/r-textasdata/bin/python"</pre></div>
+      <p>環境名稱取 <code>r-</code> 開頭是 reticulate 的慣例，它會自動優先使用這類環境。第 10 週之後需要 transformers 與 torch 時，做法一樣：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>virtualenv_install("r-textasdata", c("transformers", "torch"))</pre></div>
+      <div class="callout note"><div class="ct">▍torch 很大，提早裝</div>
+        <p><code>torch</code> 加上模型權重動輒數 GB，在課堂上當場裝會等到天荒地老。<strong>第 10 週之前找個晚上先裝好</strong>，讓它自己下載。</p>
+      </div>
+
+      <h2 id="s18-pass">4. R 與 Python 互傳物件</h2>
+      <p>reticulate 的核心是一個叫 <code>py</code> 的橋梁物件。R 這邊寫進 <code>py$名字</code>，Python 那邊就能用；Python 建立的變數，R 這邊也從 <code>py$</code> 取回。</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>py$texts &lt;- head(d$說明清理, 3)        # R → Python
+py_run_string("lens = [len(t) for t in texts]")
+py$lens                                  # Python → R
+#&gt; [1] 803 469 532
+
+nchar(head(d$說明清理, 3))               # R 自己算的，對照用
+#&gt; [1] 803 469 532</pre></div>
+      <p>兩邊數字完全一致——這不是廢話，而是<strong>每次跨語言工作都該做的驗證</strong>。型別轉換是 reticulate 最容易出錯的地方（R 的向量、Python 的 list、numpy array 之間的對應不總是直覺），拿一個你已知答案的小例子對一次，比事後除錯便宜太多。</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:30%">R</th><th style="width:30%">Python</th><th>注意</th></tr></thead>
+        <tbody>
+          <tr><td>向量 <code>c(1,2,3)</code></td><td><code>list</code> 或 numpy array</td><td>長度 1 的向量會變成純量</td></tr>
+          <tr><td><code>list()</code></td><td><code>dict</code> 或 <code>list</code></td><td>有名稱→dict，無名稱→list</td></tr>
+          <tr><td><code>data.frame</code></td><td><code>pandas.DataFrame</code></td><td>需要先裝 pandas</td></tr>
+          <tr><td>索引從 <strong>1</strong> 開始</td><td>索引從 <strong>0</strong> 開始</td><td>最常見的差一錯誤</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="s18-import">5. 把 Python 模組當 R 物件用</h2>
+      <p>比 <code>py_run_string()</code> 更好用的是 <code>import()</code>——它把 Python 模組變成 R 物件，用 <code>$</code> 取用：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>jieba &lt;- import("jieba")
+paste(iterate(jieba$cut("能源政策與經濟發展的平衡")), collapse = "/")
+#&gt; [1] "能源/政策/與/經濟/發展/的/平衡"</pre></div>
+      <p>這是第 12 章那個句子，用 Python 版的 jieba 斷出來的結果——<strong>與 R 版 jiebaR 完全相同</strong>。兩個套件包裝的是同一個演算法。</p>
+      <p><code>iterate()</code> 是因為 <code>jieba.cut()</code> 回傳的是 Python 的 generator（惰性序列），要走過一遍才變成 R 能用的東西。遇到「印出來是 <code>&lt;generator object&gt;</code>」時就是這個原因。</p>
+      <p>先檢查模組在不在，可以少走很多冤枉路：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>for (m in c("jieba", "transformers", "torch", "numpy")) {
+  cat(sprintf("  %-14s %s\n", m, if (py_module_available(m)) "可用" else "未安裝"))
+}
+#&gt;   jieba          可用
+#&gt;   transformers   未安裝
+#&gt;   torch          未安裝
+#&gt;   numpy          可用</pre></div>
+
+      <h2 id="s18-qmd">6. 在 Quarto 裡混用兩種語言</h2>
+      <p>同一份 <code>.qmd</code> 可以同時有 R 與 Python 的區塊，共享同一個 Python 環境：</p>
+      <div class="codeblock"><span class="lang">lab.qmd</span><button class="copyb">複製</button><pre>```{r}
+#| label: setup
+library(reticulate)
+use_virtualenv("r-textasdata", required = TRUE)
+d &lt;- readr::read_csv("data/立法院質詢_第11屆.csv", show_col_types = FALSE)
+```
+
+```{python}
+#| label: py-side
+import jieba
+words = [list(jieba.cut(t)) for t in r.d["說明"][:3]]
+print([len(w) for w in words])
+```
+
+```{r}
+#| label: back-to-r
+length(py$words[[1]])
+```</pre></div>
+      <p>注意 Python 區塊用 <code>r.d</code> 取用 R 的物件（前綴 <code>r.</code>），R 區塊用 <code>py$words</code> 取回 Python 的東西。方向相反、寫法不同，很容易搞混，寫錯時錯誤訊息會說「找不到 <code>d</code>」。</p>
+
+      <h2 id="s18-trap">7. 三個陷阱</h2>
+      <p><strong>一、換環境要重啟 R。</strong>Python 直譯器一旦在該工作階段啟動，就不能中途換成另一個。改了 <code>use_virtualenv()</code> 卻沒生效時，先 <strong>Session → Restart R</strong>（<span class="kbd">Cmd/Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">F10</span>）。</p>
+      <p><strong>二、把環境設定寫進腳本開頭。</strong>不要只在 Console 打一次 <code>use_virtualenv()</code>——那樣別人（和明天的你）執行你的腳本會綁到別的 Python。跟 <code>library()</code> 一樣，它屬於腳本的一部分。</p>
+      <p><strong>三、環境不要上傳。</strong><code>.virtualenvs/</code> 或專案裡的 <code>venv/</code> 動輒上 GB，跟第 16 章的資料一樣要進 <code>.gitignore</code>。要讓別人重現，附一份 <code>requirements.txt</code>：</p>
+      <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>writeLines(system2(py_config()$python, c("-m", "pip", "freeze"), stdout = TRUE),
+           "requirements.txt")</pre></div>
+
+      <h2 id="s18-p">8. 動手練習</h2>
+      <div class="practice"><ol>
+        <li>執行 <code>py_config()</code>，看清楚你現在綁的是哪個 Python。</li>
+        <li>建立 <code>r-textasdata</code> 環境並裝 jieba，用 <code>import()</code> 斷一個你自己想的句子。</li>
+        <li>用 <code>py$</code> 把前 10 筆質詢傳給 Python，在 Python 算字元數，再取回 R 跟 <code>nchar()</code> 對照，確認完全一致。</li>
+        <li>做一份混用 R 與 Python 的 <code>.qmd</code>，Render 成功。</li>
+        <li>在第 10 週之前找個晚上執行 <code>virtualenv_install("r-textasdata", c("transformers", "torch"))</code>，讓它自己下載。裝完用 <code>py_module_available("transformers")</code> 確認。</li>
+        <li>產生 <code>requirements.txt</code>，並把虛擬環境資料夾加進 <code>.gitignore</code>。</li>
+      </ol></div>
+
+      <h2 id="s18-s">9. 本章小結</h2>
+      <ul>
+        <li>課綱把 Python 定位為選擇性介紹，集中在 Transformer、NLP 套件與 BERTopic。</li>
+        <li>永遠先 <code>py_config()</code> 確認綁的是哪個 Python；不要動系統 Python。</li>
+        <li><code>virtualenv_create()</code> ／ <code>virtualenv_install()</code> ／ <code>use_virtualenv()</code> 三步建立專案專用環境。</li>
+        <li><code>py$名字</code> 雙向傳物件；<strong>用已知答案的小例子驗證型別轉換</strong>。</li>
+        <li><code>import()</code> 把模組當 R 物件用；generator 要 <code>iterate()</code>。</li>
+        <li>Quarto 裡 Python 用 <code>r.物件</code>、R 用 <code>py$物件</code>，方向相反。</li>
+        <li>換環境要重啟 R；環境設定寫進腳本；虛擬環境不上傳，改附 <code>requirements.txt</code>。</li>
+      </ul>
+      <footer class="foot">所有指令與輸出皆在 R 4.6.1 + reticulate 1.47.0 + Python 3.12.13 實際執行驗證（含建立虛擬環境與安裝 jieba）；Python 定位對照 2026-09-17 版課綱（查證日 2026-09-18）。</footer>
+      <div class="chap-foot"><a class="nextlink" data-go="ch19"><span class="k">下一章 →</span> 19 · 從 Lab 到期末論文的工作流</a></div>
+    </section>
+
+    <!-- ===================== ch19 ===================== -->
+    <section class="chapter" id="ch19">
+      <div class="crumb">第四篇 · 交付與協作 / 19</div>
+      <h1 class="ch">從 Lab 到期末論文的工作流</h1>
+      <p class="lead">本章目標：把前面十八章的零件裝成一條線，看清楚這學期每個時間點你該產出什麼。</p>
+      <div class="pagetoc"><div class="tt">本頁章節</div>
+        <a href="#s19-time">學期時間軸</a><a href="#s19-folder">一個資料夾撐完整學期</a><a href="#s19-week">每週的節奏</a><a href="#s19-four">四次繳交</a><a href="#s19-ai">AI 聲明清單</a><a href="#s19-check">課前最後檢查</a><a href="#s19-end">結語</a>
+      </div>
+
+      <h2 id="s19-time">1. 學期時間軸</h2>
+      <p>16 週裡有 4 週停課，實際授課 11 週。把工具準備與繳交排在一起看，會發現壓力集中在兩個點：第 7 週與第 13 週。</p>
+      <div class="diagram">
+<pre><b>W1</b>  9/11  導論　　　　　　　　　　<i>不需安裝任何軟體</i>
+<b>W2</b>  9/18  前處理與協作工作流　　　<i>★ Lab：裝套件、GitHub Desktop、clone、Overleaf 編譯 PDF</i>
+ W3  9/25  中秋（停課）
+<b>W4</b>  10/2  斷詞、DFM、字典法　　　<i>★ 本教材第三篇就是這一週的預演</i>
+ W5  10/9  國慶補假（停課）
+<b>W6</b>  10/16 人工編碼與文件分類
+<b>W7</b>  10/23 尺度分析　　　　　　　　<i>◆ 研究論文摘要截止 23:59（10%）</i>
+<b>W8</b>  10/30 主題模型
+<b>W9</b>  11/6  描述與比較、詞嵌入
+<b>W10</b> 11/13 NLP 與 Transformer　　　<i>★ Python 開始吃重 → 第 17、18 章</i>
+ W11 11/20 校慶（停課）
+<b>W12</b> 11/27 大型語言模型
+<b>W13</b> 12/4  多語言與多模態　　　　　<i>◆ 期中研究設計報告截止 23:59（20%）</i>
+<b>W14</b> 12/11 海報工作坊　　　　　　　<i>計入課堂參與</i>
+<b>W15</b> 12/18 期末海報發表　　　　　　<i>◆ 海報（25%）</i>
+ W16 12/25 行憲紀念日（停課）
+      期末研究論文（25%）　　　　　<i>◆ 截止日待公告，於 NTU COOL 公布</i></pre>
+        <div class="dcap">★ 是工具準備的關鍵節點，◆ 是繳交節點。課堂參與另佔 20%，貫穿整學期。</div>
+      </div>
+      <div class="callout warn"><div class="ct">▍第 2 週是全學期最陡的一週</div>
+        <p>一堂課之內要完成：安裝套件與相依、建立專案、設定 GitHub Desktop、clone 課程儲存庫、在 Overleaf 建立 LaTeX 文件並編譯成 PDF、邀請教師取得 Editor 權限、還要檢視一份語料庫找出可行的研究文本來源。</p>
+        <p>如果你已經讀完這份教材的第一篇與第四篇，這一週你只需要跟著做一次確認；否則你會在裝套件的地方就落後半堂課。</p>
+      </div>
+
+      <h2 id="s19-folder">2. 一個資料夾撐完整學期</h2>
+      <p>不要每週開一個新專案。從第 2 週建立的那一個 <code>text-as-data-lab</code> 用到期末，讓它慢慢長大：</p>
+      <div class="diagram">
+<pre><b>text-as-data-lab/</b>
+├── text-as-data-lab.Rproj
+├── README.md              <i>期末會變成可重現儲存庫的說明書，現在就開始寫</i>
+├── .gitignore
+├── renv.lock              <i>接近期末時才產生</i>
+├── <b>data/</b>                 <i>原始資料，只讀不改，不上傳</i>
+├── <b>R/</b>
+│   ├── 01-fetch.R         <i>取得資料的腳本要上傳（第 16 章）</i>
+│   ├── 02-clean.R
+│   ├── 03-dfm.R
+│   └── 04-analysis.R
+├── <b>output/</b>               <i>圖表與清理後資料，全部可重新生成</i>
+├── <b>report/</b>
+│   └── lab.qmd            <i>分析筆記本，整學期持續累積</i>
+└── <b>submissions/</b>          <i>從 Overleaf 下載回來的 PDF 存查</i>
+    ├── 01-abstract.pdf
+    ├── 02-midterm.pdf
+    └── 03-poster.pdf</pre>
+        <div class="dcap">唯一新增的是 <code>submissions/</code>：Overleaf 上的是正本，但每次繳交後把 PDF 下載一份存在本機，你會知道當時交出去的到底長什麼樣。</div>
+      </div>
+
+      <h2 id="s19-week">3. 每週的節奏</h2>
+      <p>課綱建議課外每週 3–4 小時，並拆成三塊：課前 1–2 小時讀文獻與投影片、課後 0.5–1 小時做 Lab 與核對結果、研究計畫 1.5–2 小時。</p>
+      <p>值得注意的是<strong>第三塊</strong>——課綱明寫「研究計畫應及早開始，並在整個學期持續進行」。不是期中前才開始想題目，而是從第一週就一點一點推進。第 7 週那份 1,000 字摘要要交的東西，最好在第 4、5 週就有雛形。</p>
+      <div class="callout tip"><div class="ct">▍課後 Lab 不計分，但它是唯一的練習場</div>
+        <p>新版課綱把課後 Lab 明確定位為自主練習。沒有分數逼你交，但期中加期末合計 45% 要你真的跑得動分析。跳過 Lab 的代價不會立刻出現，會在 12 月 4 日那天出現。</p>
+      </div>
+
+      <h2 id="s19-four">4. 四次繳交各自要準備什麼</h2>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:20%">繳交</th><th style="width:14%">截止</th><th>工具面要先就緒的事</th></tr></thead>
+        <tbody>
+          <tr><td>研究論文摘要<br>10%</td><td>10/23<br>（W7）</td><td>Overleaf 帳號與專案、課程 LaTeX 範本、Editor 權限邀請流程跑過一次、AI 聲明</td></tr>
+          <tr><td>期中研究設計報告<br>20%</td><td>12/4<br>（W13）</td><td>你的資料已經抓下來並清理過、分析筆記本能 Render 成功、第 15 章的表格與數字交棒機制已在用</td></tr>
+          <tr><td>期末海報<br>25%</td><td>12/18<br>（W15）</td><td>PolMeth 海報規範、圖表輸出成高解析度、中文 PDF 字型已測過</td></tr>
+          <tr><td>期末研究論文<br>25%</td><td>待公告</td><td>可重現儲存庫（README、腳本順序、renv.lock）、補充附錄的程式碼說明與標註規程</td></tr>
+        </tbody>
+      </table></div>
+      <p>注意期末論文的附錄是<strong>不限篇幅</strong>的，課綱明列可放穩健性檢查、驗證、標註規程、提示詞、模型細節與程式碼文件。這意味著你整學期在分析筆記本裡累積的東西，最後幾乎都有地方放——<strong>前提是你有在累積</strong>。</p>
+
+      <h2 id="s19-ai">5. AI 聲明清單</h2>
+      <p>每一份繳交（含加分申請）都要附，沒有就不予受理。第 10 章談過規定，這裡給一份可以直接照抄的骨架：</p>
+      <div class="codeblock"><span class="lang">AI 使用聲明範本</span><button class="copyb">複製</button><pre>AI Use Disclosure
+
+Tool and version: [工具名稱與版本]
+What it was asked to do: [你請它做什麼，例如：解讀錯誤訊息、修改英文語句]
+How the output was used: [產出怎麼被使用，例如：作為除錯線索，程式碼由本人重寫]
+How it was checked or verified: [你怎麼驗證，例如：逐行執行並比對已知結果]</pre></div>
+      <p>完全沒使用時，照錄課綱指定的這一句：</p>
+      <div class="codeblock"><span class="lang">無使用時</span><button class="copyb">複製</button><pre>No generative AI tools were used in the preparation of this assignment.</pre></div>
+      <p>課綱另提供 <a href="https://disclose-ai.app" target="_blank" rel="noopener">AI Disclosure Generator</a> 輔助撰寫，且明說<strong>不需要附上確切的提示詞</strong>。</p>
+
+      <h2 id="s19-check">6. 課前最後檢查</h2>
+      <p>開學前把這張清單走一遍。每一項後面是對應章節，卡住就回去看。</p>
+      <div class="practice"><ol>
+        <li>終端機執行 <code>R --version</code> 與 <code>quarto --version</code> 都有版本號（第 1 章）</li>
+        <li>RStudio 的六項設定都改好了，特別是關閉 workspace 自動儲存與 UTF-8（第 2 章）</li>
+        <li>有一個用 <code>.Rproj</code> 開啟的專案，裡面有 data／R／output／report 四個資料夾（第 3 章）</li>
+        <li><code>library(quanteda)</code>、<code>library(jiebaR)</code>、<code>library(tidyverse)</code> 都能載入（第 4 章）</li>
+        <li>能把質詢 CSV 讀進來，<code>glimpse()</code> 看到 162 筆、中文沒亂碼（第 6 章）</li>
+        <li>能用管線算出各會期的平均字數（第 7 章）</li>
+        <li>能建立 dfm 並印出 <code>topfeatures()</code>（第 13 章）</li>
+        <li>能 Render 一份 <code>.qmd</code> 成 HTML（第 15 章）</li>
+        <li>能用 Quarto 或 Overleaf 產生一份含中文的 PDF（第 14、15 章）</li>
+        <li>GitHub Desktop 已登入，能 clone 一個儲存庫（第 16 章）</li>
+        <li>Overleaf 帳號已註冊，能編譯並分享專案（第 15 章）</li>
+        <li>知道遇到錯誤時該去哪裡問（第 10 章）</li>
+      </ol></div>
+
+      <h2 id="s19-end">7. 結語</h2>
+      <p>這份教材從「什麼是 Console」開始，走到你能把一份真實的中文政治文本讀進 R、清理、斷詞、建成文件特徵矩陣、算出詞頻與分組差異、畫成圖，再把數字交棒給論文。這正好就是課程前四週會走一遍的路。</p>
+      <p>但工具只是門票。這門課真正要教的是後面那些問題：這個詞頻表能不能支持你的論點、這個主題模型的主題是不是你想像的那個意思、當四成的質詢來自同一位委員時你的比較還成不成立。那些問題沒有套件可以裝。</p>
+      <p>工具準備好了，你就能把整個學期的注意力放在那裡。這是這份教材唯一的目的。</p>
+      <footer class="foot">時間軸、評分與繳交要求對照 2026-09-17 版課綱；AI 聲明格式依課綱生成式 AI 章節（查證日 2026-09-18）。</footer>
+      <div class="chap-foot"><a class="nextlink" data-go="apA"><span class="k">附錄 →</span> A · 快捷鍵速查</a></div>
+    </section>
+
+    <!-- ===================== 附錄 A ===================== -->
+    <section class="chapter" id="apA">
+      <div class="crumb">附錄 A</div>
+      <h1 class="ch">快捷鍵速查</h1>
+      <p class="lead">按使用頻率排列。macOS 的 <span class="kbd">Cmd</span> 在 Windows 一律換成 <span class="kbd">Ctrl</span>，除非另有註明。</p>
+
+      <h2>編輯與執行</h2>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:34%">動作</th><th style="width:22%">macOS</th><th style="width:22%">Windows</th><th>備註</th></tr></thead>
+        <tbody>
+          <tr><td>執行目前行／選取範圍</td><td><span class="kbd">Cmd</span>+<span class="kbd">Enter</span></td><td><span class="kbd">Ctrl</span>+<span class="kbd">Enter</span></td><td>按最多次的一個</td></tr>
+          <tr><td>執行整份 Script</td><td><span class="kbd">Cmd</span>+<span class="kbd">Shift</span>+<span class="kbd">Enter</span></td><td><span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">Enter</span></td><td></td></tr>
+          <tr><td>插入 <code>&lt;-</code></td><td><span class="kbd">Alt</span>+<span class="kbd">-</span></td><td><span class="kbd">Alt</span>+<span class="kbd">-</span></td><td>自動補空格</td></tr>
+          <tr><td>插入管線 <code>|&gt;</code></td><td><span class="kbd">Cmd</span>+<span class="kbd">Shift</span>+<span class="kbd">M</span></td><td><span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">M</span></td><td>需先啟用原生管線</td></tr>
+          <tr><td>註解／取消註解</td><td><span class="kbd">Cmd</span>+<span class="kbd">Shift</span>+<span class="kbd">C</span></td><td><span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">C</span></td><td>可整段選取</td></tr>
+          <tr><td>新建 R Script</td><td><span class="kbd">Cmd</span>+<span class="kbd">Shift</span>+<span class="kbd">N</span></td><td><span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">N</span></td><td></td></tr>
+          <tr><td>存檔</td><td><span class="kbd">Cmd</span>+<span class="kbd">S</span></td><td><span class="kbd">Ctrl</span>+<span class="kbd">S</span></td><td></td></tr>
+        </tbody>
+      </table></div>
+
+      <h2>執行控制與導覽</h2>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:34%">動作</th><th style="width:22%">macOS</th><th style="width:22%">Windows</th><th>備註</th></tr></thead>
+        <tbody>
+          <tr><td>中斷執行中的程式</td><td><span class="kbd">Esc</span></td><td><span class="kbd">Esc</span></td><td>游標要在 Console</td></tr>
+          <tr><td>清空 Console 畫面</td><td><span class="kbd">Ctrl</span>+<span class="kbd">L</span></td><td><span class="kbd">Ctrl</span>+<span class="kbd">L</span></td><td>只清畫面不清物件</td></tr>
+          <tr><td>重啟 R</td><td><span class="kbd">Cmd</span>+<span class="kbd">Shift</span>+<span class="kbd">F10</span></td><td><span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">F10</span></td><td>換 Python 環境時要用</td></tr>
+          <tr><td>切到 Console</td><td><span class="kbd">Ctrl</span>+<span class="kbd">2</span></td><td><span class="kbd">Ctrl</span>+<span class="kbd">2</span></td><td><span class="kbd">Ctrl</span>+<span class="kbd">1</span> 切回編輯器</td></tr>
+          <tr><td>Render Quarto 文件</td><td><span class="kbd">Cmd</span>+<span class="kbd">Shift</span>+<span class="kbd">K</span></td><td><span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">K</span></td><td></td></tr>
+          <tr><td>查看所有快捷鍵</td><td><span class="kbd">Alt</span>+<span class="kbd">Shift</span>+<span class="kbd">K</span></td><td><span class="kbd">Alt</span>+<span class="kbd">Shift</span>+<span class="kbd">K</span></td><td>忘記時按它</td></tr>
+        </tbody>
+      </table></div>
+      <div class="chap-foot"><a class="nextlink" data-go="apB"><span class="k">下一個附錄 →</span> B · Windows 操作對照</a></div>
+    </section>
+
+    <!-- ===================== 附錄 B ===================== -->
+    <section class="chapter" id="apB">
+      <div class="crumb">附錄 B</div>
+      <h1 class="ch">Windows 操作對照</h1>
+      <p class="lead">教材各章的 Windows 差異彙整於此，方便使用 Windows 的同學一次看完。</p>
+
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:12%">章節</th><th style="width:30%">項目</th><th>Windows 的做法</th></tr></thead>
+        <tbody>
+          <tr><td>01</td><td>R 的安裝位置</td><td><code>C:\Program Files\R\R-4.x.x\</code>；套件裝在 <code>C:\Users\你的名字\AppData\Local\R\win-library\4.x</code></td></tr>
+          <tr><td>01</td><td>編譯工具</td><td>需另裝 <a href="https://cran.r-project.org/bin/windows/Rtools/" target="_blank" rel="noopener">Rtools</a>（macOS 的對應物是 Xcode Command Line Tools）。本課的 jiebaR 等套件會用到編譯</td></tr>
+          <tr><td>02</td><td>設定入口</td><td><strong>Tools → Global Options…</strong>（沒有 macOS 的 RStudio → Settings）</td></tr>
+          <tr><td>02</td><td>編碼</td><td>Windows 預設語系不是 UTF-8，<strong>Code → Saving → Default text encoding 改成 UTF-8 特別關鍵</strong></td></tr>
+          <tr><td>03</td><td>路徑分隔</td><td>反斜線 <code>\</code> 在 R 字串裡是逃脫字元，要寫 <code>\\</code> 或改用 <code>/</code>；用 <code>here()</code> 可完全避開</td></tr>
+          <tr><td>04</td><td>安裝失敗</td><td>看到 <code>configure: error</code> 多半是缺 Rtools，而不是 macOS 那種缺 brew 套件</td></tr>
+          <tr><td>06</td><td>CSV 編碼</td><td>Excel 另存 CSV 時要選「CSV UTF-8」；舊政府資料常是 Big5，用 <code>locale(encoding = "BIG5")</code></td></tr>
+          <tr><td>14</td><td>繪圖中文字型</td><td><code>base_family = "Microsoft JhengHei"</code>（微軟正黑體，系統內建）</td></tr>
+          <tr><td>16</td><td>GitHub Desktop</td><td>預設 clone 位置 <code>C:\Users\你的名字\Documents\GitHub</code></td></tr>
+          <tr><td>全篇</td><td>快捷鍵</td><td><span class="kbd">Cmd</span> 一律換成 <span class="kbd">Ctrl</span>；<span class="kbd">Alt</span> 系列兩邊相同</td></tr>
+        </tbody>
+      </table></div>
+      <div class="callout note"><div class="ct">▍教材的驗證環境</div>
+        <p>本教材所有程式碼在 macOS（Apple Silicon）的 R 4.6.1 實際執行驗證。上表的 Windows 差異依官方文件整理，<strong>未在 Windows 實機測試</strong>。若你在 Windows 上遇到本表沒提到的差異，那是本教材的缺口，請回報。</p>
+      </div>
+      <div class="chap-foot"><a class="nextlink" data-go="apC"><span class="k">下一個附錄 →</span> C · 環境安裝指引</a></div>
+    </section>
+
+    <!-- ===================== 附錄 C ===================== -->
+    <section class="chapter" id="apC">
+      <div class="crumb">附錄 C</div>
+      <h1 class="ch">環境安裝指引</h1>
+      <p class="lead">從一台全新的電腦到可以上課，需要裝的東西與順序。</p>
+
+      <h2>1. 安裝順序</h2>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:8%">順序</th><th style="width:22%">項目</th><th>取得方式</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>R</td><td><a href="https://cran.r-project.org/" target="_blank" rel="noopener">CRAN</a>，或 macOS 用 <code>brew install --cask r</code>（需輸入系統密碼）</td></tr>
+          <tr><td>2</td><td>RStudio</td><td><a href="https://posit.co/download/rstudio-desktop/" target="_blank" rel="noopener">posit.co</a>，或 <code>brew install --cask rstudio</code></td></tr>
+          <tr><td>3</td><td>編譯工具</td><td>Windows：Rtools｜macOS：<code>xcode-select --install</code></td></tr>
+          <tr><td>4</td><td>Quarto</td><td><a href="https://quarto.org/docs/get-started/" target="_blank" rel="noopener">quarto.org</a>，或 <code>brew install --cask quarto</code></td></tr>
+          <tr><td>5</td><td>TinyTeX</td><td>終端機執行 <code>quarto install tinytex</code>（出 PDF 用）</td></tr>
+          <tr><td>6</td><td>R 套件</td><td>見下方腳本</td></tr>
+          <tr><td>7</td><td>GitHub Desktop</td><td><a href="https://desktop.github.com" target="_blank" rel="noopener">desktop.github.com</a></td></tr>
+          <tr><td>8</td><td>Overleaf 帳號</td><td><a href="https://www.overleaf.com" target="_blank" rel="noopener">overleaf.com</a>，建議用學校信箱註冊</td></tr>
+          <tr><td>9</td><td>Positron（選用）</td><td><a href="https://positron.posit.co" target="_blank" rel="noopener">positron.posit.co</a>，第 10 週之後才需要</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2>2. R 套件安裝腳本</h2>
+      <p>在 RStudio 的 Console 執行一次即可。完整清單與各自的出場週次見第 4 章。</p>
+      <div class="codeblock"><span class="lang">R Console</span><button class="copyb">複製</button><pre>cran &lt;- c(
+  "tidyverse", "here", "usethis", "devtools", "remotes", "renv",
+  "knitr", "rmarkdown", "quarto", "gt", "janitor",
+  "quanteda", "quanteda.textstats", "quanteda.textmodels", "quanteda.textplots",
+  "readtext", "stopwords", "tidytext",
+  "sentimentr", "syuzhet", "textdata",
+  "stm", "seededlda", "topicmodels", "LSX", "stminsights", "oolong",
+  "text2vec", "word2vec", "udpipe",
+  "glmnet", "tidymodels", "caret",
+  "rvest", "httr2", "jsonlite", "xml2",
+  "reticulate"
+)
+install.packages(setdiff(cran, rownames(installed.packages())))
+
+# 教師與研究社群維護、CRAN 上沒有的套件
+remotes::install_github(c("prodriguezsosa/conText",
+                          "davidycliao/flaiR",
+                          "davidycliao/legisTaiwan"))</pre></div>
+
+      <h2>3. 中文斷詞套件 jiebaR</h2>
+      <div class="callout warn"><div class="ct">▍這個套件目前需要額外處理</div>
+        <p>2026-09-18 實測：CRAN 上的 jiebaR 對 R 4.6 回報「not available for this version of R」；從 GitHub 安裝會編譯失敗，因為它的原始碼用了 C++17 已移除的 <code>std::not1</code>，而 R 4.6 預設以 C++20 編譯。</p>
+        <p>三個選擇：<strong>一、</strong>下載原始碼，把 <code>inst/include/lib/limonp/StringUtil.hpp</code> 裡兩處 <code>std::not1(...)</code> 改寫成 lambda，再 <code>R CMD INSTALL</code>。<strong>二、</strong>用 Python 版的 jieba（第 18 章，實測結果與 R 版完全相同）。<strong>三、</strong>先用 quanteda 內建的 ICU 斷詞（第 12 章有實測對照，多數句子結果一致）。</p>
+        <p>上游修正後就能恢復一般安裝。這正是第 10 章「判斷是誰壞了」的實例。</p>
+      </div>
+
+      <h2>4. 安裝完成檢查</h2>
+      <div class="codeblock"><span class="lang">R Console</span><button class="copyb">複製</button><pre>pkgs &lt;- c("tidyverse", "quanteda", "quanteda.textstats", "stm",
+          "conText", "flaiR", "reticulate", "quarto")
+data.frame(套件 = pkgs,
+           已安裝 = sapply(pkgs, requireNamespace, quietly = TRUE))</pre></div>
+      <p>再跑一次第 19 章的課前檢查清單，十二項都過就準備好了。</p>
+      <footer class="foot">安裝方式對照各官方網站；jiebaR 的編譯問題為 2026-09-18 於 R 4.6.1 實測結果（查證日 2026-09-18）。</footer>
+      <div class="chap-foot" style="color:var(--muted);font-size:13.5px;">教材到此結束。有任何錯誤或在 Windows 上遇到的差異，歡迎回報。</div>
+    </section>
     <div class="pagemeta">
-      課程版本 v0.6（導論＋第一至三篇，對齊 2026-09-17 課綱）· 更新日 2026-09-17 · 查證日 2026-09-17<br>
+      課程版本 v1.0（全 19 章＋附錄，對齊 2026-09-17 課綱）· 更新日 2026-09-17 · 查證日 2026-09-17<br>
       課程資料整理 © Jerry。課綱依 2026-09-17 版整理，內容版權屬國立臺灣大學與授課教師；外部連結之文件與影片版權分屬各原創作者。
     </div>
   </main>
@@ -2180,20 +2885,19 @@ write_csv(f, here("output", "top10_freq.csv"))</pre></div>
       ["14","描述統計與第一張圖","ch14",1]
     ]},
     {title:"第四篇 · 交付與協作",items:[
-      ["15","Quarto 筆記本與 Overleaf 繳交","",0],
-      ["16","GitHub Desktop 與課程儲存庫","",0],
-      ["17","Positron","",0],
-      ["18","reticulate 接 Python","",0],
-      ["19","從 Lab 到期末論文的工作流","",0]
+      ["15","Quarto 筆記本與 Overleaf 繳交","ch15",1],
+      ["16","GitHub Desktop 與課程儲存庫","ch16",1],
+      ["17","Positron","ch17",1],
+      ["18","reticulate 接 Python","ch18",1],
+      ["19","從 Lab 到期末論文的工作流","ch19",1]
     ]},
     {title:"附錄",items:[
-      ["A","快捷鍵速查","",0],
-      ["B","Windows 操作對照","",0],
-      ["C","課前自我檢查清單","",0],
-      ["D","環境安裝紀錄","",0]
+      ["A","快捷鍵速查","apA",1],
+      ["B","Windows 操作對照","apB",1],
+      ["C","環境安裝指引","apC",1]
     ]}
   ];
-  var order=['ch00','ch01','ch02','ch03','ch04','ch05','ch06','ch07','ch08','ch09','ch10','ch11','ch12','ch13','ch14'];
+  var order=['ch00','ch01','ch02','ch03','ch04','ch05','ch06','ch07','ch08','ch09','ch10','ch11','ch12','ch13','ch14','ch15','ch16','ch17','ch18','ch19','apA','apB','apC'];
 
   var navbody=document.getElementById('navbody');
   groups.forEach(function(g){
