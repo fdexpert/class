@@ -1701,7 +1701,7 @@ packageVersion("quanteda")   # 單獨查某個套件的版本</pre></div>
       <h1 class="ch">從 CSV 到 corpus</h1>
       <p class="lead">本章目標：認識 quanteda 的三層結構，把那張 162 列的表格變成一個帶有中繼資料的語料庫物件。</p>
       <div class="pagetoc"><div class="tt">本頁章節</div>
-        <a href="#s11-three">三層結構</a><a href="#s11-build">建立 corpus</a><a href="#s11-docvars">docvars</a><a href="#s11-summary">summary</a><a href="#s11-why">為什麼不直接用表格</a><a href="#s11-p">動手練習</a><a href="#s11-s">本章小結</a>
+        <a href="#s11-three">三層結構</a><a href="#s11-build">建立 corpus</a><a href="#s11-docvars">docvars</a><a href="#s11-summary">summary</a><a href="#s11-reshape">換一個分析單位</a><a href="#s11-why">為什麼不直接用表格</a><a href="#s11-p">動手練習</a><a href="#s11-s">本章小結</a>
       </div>
 
       <h2 id="s11-three">1. quanteda 的三層結構</h2>
@@ -1755,7 +1755,25 @@ ndoc(co)
         <p><code>summary(co)</code> 會把所有 docvars 一起印出來，而我們的 docvars 裡有「事由」和「說明」兩個長文本欄位——直接執行會在 Console 噴出數千字，完全看不了。這是實測踩到的坑，<strong>取欄位是必要的</strong>。</p>
       </div>
 
-      <h2 id="s11-why">5. 為什麼不直接用表格就好</h2>
+      <h2 id="s11-reshape">5. corpus_reshape：換一個分析單位</h2>
+      <p>「一份文件」是什麼，是<strong>研究者決定的，不是資料決定的</strong>。老師在第 2 週投影片用一整頁講 corpus boundaries and document units，講的就是這件事：同一批文字，用整篇當一筆、還是用一句當一筆，後面所有統計都會不同。</p>
+      <p>quanteda 用 <code>corpus_reshape()</code> 在兩種單位之間切換：</p>
+<div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>co_s &lt;- corpus_reshape(co, to = "sentences")
+
+ndoc(co)      #&gt; 162
+ndoc(co_s)    #&gt; 1444        平均每篇 8.9 句
+head(docnames(co_s), 2)
+#&gt; [1] "11-1-1-1.1" "11-1-1-1.2"
+substr(as.character(co_s)[1], 1, 24)
+#&gt; "由「藝 FUN 券」轉型而來的「文化成年禮金」今年起擴大發放"</pre></div>
+      <p>句子單位的 docid 是「原本的 docid + 點 + 序號」，<code>docvars</code> 會整份複製下去——所以每一句都還知道自己是誰在哪一屆問的。這個操作是可逆的：</p>
+<div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>ndoc(corpus_reshape(co_s, to = "documents"))
+#&gt; 162</pre></div>
+      <div class="callout note"><div class="ct">▍什麼時候該換單位</div>
+        <p><strong>用句子：</strong>情緒分析（一篇質詢裡有讚許也有批評，混在一起會互相抵消）、關鍵詞共現、需要細緻上下文的標註。<strong>用整篇：</strong>主題模型（句子太短，stm 會學不出東西）、以「一次質詢」為觀察值的迴歸。<strong>先想清楚你的分析單位是什麼，再決定 reshape。</strong>這在論文的資料章節是必須交代的一句話。</p>
+      </div>
+
+      <h2 id="s11-why">6. 為什麼不直接用表格就好</h2>
       <p>你可能會想：資料本來就在 tibble 裡，用第 7 章的 dplyr 不就夠了嗎？</p>
       <p>對於「算字數、依委員分組」這類操作，確實夠。但 corpus 之後的兩層才是重點——<strong>tokens 與 dfm 是專門為文本設計的資料結構</strong>，有 tibble 給不了的東西：dfm 是稀疏矩陣，162 篇 × 六千多個詞如果存成一般表格會浪費大量記憶體；而課程後面要用的主題模型（stm）、尺度分析（Wordfish）、分類器，它們的輸入介面就是 dfm。</p>
       <p>簡單說：<strong>dplyr 負責整理與篩選，quanteda 負責文本本身</strong>。兩者在同一段管線裡並用是常態。</p>
@@ -1765,7 +1783,7 @@ ndoc(co)
         <div class="ph">quanteda 的影片教學極少，搜尋結果品質都不足以放進教材（查證日 2026-09-18）。官方文件反而是更好的資源：<a href="https://tutorials.quanteda.io/" target="_blank" rel="noopener">tutorials.quanteda.io</a> 有完整的互動教學，從 corpus 一路到主題模型，也是課程後續週次會用到的參考。</div>
       </div>
 
-      <h2 id="s11-p">6. 動手練習</h2>
+      <h2 id="s11-p">7. 動手練習</h2>
       <div class="practice"><ol>
         <li>建立 corpus，確認 <code>ndoc()</code> 是 162、<code>names(docvars(co))</code> 有七個欄位。</li>
         <li>執行 <code>summary(co, n = 10)[, 1:4]</code>，找出前十篇裡 Types/Tokens 比例最高的是哪一篇。</li>
@@ -1774,13 +1792,15 @@ ndoc(co)
         <li>把 <code>docid_field</code> 拿掉重建一次 corpus，觀察文件編號變成什麼。</li>
       </ol></div>
 
-      <h2 id="s11-s">7. 本章小結</h2>
+      <h2 id="s11-s">8. 本章小結</h2>
       <ul>
         <li>三層結構：corpus（文本＋中繼資料）→ tokens（斷詞、保留順序）→ dfm（詞袋、順序消失）。</li>
         <li><code>corpus(d, text_field = , docid_field = )</code>；其餘欄位自動成為 docvars。</li>
         <li>docvars 決定你之後能做哪些分組比較，建 corpus 前先想清楚。</li>
         <li><code>summary(co)</code> 的 Types／Tokens／Sentences 三個欄位意義不同；有長文本 docvars 時務必取欄位。</li>
         <li>dplyr 管整理、quanteda 管文本，兩者並用。</li>
+        <li><code>corpus_reshape()</code> 在整篇與句子之間切換，可逆；本課語料 162 篇 → 1,444 句。</li>
+        <li>分析單位（整篇還是句子）是研究決定，要在資料章節寫清楚。</li>
       </ul>
       <footer class="foot">程式碼與輸出皆在 R 4.6.1 + quanteda 4.5.0 實際執行驗證；對照 <a href="https://quanteda.io/" target="_blank" rel="noopener">quanteda 官方文件</a> 撰寫（查證日 2026-09-18）。</footer>
       <div class="chap-foot"><a class="nextlink" data-go="ch12"><span class="k">下一章 →</span> 12 · 斷詞：英文與中文</a></div>
@@ -1792,7 +1812,7 @@ ndoc(co)
       <h1 class="ch">斷詞：英文與中文</h1>
       <p class="lead">本章目標：學會 <code>tokens()</code> 的常用選項，並用實測結果搞清楚中文斷詞到底該不該用 jieba。</p>
       <div class="pagetoc"><div class="tt">本頁章節</div>
-        <a href="#s12-en">英文斷詞</a><a href="#s12-opt">清理選項</a><a href="#s12-zh">中文的真相</a><a href="#s12-cmp">ICU 與 jieba 實測對照</a><a href="#s12-dict">自訂詞典</a><a href="#s12-all">全語料斷詞</a><a href="#s12-p">動手練習</a><a href="#s12-s">本章小結</a>
+        <a href="#s12-en">英文斷詞</a><a href="#s12-opt">清理選項</a><a href="#s12-zh">中文的真相</a><a href="#s12-cmp">ICU 與 jieba 實測對照</a><a href="#s12-dict">自訂詞典</a><a href="#s12-coll">搭配詞</a><a href="#s12-comp">tokens_compound</a><a href="#s12-ngram">n-gram</a><a href="#s12-order">操作順序</a><a href="#s12-stem">詞幹還原</a><a href="#s12-all">全語料斷詞</a><a href="#s12-p">動手練習</a><a href="#s12-s">本章小結</a>
       </div>
 
       <h2 id="s12-en">1. 英文斷詞：空白幫你做完了</h2>
@@ -1860,7 +1880,110 @@ segment("加熱菸產品通通被海關沒收", w)
       </div>
       <p>詞多的時候，可以把詞寫成一個純文字檔（一行一詞），建立 worker 時直接載入：<code>worker(user = "my_dict.txt")</code>。</p>
 
-      <h2 id="s12-all">6. 全語料斷詞</h2>
+      <h2 id="s12-coll">6. 搭配詞：讓語料自己說哪些字該黏在一起</h2>
+      <p>上一節的自訂詞典有個前提——<strong>你得先知道要加哪些詞</strong>。但研究一份陌生語料時，你往往不知道。<code>textstat_collocations()</code> 反過來做：統計哪些相鄰詞組出現得比「隨機湊在一起」該有的頻率高很多。</p>
+<div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>library(quanteda.textstats)
+cl &lt;- textstat_collocations(tk, size = 2, min_count = 10)
+head(cl[order(-cl$count), ], 10)
+
+#&gt;  collocation count    lambda         z
+#&gt;        年 月    74  4.909011 27.742857
+#&gt;    敬請 貴院    41 13.107748  8.881827
+#&gt;        月 日    36  7.500978 18.170198
+#&gt;    社會 住宅    26  5.850605 21.188071
+#&gt;        自 年    26  4.815213 16.696112
+#&gt;  衛生 福利部    24 12.101491  8.279996
+#&gt;        至 年    23  3.504844 14.492214
+#&gt;    相關 事宜    21  7.390521 14.027766
+#&gt;        量 能    20  7.407040 17.763576
+#&gt;    詐騙 集團    18  7.461637 14.943580</pre></div>
+      <p><code>lambda</code> 是結合強度的對數勝算比，<code>z</code> 是它的檢定統計量。<strong>兩個要一起看</strong>：<code>年 月</code> 出現 74 次、z 高達 27.7，但 lambda 只有 4.9——很常見卻不特別「黏」；<code>敬請 貴院</code> lambda 13.1 但 z 只有 8.9——極度固定的組合，只是樣本數少。</p>
+      <p><code>min_count</code> 決定你看得到多少東西，這是個要交代的參數：</p>
+<div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre># 同一份語料，只改 min_count
+#&gt; min_count =  5 → 309 組
+#&gt; min_count = 10 →  56 組
+#&gt; min_count = 20 →   9 組</pre></div>
+      <div class="callout note"><div class="ct">▍搭配詞統計順便是斷詞品質的健康檢查</div>
+        <p>把 <code>min_count</code> 降到 5，名單裡混進了這些：</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>collocation</th><th>count</th><th>lambda</th><th>z</th></tr></thead>
+          <tbody>
+            <tr><td>咪 酯</td><td>9</td><td>13.10</td><td>7.87</td></tr>
+            <tr><td>條規 定</td><td>7</td><td>12.86</td><td>7.69</td></tr>
+            <tr><td>通 膨</td><td>7</td><td>12.86</td><td>7.69</td></tr>
+            <tr><td>計 畫</td><td>6</td><td>12.72</td><td>7.57</td></tr>
+          </tbody>
+        </table></div>
+        <p>「依托<u>咪酯</u>」「第○<u>條規定</u>」「<u>通膨</u>」「<u>計畫</u>」——這四組全是 jieba 切錯，被搭配詞統計原封不動抓了回來。<strong>高 lambda 的短詞組，第一個要懷疑的是斷詞而不是語言現象。</strong>把它們加進 <code>new_user_word()</code> 再重跑，是很實際的迭代流程。</p>
+      </div>
+
+      <h2 id="s12-comp">7. tokens_compound：把搭配詞黏成一個特徵</h2>
+      <p>找到搭配詞之後，<code>tokens_compound()</code> 把它們合併成單一 token，中間用底線連接：</p>
+<div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>cl2 &lt;- cl[cl$z &gt; 6 &amp; cl$count &gt;= 10, ]     # 56 組
+tk_c &lt;- tokens_compound(tk, pattern = phrase(cl2$collocation))
+
+nfeat(dfm(tk))     #&gt; 8225      合併前
+nfeat(dfm(tk_c))   #&gt; 8294      合併後
+
+topfeatures(dfm(tk_c)[, grep("_", featnames(dfm(tk_c)))], 8)
+#&gt;       年_月   社會_住宅 衛生_福利部    年_月_日       量_能   詐騙_集團
+#&gt;          38          26          24          22          20          18
+#&gt;     護理_師 使用_牌照稅
+#&gt;          18          18</pre></div>
+      <p>特徵數只增加 69，因為合併會<strong>吃掉</strong>原本的單詞。實測驗證這一點：</p>
+<div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>"福利部" %in% featnames(dfm(tk))     #&gt; TRUE    合併前存在
+"福利部" %in% featnames(dfm(tk_c))   #&gt; FALSE   合併後消失</pre></div>
+      <div class="callout warn"><div class="ct">▍合併是不可逆的取捨</div>
+        <p>合併之後，任何以「福利部」為關鍵詞的計數、字典比對、keyness 都會漏掉這 24 次。<strong>如果你的研究問題關心的是部會被提及的頻率，這個合併就是個錯誤的決定。</strong>反過來，如果你在做主題模型、希望「衛生福利部」不要被拆成兩個無意義的碎片，合併就是對的。同一個操作、相反的判斷，差別只在研究問題。</p>
+      </div>
+
+      <h2 id="s12-ngram">8. n-gram：機械式的另一條路</h2>
+      <p><code>tokens_ngrams()</code> 不做統計判斷，直接把<strong>每一組</strong>相鄰詞都組成新特徵：</p>
+<div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>ng &lt;- tokens_ngrams(tk, n = 2)
+
+nfeat(dfm(tk))     #&gt;  8225     單詞
+nfeat(dfm(ng))     #&gt; 30635     bigram
+
+topfeatures(dfm(ng), 6)
+#&gt;       年_月   敬請_貴院       月_日       自_年   社會_住宅 衛生_福利部
+#&gt;          74          41          36          26          26          24</pre></div>
+      <p>特徵數暴增 3.7 倍，絕大多數只出現一次。<code>tokens_ngrams()</code> 適合丟給會自己做特徵選擇的模型（例如加了 L1 懲罰的 glmnet）；要人看的描述統計，<code>textstat_collocations()</code> + <code>tokens_compound()</code> 的結果乾淨得多。</p>
+
+      <h2 id="s12-order">9. 操作順序會改變結果</h2>
+      <p>老師的投影片特別花一頁講 bigrams and operation order。用這份語料實測「先去停用詞」與「後去停用詞」的差別：</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:48%">順序</th><th style="width:20%">bigram 特徵數</th><th>前 5 名</th></tr></thead>
+        <tbody>
+          <tr><td>直接組 bigram</td><td>35,369</td><td>113_年、敬請_貴院、2023_年、112_年、<strong>地方_政府</strong></td></tr>
+          <tr><td>先去停用詞再組 bigram</td><td>31,927</td><td>113_年、敬請_貴院、2023_年、112_年、<strong>2024_年</strong></td></tr>
+        </tbody>
+      </table></div>
+      <p>少了 3,442 個特徵，但前四名一模一樣。這是個<strong>值得記住的經驗</strong>：順序確實會改變結果，可是改變的多半是長尾，不是你會拿去報告的那一端。所以順序要交代，但不必因此焦慮——重點是<strong>寫下來、能重現</strong>，而不是找到唯一正確的順序。</p>
+      <div class="callout note"><div class="ct">▍為什麼先去停用詞會「少」特徵而不是「多」</div>
+        <p>因為「的」被刪掉之後，「能源 的 政策」從兩個 bigram（能源_的、的_政策）變成一個（能源_政策）。刪一個詞，消掉兩個含它的 bigram，再生出一個跨過它的新 bigram——淨效果是減少。順帶一提，這也表示<strong>先去停用詞會製造出原文裡不相鄰的詞組</strong>，如果你的方法依賴真實相鄰性，這就不能做。</p>
+      </div>
+
+      <h2 id="s12-stem">10. 詞幹與詞形還原：英文的事</h2>
+      <p>英文有詞形變化，<code>support / supports / supported</code> 在 dfm 裡是三個不同的欄。<code>tokens_wordstem()</code> 用 Porter 演算法把它們砍成同一個詞幹：</p>
+<div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>e &lt;- tokens(c("The government supports workers and their organisations.",
+              "Governments supported the organisation of workers."),
+            remove_punct = TRUE) |&gt; tokens_tolower()
+tokens_wordstem(e, language = "en")
+
+#&gt; text1 :
+#&gt; [1] "the" "govern" "support" "worker" "and" "their" "organis"
+#&gt; text2 :
+#&gt; [1] "govern" "support" "the" "organis" "of" "worker"</pre></div>
+      <p>注意 <code>organis</code> 和 <code>govern</code>——詞幹<strong>不保證是真的字</strong>。這就是 stemming 與 lemmatization 的差別：lemmatization 會還原成字典裡的原形（<code>organisation</code> → <code>organisation</code>、<code>better</code> → <code>good</code>），但需要詞性標註，要靠 UDPipe 或 spaCy，不是一行 quanteda 就能解決。</p>
+      <p>中文呢？沒有詞形變化，這一步<strong>完全沒有作用</strong>：</p>
+<div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>zh &lt;- tokens("能源 轉型 政策", what = "fastestword")
+tokens_wordstem(zh, language = "en")
+#&gt; [1] "能源" "轉型" "政策"        原封不動</pre></div>
+      <div class="callout note"><div class="ct">▍第 2 週 lab 是英國下議院語料，這一節用得到</div>
+        <p>老師的 take-home lab 用的是 1945–2025 年英國下議院演說 5,000 筆，全是英文。<code>tokens_wordstem()</code>、<code>stopwords("en")</code>、<code>kwic()</code> 這些在那份 lab 裡都會出現。中文的坑（第 3 到第 5 節）留給你自己的期末語料。</p>
+      </div>
+
+      <h2 id="s12-all">11. 全語料斷詞</h2>
       <p>把第 9 章的 <code>map_chr()</code> 接上來，跑完 162 筆：</p>
       <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>seg &lt;- map_chr(d$說明清理, \(s) paste(segment(s, w), collapse = " "))
 
@@ -1877,7 +2000,7 @@ length(unique(unlist(as.list(tk))))      # 不重複詞型
       <p>做法是：jieba 斷好之後<strong>用空白把詞接回一個字串</strong>，再交給 quanteda——這樣 quanteda 只要照空白切就好，等於把中文變成「英文那樣的形式」。這是 R 社群處理中文最常見的做法。</p>
       <p>五萬詞、六千多個詞型。這個規模在文本分析裡算小，但已經足夠讓你在自己的筆電上跑完整個流程而不用等待，很適合學習。</p>
 
-      <h2 id="s12-p">7. 動手練習</h2>
+      <h2 id="s12-p">12. 動手練習</h2>
       <div class="practice"><ol>
         <li>拿三個你自己想到的政治或政策名詞，先看預設怎麼斷，再用 <code>new_user_word()</code> 加入後重斷，比較差異。</li>
         <li>把 <code>remove_numbers = TRUE</code> 拿掉重跑一次，比較 <code>sum(ntoken(tk))</code> 差多少。想一想：如果研究題目是預算或統計數據，這個選項該怎麼設？</li>
@@ -1886,7 +2009,7 @@ length(unique(unlist(as.list(tk))))      # 不重複詞型
         <li>用 <code>kwic(tk, "政策", window = 5)</code> 看「政策」這個詞出現時前後五個詞是什麼——這叫關鍵詞脈絡（keyword in context），是檢查斷詞品質最快的方法。</li>
       </ol></div>
 
-      <h2 id="s12-s">8. 本章小結</h2>
+      <h2 id="s12-s">13. 本章小結</h2>
       <ul>
         <li><code>tokens()</code> 的 remove 選項每一個都是研究決定，要在方法章節交代。</li>
         <li>quanteda 內建的 ICU 斷詞<strong>已經能處理中文</strong>，實測四句有兩句與 jieba 完全相同。</li>
@@ -1894,6 +2017,11 @@ length(unique(unlist(as.list(tk))))      # 不重複詞型
         <li><code>new_user_word()</code> 加入政策名與專有名詞，清單要納入版本控制與論文附錄。</li>
         <li>標準做法：jieba 斷詞 → 空白接回字串 → 交給 quanteda。</li>
         <li>本課語料斷完共 49,975 詞、6,471 個詞型。</li>
+        <li><code>textstat_collocations()</code> 讓語料自己說哪些詞該黏在一起；高 lambda 的短詞組先懷疑斷詞，不要急著解釋。</li>
+        <li><code>tokens_compound()</code> 合併後原本的單詞會消失（「福利部」實測從 TRUE 變 FALSE），是不可逆的取捨。</li>
+        <li><code>tokens_ngrams()</code> 特徵數暴增 3.7 倍，適合丟給會自動選特徵的模型，不適合給人看。</li>
+        <li>操作順序會改變結果（35,369 vs 31,927 個 bigram），但前四名相同——要交代，不必焦慮。</li>
+        <li><code>tokens_wordstem()</code> 只對英文有用，第 2 週 lab 的英國下議院語料用得到。</li>
       </ul>
       <footer class="foot">對照實驗於 R 4.6.1 + quanteda 4.5.0 + jiebaR 0.11 實際執行；對照 <a href="https://quanteda.io/reference/tokens.html" target="_blank" rel="noopener">quanteda tokens 文件</a> 與 <a href="https://qinwenfeng.com/jiebaR/" target="_blank" rel="noopener">jiebaR 文件</a> 撰寫（查證日 2026-09-18）。</footer>
       <div class="chap-foot"><a class="nextlink" data-go="ch13"><span class="k">下一章 →</span> 13 · dfm 與停用詞</a></div>
@@ -1905,7 +2033,7 @@ length(unique(unlist(as.list(tk))))      # 不重複詞型
       <h1 class="ch">dfm 與停用詞</h1>
       <p class="lead">本章目標：建立文件特徵矩陣，理解它為什麼那麼空，並親手處理中文停用詞這個沒有標準答案的問題。</p>
       <div class="pagetoc"><div class="tt">本頁章節</div>
-        <a href="#s13-build">建立 dfm</a><a href="#s13-sparse">稀疏度</a><a href="#s13-raw">沒去停用詞的樣子</a><a href="#s13-stop">中文停用詞的麻煩</a><a href="#s13-trim">去除與修剪</a><a href="#s13-tfidf">tf-idf</a><a href="#s13-p">動手練習</a><a href="#s13-s">本章小結</a>
+        <a href="#s13-build">建立 dfm</a><a href="#s13-sparse">稀疏度</a><a href="#s13-raw">沒去停用詞的樣子</a><a href="#s13-stop">中文停用詞的麻煩</a><a href="#s13-trim">去除與修剪</a><a href="#s13-tfidf">tf-idf</a><a href="#s13-tfmath">tf-idf 手算</a><a href="#s13-tfdf">詞頻與文件頻率</a><a href="#s13-p">動手練習</a><a href="#s13-s">本章小結</a>
       </div>
 
       <h2 id="s13-build">1. 建立 dfm</h2>
@@ -1955,6 +2083,20 @@ dim(dfm_remove(dm0, sw))
         <p>本教材的清單裡有「政府」嗎？沒有。但如果你的研究問題是「委員多常訴諸政府責任」，「政府」就是核心詞；如果你研究的是政策議題分布，「政府」可能是雜訊。<strong>同一個詞在不同研究裡地位完全不同</strong>，沒有一份清單能通用。刪掉的每個詞都要說得出理由。</p>
       </div>
 
+      <div class="callout warn"><div class="ct">▍停用詞表會吃掉否定詞——這是最貴的一個坑</div>
+        <p>英文的內建停用詞表<strong>包含 not 和 no</strong>：</p>
+<div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>length(stopwords("en"))                    #&gt; 175
+c("not", "no") %in% stopwords("en")        #&gt; TRUE TRUE
+
+keep &lt;- setdiff(stopwords("en"), c("not", "no", "nor"))
+length(keep)                               #&gt; 172</pre></div>
+        <p>中文一樣。「不」是高頻虛詞，任何一份中文停用詞表都會收，而它一旦被刪掉：</p>
+<div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>z &lt;- tokens("政府 不 支持 刪減 醫療 預算", what = "fastestword")
+tokens_remove(z, "不")
+#&gt; [1] "政府" "支持" "刪減" "醫療" "預算"</pre></div>
+        <p>「政府不支持刪減醫療預算」變成「政府支持刪減醫療預算」——<strong>意思完全相反</strong>。如果你在做情緒分析或立場分類，這一刀會直接毀掉測量效度。做法是先把否定詞從停用詞表裡挑出來（上面的 <code>setdiff()</code>），或者在斷詞階段就用 <code>tokens_compound()</code> 把「不_支持」黏成一個特徵（第 12 章第 7 節）。</p>
+      </div>
+
       <h2 id="s13-trim">5. 去除與修剪</h2>
       <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>stop_zh &lt;- c("的","是","與","及","在","為","對","於","並","以","有","也","等","將","其","之",
              "而","了","要","從","或","我國","本院","委員","質詢","行政院","特向","提出",
@@ -1992,7 +2134,76 @@ sparsity(dm)
         <div class="ph">與第 11 章同樣的狀況：quanteda 的影片教學太少，找到的幾支多半用 tm 或 tidytext 套件，與本課的工具不同，硬放反而混淆（查證日 2026-09-18）。建議改讀 <a href="https://tutorials.quanteda.io/basic-operations/dfm/" target="_blank" rel="noopener">quanteda 官方 dfm 教學</a>。</div>
       </div>
 
-      <h2 id="s13-p">7. 動手練習</h2>
+      <h2 id="s13-tfmath">7. tf-idf 手算：公式到底在算什麼</h2>
+      <p><code>dfm_tfidf()</code> 一行就跑完，但老師的投影片特別用四份文件手算了一遍，因為<strong>看不懂公式就不知道什麼時候不該用它</strong>。我們照做一次，用四份極小的假文件，好處是每個數字都能自己驗算。</p>
+<div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>demo &lt;- corpus(c(d1 = "健保 財務 健保 改革",
+                 d2 = "健保 給付 調整",
+                 d3 = "能源 轉型 政策",
+                 d4 = "能源 政策 檢討"))
+dt &lt;- dfm(tokens(demo, what = "fastestword"))</pre></div>
+      <p>公式（這一課用原始次數與以 10 為底的對數）：</p>
+      <div class="diagram">
+<pre>tf-idf(詞, 文件) = tf × log&#8321;&#8320;( N / df )
+
+   tf  = 這個詞在<b>這份文件</b>裡出現幾次
+   df  = 全語料中<b>有幾份文件</b>出現過這個詞
+   N   = 文件總數</pre>
+        <div class="dcap">df 是「幾份文件有」，不是「總共出現幾次」——這是最常搞混的一點。</div>
+      </div>
+      <p>拿「健保」來算：N = 4，d1 和 d2 有它所以 df = 2。</p>
+<div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>#  IDF(健保) = log10(4 / 2) = log10(2) = 0.3010
+#  d1 裡 健保 出現 2 次，所以 tf = 2
+#  tf-idf = 2 × 0.3010 = 0.6021
+
+round(as.matrix(dfm_tfidf(dt, base = 10))[, c("健保", "能源", "改革")], 4)
+#&gt;     features
+#&gt; docs   健保  能源   改革
+#&gt;   d1 0.6021 0.000 0.6021
+#&gt;   d2 0.3010 0.000 0.0000
+#&gt;   d3 0.0000 0.301 0.0000
+#&gt;   d4 0.0000 0.301 0.0000</pre></div>
+      <p>手算的 0.6021 和函式輸出一模一樣。注意兩件事：</p>
+      <p><strong>一、「改革」只出現在 d1 一次，分數卻跟出現兩次的「健保」一樣高。</strong>tf 是 1、df 是 1，IDF = log₁₀(4/1) = 0.6021。稀有詞就算只出現一次也能拿到高分——這是 tf-idf 的設計，也是它的脆弱之處：<strong>錯字、OCR 雜訊、斷詞失誤，全都是「稀有詞」。</strong></p>
+      <p><strong>二、出現在<u>每一份</u>文件的詞，分數是 0。</strong>log₁₀(4/4) = 0。tf-idf 會自動壓掉無所不在的詞，所以有人說「用了 tf-idf 就不用去停用詞」——在這個極端例子上成立，實務上不成立，因為停用詞通常不是出現在 100% 的文件裡。</p>
+      <div class="callout note"><div class="ct">▍base 這個參數要交代</div>
+        <p><code>dfm_tfidf()</code> 預設 <code>base = 10</code>，但很多 Python 工具（含 scikit-learn）用自然對數，而且還會多做平滑與 L2 正規化。<strong>同一份語料、同一個公式名稱，兩邊算出來的數字不會一樣。</strong>論文裡寫「使用 tf-idf 加權」是不夠的，要寫清楚底數與是否正規化。</p>
+      </div>
+
+      <h2 id="s13-tfdf">8. 詞頻與文件頻率：兩種不同的「常見」</h2>
+      <p>上一節的 df 值得單獨看。同樣是「常見」，<code>tf</code>（總出現次數）與 <code>df</code>（出現在幾份文件）講的是不同的故事。回到 162 篇質詢：</p>
+<div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>x  &lt;- dfm(tk)
+tf &lt;- colSums(x)
+df &lt;- colSums(dfm_weight(x, "boolean"))
+
+data.frame(feature = names(tf), tf = as.numeric(tf), df = as.numeric(df)) |&gt;
+  mutate(每篇平均 = round(tf / df, 2)) |&gt;
+  arrange(desc(tf)) |&gt; head(8)
+
+#&gt;  feature  tf  df 每篇平均
+#&gt;       年 380 107     3.55
+#&gt;     政策 198  64     3.09
+#&gt;       應 154  85     1.81
+#&gt;       月 142  72     1.97
+#&gt;     相關 134  83     1.61
+#&gt;     問題 130  68     1.91
+#&gt;       更 113  61     1.85
+#&gt;   行政院 109  66     1.65</pre></div>
+      <p>這些是「散布型」的常見詞：出現在半數以上的文件裡，每篇一兩次。它們描述的是<strong>這種文體長什麼樣</strong>，不是任何一篇在講什麼。</p>
+      <p>把排序換成 <code>tf / df</code>（集中度），看到的完全是另一批詞：</p>
+<div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>#  只看 tf &gt;= 15 的詞，依 tf/df 排序
+#&gt;  feature tf df 集中度
+#&gt;     香菇 26  1   26.0
+#&gt;     牡蠣 19  1   19.0
+#&gt;     測速 17  1   17.0
+#&gt;     學檔 31  2   15.5
+#&gt;     訪視 23  2   11.5
+#&gt;     疫苗 44  4   11.0</pre></div>
+      <p>「香菇」出現 26 次，全部集中在<strong>同一篇</strong>質詢裡。這不是雜訊，這是個發現：這份語料裡有單一議題的密集質詢。<strong>高 tf、低 df 的詞是找「有人在盯某件事」的最快路徑</strong>——而按總詞頻排序，它們永遠排在第 300 名以後，你根本看不到。</p>
+      <div class="callout note"><div class="ct">▍「學檔」這個詞洩漏了什麼</div>
+        <p>「學檔」不是一個正常的中文詞——它是「學習歷程<u>檔案</u>」被 jieba 切壞的殘骸。它能爬到集中度第 4 名，正好示範第 12 章第 6 節的說法：<strong>異常的統計排名往往先反映斷詞問題，才反映語言現象。</strong>看到不認識的詞，第一步是 <code>kwic()</code> 回原文看（下一章第 5 節），不是急著解釋它。</p>
+      </div>
+
+      <h2 id="s13-p">9. 動手練習</h2>
       <div class="practice"><ol>
         <li>調整 <code>dfm_trim()</code> 的門檻：試 <code>min_termfreq = 2</code>、<code>10</code>、<code>20</code>，記錄每次的詞型數與稀疏度，畫成一張小表。</li>
         <li>把「政府」「政策」也加進停用詞清單重跑，看 <code>topfeatures()</code> 變成什麼。你覺得這樣做合理嗎？在什麼研究問題下合理？</li>
@@ -2001,7 +2212,7 @@ sparsity(dm)
         <li>找出只出現一次的詞有幾個：<code>sum(colSums(dm0) == 1)</code>，算算佔全部詞型的比例。這個數字會讓你對語言的長尾有感。</li>
       </ol></div>
 
-      <h2 id="s13-s">8. 本章小結</h2>
+      <h2 id="s13-s">10. 本章小結</h2>
       <ul>
         <li>dfm＝文件特徵矩陣，列是文件、欄是詞、值是次數；詞序消失，這就是詞袋模型。</li>
         <li>本課語料原始 dfm 為 162 × 6,469，稀疏度 0.971（97.1% 是零）。</li>
@@ -2010,6 +2221,9 @@ sparsity(dm)
         <li><code>dfm_remove()</code> 依清單刪、<code>dfm_trim()</code> 依頻率刪；處理後為 162 × 1,964。</li>
         <li>tf-idf 換一個角度看重要性：詐騙、學生、護理、住宅、疫苗浮現，「政府」退場。</li>
         <li>停用詞清單與修剪門檻都是研究決定，要寫進方法與附錄。</li>
+        <li>停用詞表含否定詞（英文 175 個含 not/no）；刪掉「不」會讓「不支持」變「支持」，直接毀掉測量效度。</li>
+        <li>tf-idf = tf × log₁₀(N/df)；手算與 <code>dfm_tfidf(base = 10)</code> 實測完全吻合。底數與正規化方式要在論文寫明。</li>
+        <li>tf 高、df 低的詞（香菇 26 次全在同一篇）是找單一議題密集質詢的最快路徑。</li>
       </ul>
       <footer class="foot">程式碼與輸出皆在 R 4.6.1 + quanteda 4.5.0 + stopwords 套件實際執行驗證；簡繁停用詞比對為實測結果（查證日 2026-09-18）。</footer>
       <div class="chap-foot"><a class="nextlink" data-go="ch14"><span class="k">下一章 →</span> 14 · 描述統計與第一張圖</a></div>
@@ -2021,7 +2235,7 @@ sparsity(dm)
       <h1 class="ch">描述統計與第一張圖</h1>
       <p class="lead">本章目標：把 dfm 變成可以放進報告的表與圖，並做出這份語料的第一個實質發現。</p>
       <div class="pagetoc"><div class="tt">本頁章節</div>
-        <a href="#s14-freq">textstat_frequency</a><a href="#s14-plot">畫第一張圖</a><a href="#s14-font">中文字型問題</a><a href="#s14-keyness">分組比較</a><a href="#s14-save">存檔與可重現</a><a href="#s14-next">接到課程哪裡</a><a href="#s14-p">動手練習</a><a href="#s14-s">本章小結</a>
+        <a href="#s14-freq">textstat_frequency</a><a href="#s14-plot">畫第一張圖</a><a href="#s14-font">中文字型問題</a><a href="#s14-keyness">分組比較</a><a href="#s14-kwic">kwic 回到原文</a><a href="#s14-save">存檔與可重現</a><a href="#s14-next">接到課程哪裡</a><a href="#s14-p">動手練習</a><a href="#s14-s">本章小結</a>
       </div>
 
       <h2 id="s14-freq">1. textstat_frequency：從矩陣到表格</h2>
@@ -2095,12 +2309,50 @@ head(k, 6)
         <p>換句話說，<strong>你看到的可能是抽樣假象，不是議題變遷</strong>。要驗證它，需要完整資料、控制委員層級的變異，並考慮多重比較的問題。這正是課程第 5 週與第 9 週要教的內容——工具讓你很快看到「一個模式」，方法訓練讓你判斷「那是不是真的」。</p>
       </div>
 
-      <h2 id="s14-save">5. 存檔與可重現</h2>
+      <h2 id="s14-kwic">5. kwic：回到原文檢查你量到什麼</h2>
+      <p>前四節做的都是<strong>把文字變成數字</strong>。這一節做相反的事，而且它比前四節都重要：<code>kwic()</code>（keyword in context）把數字帶回原文，讓你確認那個數字到底在算什麼。</p>
+      <p>老師的四大原則裡有一條是「所有量化文本模型都是錯的，但有些有用」——判斷有沒有用的方法不是看統計量，是<strong>回去讀</strong>。</p>
+<div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>k &lt;- kwic(tk, pattern = "健保", window = 5)
+nrow(k)                    #&gt; 14
+length(unique(k$docname))  #&gt;  7
+
+head(as.data.frame(k)[, c("docname", "pre", "keyword", "post")], 5)
+#&gt;     docname                          pre keyword                         post
+#&gt;  11-1-20-66     人數 成長率 高達 年 肺癌    健保       醫療 支出 更 高達 億元
+#&gt;  11-1-20-66     冠王 晚期 確診 比例 最高    健保   醫療 支出 最高 死亡率 最高
+#&gt;  11-1-20-66       五 維護 民眾 健康 減少    健保     支出 建請 行政院 讓 儘速
+#&gt;   11-1-5-16         衛 福 兒科 專科 醫師    健保 點值採 固定點 值並 適度 調整
+#&gt;   11-1-6-23 法規 研究 諮詢 由衛福部 下轄    健保       辦理 本次 既 涉及 健保</pre></div>
+      <p>三十秒的閱讀就換到三個資訊：<strong>一、</strong>14 次命中只散在 7 篇，其中一篇就佔了 3 次——「健保」的詞頻高不代表關心的人多。<strong>二、</strong>第 4 列的「點值採 固定點 值並」是斷詞切壞的殘骸（原文是「點值採固定點值」），在頻率表上你永遠看不到這件事。<strong>三、</strong>第 5 列的「衛 福」被切成兩個字，表示這份語料還需要加詞典。</p>
+
+      <h3>pattern 的三種寫法</h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:26%">寫法</th><th style="width:16%">本語料命中</th><th>用在什麼時候</th></tr></thead>
+        <tbody>
+          <tr><td><code>"健保"</code></td><td>14</td><td>完全比對單一 token</td></tr>
+          <tr><td><code>"健保*"</code></td><td>14</td><td>萬用字元；此處沒有「健保法」之類的複合詞，所以與上面相同</td></tr>
+          <tr><td><code>"*能源*"</code></td><td>7</td><td>前後都放萬用字元，抓得到「再生能源」「能源局」</td></tr>
+          <tr><td><code>phrase("衛生 福利部")</code></td><td>24</td><td><strong>詞已經被切成兩個 token</strong> 時，唯一的寫法</td></tr>
+        </tbody>
+      </table></div>
+      <p><code>phrase()</code> 是中文最常用到的一個，原因在斷詞：</p>
+<div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>cu &lt;- worker(bylines = FALSE)
+segment("再生能源政策",   cu)   #&gt; 再生能源 / 政策
+segment("能源轉型的進度", cu)   #&gt; 能源 / 轉型 / 的 / 進度
+segment("長照2.0",        cu)   #&gt; 長 / 照 / 2.0
+segment("碳費徵收",       cu)   #&gt; 碳費 / 徵收</pre></div>
+      <p>jieba 的預設詞典<strong>有</strong>「再生能源」和「碳費」，<strong>沒有</strong>「能源轉型」和「長照」。所以 <code>kwic(tk, "再生能源")</code> 有結果，<code>kwic(tk, "能源轉型")</code> 卻是 0 筆——不是語料裡沒人講能源轉型，是它被切成兩個 token 了。這時兩條路：回頭 <code>new_user_word()</code> 重跑（第 12 章第 5 節），或當下用 <code>phrase("能源 轉型")</code> 查。</p>
+      <div class="callout warn"><div class="ct">▍每一個要寫進論文的數字，都先 kwic 過一次</div>
+        <p>這是<strong>可以省最多時間的一個習慣</strong>。你在頻率表上看到「疫苗」44 次，看起來是個議題；<code>kwic()</code> 一查發現集中在 4 篇、其中大半是同一位委員的同一份質詢反覆提及——那就不是「這屆立院關心疫苗」，而是「有一位委員關心疫苗」。這兩句話在論文裡差很多，而只有 kwic 分得出來。</p>
+        <p>操作上：算完 <code>textstat_frequency()</code> 或 <code>textstat_keyness()</code>，挑前 10 名逐一 <code>kwic()</code>，把看到的問題記下來。這份筆記之後會直接變成論文方法章節的一段。</p>
+      </div>
+
+      <h2 id="s14-save">6. 存檔與可重現</h2>
       <div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>ggsave(here("output", "top10.png"), p, width = 7, height = 4.4, dpi = 300)
 write_csv(f, here("output", "top10_freq.csv"))</pre></div>
       <p>呼應第 3 章的紀律：圖和表都存進 <code>output/</code>，而且都是<strong>由程式碼生成的</strong>。不要在 RStudio 的 Plots 面板按 Export 手動存——那樣資料一改，你得記得重按一次，而你一定會忘記。</p>
 
-      <h2 id="s14-next">6. 這一篇接到課程哪裡</h2>
+      <h2 id="s14-next">7. 這一篇接到課程哪裡</h2>
       <p>你剛剛走完的流程——讀檔、清理、斷詞、建 dfm、算詞頻、分組比較、畫圖——<strong>幾乎就是課程第 4 週 Lab 的內容</strong>（「使用 quanteda，沿著同一個範例從語料庫一路做到 token 與 DFM」）。上課時你會是已經走過一遍的人。</p>
       <div class="callout note"><div class="ct">▍課後 Lab 不計分，但別因此跳過</div>
         <p>2026-09-17 版課綱把課後 Lab 明確定位為<strong>自主練習，不是獨立的計分項目</strong>。這反而提高了它的重要性：沒有分數逼你，但期中研究設計（20%）與期末論文（25%）要你真的跑得動分析。<strong>Lab 是唯一的練習場</strong>，跳過的代價會在第 13 週截止日那天出現。</p>
@@ -2125,7 +2377,7 @@ write_csv(f, here("output", "top10_freq.csv"))</pre></div>
         <div class="vcap">「Using ggplot to create bar charts for 2 categorical variables」— R Programming 101（10 萬觀看）。本章只用到最基本的 <code>geom_col()</code>，影片講得更完整，包括分組長條與堆疊長條，第 5 週比較不同群體時會用到。版權屬原作者。</div>
       </div>
 
-      <h2 id="s14-p">7. 動手練習</h2>
+      <h2 id="s14-p">8. 動手練習</h2>
       <div class="practice"><ol>
         <li>把長條圖的 <code>n = 10</code> 改成 20，觀察圖變得好讀還是更亂，想想報告裡該放幾個。</li>
         <li>移除 <code>reorder()</code> 重畫一次，親眼看看沒有排序的長條圖有多難讀。</li>
@@ -2134,7 +2386,7 @@ write_csv(f, here("output", "top10_freq.csv"))</pre></div>
         <li>用 <code>quanteda.textplots::textplot_wordcloud(dm, max_words = 60)</code> 畫一張文字雲。畫完之後，比較它和長條圖哪個更能讓人讀出資訊——這題沒有標準答案，但值得你有自己的立場。</li>
       </ol></div>
 
-      <h2 id="s14-s">8. 本章小結</h2>
+      <h2 id="s14-s">9. 本章小結</h2>
       <ul>
         <li><code>textstat_frequency()</code> 給出整齊的表，<code>docfreq</code> 欄能區分散布型與集中型的詞。</li>
         <li>畫長條圖三要素：<code>reorder()</code> 排序、<code>coord_flip()</code> 橫放、拿掉無資訊的軸標題。</li>
@@ -2143,6 +2395,8 @@ write_csv(f, here("output", "top10_freq.csv"))</pre></div>
         <li>但該發現受限於樣本、組別不對等與委員分布極度不均，<strong>可能是抽樣假象</strong>。</li>
         <li>圖表一律由程式碼生成並存進 <code>output/</code>，不要手動 Export。</li>
         <li>這一篇等於第 4 週 Lab 的完整預演。</li>
+        <li><code>kwic()</code> 把數字帶回原文；每一個要寫進論文的數字都先 kwic 過一次。</li>
+        <li>中文常需要 <code>phrase()</code>——jieba 預設有「再生能源」卻沒有「能源轉型」，查不到不代表沒人講。</li>
       </ul>
       <footer class="foot">程式碼、輸出與圖表皆在 R 4.6.1 + quanteda 4.5.0 + ggplot2 實際執行產生；課程週次對照 <strong>2026-09-17 版課綱</strong>第 7.2 節（查證日 2026-09-18）。</footer>
       <div class="chap-foot"><a class="nextlink" data-go="ch15"><span class="k">下一章 →</span> 15 · Quarto 筆記本與 Overleaf 繳交</a></div>
@@ -2851,10 +3105,105 @@ data.frame(套件 = pkgs,
            已安裝 = sapply(pkgs, requireNamespace, quietly = TRUE))</pre></div>
       <p>再跑一次第 19 章的課前檢查清單，十二項都過就準備好了。</p>
       <footer class="foot">安裝方式對照各官方網站；jiebaR 的編譯問題為 2026-09-18 於 R 4.6.1 實測結果（查證日 2026-09-18）。</footer>
+      <div class="chap-foot"><a class="nextlink" data-go="apD"><span class="k">下一個附錄 →</span> D · 第 2 週 lab 快速上手</a></div>
+    </section>
+
+    <!-- ===================== 附錄 D ===================== -->
+    <section class="chapter" id="apD">
+      <div class="crumb">附錄 D</div>
+      <h1 class="ch">第 2 週 take-home lab 快速上手</h1>
+      <p class="lead">老師在第 2 週發的 lab 要回家自己做。這一頁是開工前的十分鐘檢查，把會卡住的地方先排掉。</p>
+      <div class="pagetoc"><div class="tt">本頁章節</div>
+        <a href="#sD-what">這份 lab 是什麼</a><a href="#sD-pkg">套件檢查</a><a href="#sD-wd">工作目錄</a><a href="#sD-data">資料長什麼樣</a><a href="#sD-map">對照本教材哪幾章</a>
+      </div>
+
+      <h2 id="sD-what">1. 這份 lab 是什麼</h2>
+      <p>資料夾裡有三種格式，<strong>擇一即可，不必都做</strong>：</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:34%">檔案</th><th>用途</th></tr></thead>
+        <tbody>
+          <tr><td><code>Lab_Session_W2.R</code></td><td>純 R 腳本，說明都在註解裡。習慣一行一行跑的人選這個</td></tr>
+          <tr><td><code>Lab_Session_W2.qmd</code></td><td>Quarto 學生版，說明是正文、程式是 chunk。<strong>不需要 render</strong></td></tr>
+          <tr><td><code>Lab_Session_W2.md</code></td><td>已經算好的版本，只看不跑</td></tr>
+          <tr><td><code>*_Answers.*</code></td><td>11 題練習的完整解答。<strong>自己做完再看</strong></td></tr>
+        </tbody>
+      </table></div>
+      <p>內容涵蓋：字串操作與正規表達式、中繼資料清理、建立 corpus 與 <code>corpus_reshape()</code>、斷詞與多詞表達、<code>kwic()</code>、搭配詞、DFM 與 <code>dfm_trim()</code>、詞頻圖、keyness、單一特徵的時間趨勢。</p>
+
+      <h2 id="sD-pkg">2. 套件檢查</h2>
+      <p>lab 只需要這六個（<code>knitr</code> 只有要 render <code>.qmd</code> 才用得到）。<strong>不需要</strong> Python、UDPipe、Wordfish：</p>
+<div class="codeblock"><span class="lang">R Console</span><button class="copyb">複製</button><pre>pk &lt;- c("dplyr", "stringr", "ggplot2",
+        "quanteda", "quanteda.textstats", "quanteda.textplots")
+data.frame(套件 = pk, 已裝 = sapply(pk, requireNamespace, quietly = TRUE))</pre></div>
+      <p>照第 4 章裝過全課程套件的話，這些都已經有了。2026-09-18 在 R 4.6.1 上的實測版本：</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>套件</th><th>版本</th><th>套件</th><th>版本</th></tr></thead>
+        <tbody>
+          <tr><td>dplyr</td><td>1.2.1</td><td>quanteda</td><td>4.5.0</td></tr>
+          <tr><td>stringr</td><td>1.6.0</td><td>quanteda.textstats</td><td>0.97.2</td></tr>
+          <tr><td>ggplot2</td><td>4.0.3</td><td>quanteda.textplots</td><td>0.96.1</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="sD-wd">3. 工作目錄——最多人卡在這裡</h2>
+      <p>lab 的程式用相對路徑讀資料，所以<strong>工作目錄必須是 lab 那個資料夾</strong>。開啟一個腳本檔並不會改工作目錄（第 3 章講過）。開工前先跑這兩行：</p>
+<div class="codeblock"><span class="lang">R Console</span><button class="copyb">複製</button><pre>getwd()
+file.exists("Data/hc_sample_1945_2025.rds")   # 必須是 TRUE</pre></div>
+      <p>如果是 <code>FALSE</code>：</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:22%">環境</th><th>做法</th></tr></thead>
+        <tbody>
+          <tr><td>RStudio</td><td>Session → Set Working Directory → Choose Directory…，選 lab 資料夾</td></tr>
+          <tr><td>Positron</td><td>直接把 lab 資料夾當專案開啟，再啟動 R session</td></tr>
+          <tr><td>兩者皆可</td><td><code>setwd("完整路徑/W2/lab")</code>。Windows 路徑<strong>用正斜線</strong>：<code>setwd("C:/Users/你的帳號/Downloads/W2/lab")</code></td></tr>
+        </tbody>
+      </table></div>
+      <div class="callout note"><div class="ct">▍更好的做法：把 lab 資料夾變成一個 Project</div>
+        <p>在 lab 資料夾裡建一個 <code>.Rproj</code>（RStudio：File → New Project → Existing Directory），之後用 Project 開啟，工作目錄永遠正確，也不必寫 <code>setwd()</code>。第 3 章講的理由在這裡直接派上用場。另外<strong>整個資料夾要一起搬</strong>——<code>Data/</code> 和 <code>*_files/</code> 都得留在旁邊，圖才顯示得出來。</p>
+      </div>
+
+      <h2 id="sD-data">4. 資料長什麼樣</h2>
+      <p>2026-09-18 實測讀取結果：</p>
+      <div class="tablewrap"><table>
+        <tbody>
+          <tr><td style="width:24%">檔案</td><td><code>Data/hc_sample_1945_2025.rds</code>（約 7 MB）</td></tr>
+          <tr><td>筆數</td><td>5,000 筆英國下議院發言</td></tr>
+          <tr><td>欄位</td><td>13 欄：<code>date, agenda, speechnumber, speaker, party, party.facts.id, chair, terms, text, speech_url, parliament, iso3country, party_raw</code></td></tr>
+          <tr><td>日期範圍</td><td>1945-01-16 至 2025-12-16</td></tr>
+          <tr><td>政黨</td><td>23 個</td></tr>
+        </tbody>
+      </table></div>
+      <div class="callout warn"><div class="ct">▍沒有 year 欄</div>
+        <p>做時間趨勢時容易直覺打 <code>x$year</code>，會得到 <code>NULL</code>。年份要自己從 <code>date</code> 取：</p>
+<div class="codeblock"><span class="lang">R</span><button class="copyb">複製</button><pre>x &lt;- readRDS("Data/hc_sample_1945_2025.rds")
+x$year &lt;- as.integer(format(as.Date(x$date), "%Y"))</pre></div>
+      </div>
+      <p>全英文語料，所以中文的坑一個都不會遇到——<code>stopwords("en")</code> 直接可用、<code>tokens_wordstem()</code> 有作用、字型不會變豆腐格。這反而是熟悉 quanteda 語法的好機會：<strong>先在沒有中文干擾的環境把流程跑順，再回頭處理自己的中文語料。</strong></p>
+
+      <h2 id="sD-map">5. 對照本教材哪幾章</h2>
+      <div class="tablewrap"><table>
+        <thead><tr><th style="width:42%">lab 裡的操作</th><th>本教材</th></tr></thead>
+        <tbody>
+          <tr><td>字串操作、正規表達式</td><td>第 8 章</td></tr>
+          <tr><td>中繼資料清理、<code>dplyr</code> 動詞</td><td>第 7 章</td></tr>
+          <tr><td><code>corpus()</code>、<code>docvars()</code>、<code>corpus_subset()</code></td><td>第 11 章 1–4 節</td></tr>
+          <tr><td><code>corpus_reshape()</code> 拆句</td><td>第 11 章第 5 節</td></tr>
+          <tr><td><code>tokens()</code> 與清理選項</td><td>第 12 章 1–2 節</td></tr>
+          <tr><td>多詞表達、<code>tokens_compound()</code></td><td>第 12 章 6–7 節</td></tr>
+          <tr><td>搭配詞 <code>textstat_collocations()</code></td><td>第 12 章第 6 節</td></tr>
+          <tr><td><code>kwic()</code></td><td>第 14 章第 5 節</td></tr>
+          <tr><td><code>dfm()</code>、<code>dfm_trim()</code>、停用詞</td><td>第 13 章 1–5 節</td></tr>
+          <tr><td>詞頻圖、<code>textstat_keyness()</code></td><td>第 14 章 1–4 節</td></tr>
+          <tr><td>單一特徵的時間趨勢</td><td>第 14 章第 4 節（把分組換成年份）</td></tr>
+        </tbody>
+      </table></div>
+      <p>卡住的時候，帶著<strong>程式碼、完整錯誤訊息、以及你預期會發生什麼</strong>去問——這是第 10 章講的求助方式，也是老師在 lab 說明裡明寫的要求。課前討論看時間，另外還有 TA 時間可以問。</p>
+      <footer class="foot">lab 內容與資料由授課教師提供（原始教材：Schoonvelde 2026, QTA Lab 02）。本頁的套件版本、資料欄位與日期範圍為 2026-09-18 在 R 4.6.1 實機讀取結果。</footer>
       <div class="chap-foot" style="color:var(--muted);font-size:13.5px;">教材到此結束。有任何錯誤或在 Windows 上遇到的差異，歡迎回報。</div>
     </section>
+
     <div class="pagemeta">
-      課程版本 v1.0（全 19 章＋附錄，對齊 2026-09-17 課綱）· 更新日 2026-09-17 · 查證日 2026-09-17<br>
+      課程版本 v1.1（全 19 章＋4 附錄，對齊 2026-09-17 課綱與第 1／2 週投影片）· 更新日 2026-09-18 · 查證日 2026-09-18<br>
       課程資料整理 © Jerry。課綱依 2026-09-17 版整理，內容版權屬國立臺灣大學與授課教師；外部連結之文件與影片版權分屬各原創作者。
     </div>
   </main>
@@ -2894,10 +3243,11 @@ data.frame(套件 = pkgs,
     {title:"附錄",items:[
       ["A","快捷鍵速查","apA",1],
       ["B","Windows 操作對照","apB",1],
-      ["C","環境安裝指引","apC",1]
+      ["C","環境安裝指引","apC",1],
+      ["D","第 2 週 lab 快速上手","apD",1]
     ]}
   ];
-  var order=['ch00','ch01','ch02','ch03','ch04','ch05','ch06','ch07','ch08','ch09','ch10','ch11','ch12','ch13','ch14','ch15','ch16','ch17','ch18','ch19','apA','apB','apC'];
+  var order=['ch00','ch01','ch02','ch03','ch04','ch05','ch06','ch07','ch08','ch09','ch10','ch11','ch12','ch13','ch14','ch15','ch16','ch17','ch18','ch19','apA','apB','apC','apD'];
 
   var navbody=document.getElementById('navbody');
   groups.forEach(function(g){
